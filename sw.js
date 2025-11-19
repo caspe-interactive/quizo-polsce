@@ -1,6 +1,6 @@
 self.options = {
     "domain": "quizo-polsce.vercel.app",
-    "zoneId": 7447334
+    "zoneId": 3114810
 };
 
 self.lary = "";
