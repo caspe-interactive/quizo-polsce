@@ -116,12 +116,38 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="bg" loop src="sounds/background.mp3"></audio> <audio id="snd-ding" src="sounds/ding.mp3"></audio> <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio> <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// Rejestracja Service Worker
+// --- Rejestracja Service Worker ---
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').then(()=>console.log('SW zarejestrowany')).catch(e=>console.error(e));
 }
 
-// Twój quiz JS pozostaje nienaruszony
+// --- Automatyczne pokazywanie reklam ---
+const midAd = document.querySelector('.ad-mid');
+const finalAd = document.querySelector('.ad-final');
+midAd.style.display = 'none';
+finalAd.style.display = 'none';
+
+function showMidAd(currentQuestionIndex) {
+  if (currentQuestionIndex === 5) { midAd.style.display = 'flex'; } else { midAd.style.display = 'none'; }
+}
+function showFinalAd() { finalAd.style.display = 'flex'; }
+
+// --- Integracja z quizem (Twoje oryginalne funkcje) ---
+const $ = id => document.getElementById(id);
+let points = 0;
+let current = 0;
+const QUESTIONS = [ /* Twoje pytania */ ];
+function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
+let sessionQuestions = getRandomSession();
+
+function showQuestion(){
+  showMidAd(current);
+  // ... Twój oryginalny kod wyświetlania pytania
+}
+function finishQuiz(){
+  showFinalAd();
+  // ... Twój oryginalny kod kończenia quizu
+}
 </script>
 
 </body>
