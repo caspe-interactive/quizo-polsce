@@ -1,5 +1,5 @@
 self.options = {
-    "domain": "quizo-polsce.vercel.app",
+    "domain": "gleeful-manatee-69543e.netlify.app",
     "zoneId": 3114810
 };
 self.lary = "";
