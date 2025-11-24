@@ -15,8 +15,8 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
 body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
-  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px;padding:8px;text-align:center;height:120px;
+  background:#222;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+  border-radius:12px;padding:8px;text-align:center;height:120px;font-weight:700;
 }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -26,7 +26,7 @@ body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text)
 }
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-.score{display:none;color:var(--accent)}
+.score{color:var(--accent)}
 .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){.answers{grid-template-columns:1fr}.question{font-size:1.08rem}}
@@ -59,7 +59,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop">Miejsce reklamy górnej</div>
+  <div class="ad-top" id="adTop">
+    <script async src="https://cdn.monetag.com/ad.js" data-zone="3114810"></script>
+  </div>
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -70,20 +72,26 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" style="display:none;">Miejsce reklamy środkowej</div>
+    <div class="ad-mid" id="adMid" style="display:none;">
+      <script async src="https://cdn.monetag.com/ad.js" data-zone="3114810"></script>
+    </div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div class="small-muted">Miejsca reklamowe gotowe</div>
+      <div class="small-muted">Miejsca reklamowe</div>
     </div>
   </div>
   <div style="height:12px"></div>
-  <div class="ad-bottom" id="adBottom">Miejsce reklamy dolnej</div>
+  <div class="ad-bottom" id="adBottom">
+    <script async src="https://cdn.monetag.com/ad.js" data-zone="3114810"></script>
+  </div>
 </div>
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" style="display:none;">Miejsce reklamy końcowej</div>
+    <div class="ad-final" id="adFinal" style="display:none;">
+      <script async src="https://cdn.monetag.com/ad.js" data-zone="3114810"></script>
+    </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie/Popraw wynik</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz znajomemu</div>
@@ -120,27 +128,50 @@ let current = 0;
 function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,7).map(o=>o.i); }
 let sessionQuestions = getRandomSession();
 
-// autoplay bg disabled locally for bezpieczeństwa
-const bg = new Audio('sounds/background.mp3');
+// background sound
+const bg = new Audio();
+bg.src = 'https://actions.google.com/sounds/v1/ambiences/city_traffic.ogg'; 
+bg.loop = true;
+bg.volume = 0.2;
+bg.play().catch(()=>{}); // ignoruj błędy autoplay
+
+// fejerwerki
+const canvas = $('fx'); const ctx = canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+let particles = [];
+function explode(x,y,color){
+  for(let i=0;i<80;i++){particles.push({x,y,dx:(Math.random()-0.5)*6,dy:(Math.random()-0.5)*6,life:60,color});}
+}
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{p.x+=p.dx;p.y+=p.dy;p.dy+=0.1;p.life--;ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,2,2); if(p.life<=0) particles.splice(i,1);});
+  requestAnimationFrame(animate);
+}
+animate();
 
 // show question
 function showQuestion(){
-  if(current === 3){ adMid.style.display='flex'; questionEl.textContent="Oglądaj reklamę, aby kontynuować"; answersEl.innerHTML=""; setTimeout(()=>{adMid.style.display='none'; current++; showQuestion();},5000); return;}
-  if(current >= sessionQuestions.length){ adFinal.style.display='flex'; questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik"; answersEl.innerHTML=""; setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },5000); return;}
+  if(current === 3){ adMid.style.display='flex'; questionEl.textContent="Oglądaj reklamę"; answersEl.innerHTML=""; setTimeout(()=>{adMid.style.display='none'; current++; showQuestion();},3000); return;}
+  if(current >= sessionQuestions.length){ adFinal.style.display='flex'; questionEl.textContent="Oglądaj reklamę"; answersEl.innerHTML=""; setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },3000); return;}
   adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
   const idx = sessionQuestions[current]; const q = QUESTIONS[idx]; questionEl.textContent=q.q; answersEl.innerHTML='';
   const shuffled = q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
-  shuffled.forEach(obj=>{ const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans; b.onclick=()=>answer(obj.i,b,idx); answersEl.appendChild(b); });
+  shuffled.forEach(obj=>{
+    const b=document.createElement('div'); 
+    b.className='btn'; 
+    b.textContent=obj.ans; 
+    b.onclick=()=>answer(obj.i,b,idx);
+    answersEl.appendChild(b);
+  });
   progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
 function answer(idxAnswer, btn, questionIndex){
   const correct = QUESTIONS[questionIndex].correct;
-  if(idxAnswer === correct){ btn.style.background='green'; points++; }
-  else { btn.style.background='red'; }
+  if(idxAnswer === correct){ btn.style.background='green'; points++; explode(canvas.width/2, canvas.height/2,'#0ff'); }
+  else { btn.style.background='red'; explode(canvas.width/2, canvas.height/2,'#f55'); }
   pointsEl.textContent=points;
   current++;
-  setTimeout(showQuestion,400);
+  setTimeout(showQuestion,500);
 }
 
 function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; }
@@ -152,21 +183,6 @@ $('endBtn').onclick=()=>{ finalEl.style.display='none'; };
 
 // start
 showQuestion();
-
-// Minimalne wstawienie Monetag (asynchronicznie, nie blokuje)
-function insertMonetag(container, zone){
-  if(!container || container.dataset.inserted==='1') return;
-  const s = document.createElement('script');
-  s.src='https://nap5k.com/tag.min.js';
-  s.dataset.zone=zone;
-  s.async=true;
-  container.appendChild(s);
-  container.dataset.inserted='1';
-}
-insertMonetag(adTop,'10199144');
-insertMonetag(adBottom,'10199144');
-insertMonetag(adMid,'10199201');
-insertMonetag(adFinal,'10199204');
 </script>
 
 </body>
