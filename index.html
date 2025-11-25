@@ -60,6 +60,7 @@
     .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
     .small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
 
+    /* final overlay */
     #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
     #final-card{
       background:linear-gradient(180deg,#081322,#06121f);
@@ -74,6 +75,7 @@
     .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
     .final-actions .btn{font-size:1rem;padding:12px 14px}
 
+    /* install hint (PWA) */
     .install-hint { display:none; margin-top:8px; font-size:0.95rem; color:var(--muted); text-align:center; }
 
     .msg{
@@ -93,6 +95,7 @@
   <canvas id="fx"></canvas>
 
   <div class="page">
+    <!-- Górna reklama (Monetag zone 10199144) -->
     <div class="ad-top" id="adTop"></div>
 
     <div class="card" id="quizCard">
@@ -109,6 +112,7 @@
       <div id="question" class="question">Ładowanie...</div>
       <div id="answers" class="answers"></div>
 
+      <!-- Mid ad container (po 7 pytaniu) -->
       <div class="ad-mid" id="adMid" style="display:none;"></div>
 
       <div class="meta">
@@ -118,6 +122,8 @@
     </div>
 
     <div style="height:12px"></div>
+
+    <!-- Dolna reklama (Monetag zone 10199144) -->
     <div class="ad-bottom" id="adBottom"></div>
   </div>
 
@@ -125,6 +131,8 @@
     <div id="final-card">
       <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
       <div id="final-text">0 pkt</div>
+
+      <!-- Final ad container (przed wynikiem) -->
       <div class="ad-final" id="adFinal" style="display:none;"></div>
 
       <div class="final-actions" style="margin-top:14px;">
@@ -191,8 +199,12 @@
       } catch(e){ console.warn('Monetag insert failed', e); }
     }
 
-    insertMonetag(adTop, '10199144');
-    insertMonetag(adBottom, '10199144');
+    // insert top + bottom immediately
+    insertMonetag(adTop, '10199144'); 
+    insertMonetag(adBottom, '10199144'); 
+    // mid/final but hidden until needed
+    insertMonetag(adMid, '10199201'); 
+    insertMonetag(adFinal, '10199204'); 
 
     function showMidAd() {
       adTop.style.display = 'none';
@@ -200,7 +212,6 @@
       adMid.style.display = 'flex';
       questionEl.textContent = "Oglądaj reklamę, aby kontynuować";
       answersEl.innerHTML = "";
-      insertMonetag(adMid, '10199201');
       setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); }, 15000);
     }
 
@@ -211,7 +222,6 @@
       adFinal.style.display = 'flex';
       questionEl.textContent = "Oglądaj reklamę, aby zobaczyć wynik";
       answersEl.innerHTML = "";
-      insertMonetag(adFinal, '10199204');
       setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); }, 15000);
     }
 
