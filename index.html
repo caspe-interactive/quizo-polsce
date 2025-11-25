@@ -60,7 +60,6 @@
     .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
     .small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
 
-    /* final overlay */
     #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
     #final-card{
       background:linear-gradient(180deg,#081322,#06121f);
@@ -75,7 +74,6 @@
     .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
     .final-actions .btn{font-size:1rem;padding:12px 14px}
 
-    /* install hint (PWA) */
     .install-hint { display:none; margin-top:8px; font-size:0.95rem; color:var(--muted); text-align:center; }
 
     .msg{
@@ -95,7 +93,6 @@
   <canvas id="fx"></canvas>
 
   <div class="page">
-    <!-- Górna reklama (Monetag zone 10199144) -->
     <div class="ad-top" id="adTop"></div>
 
     <div class="card" id="quizCard">
@@ -112,7 +109,6 @@
       <div id="question" class="question">Ładowanie...</div>
       <div id="answers" class="answers"></div>
 
-      <!-- Mid ad container (po 7 pytaniu) -->
       <div class="ad-mid" id="adMid" style="display:none;"></div>
 
       <div class="meta">
@@ -122,8 +118,6 @@
     </div>
 
     <div style="height:12px"></div>
-
-    <!-- Dolna reklama (Monetag zone 10199144) -->
     <div class="ad-bottom" id="adBottom"></div>
   </div>
 
@@ -131,8 +125,6 @@
     <div id="final-card">
       <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
       <div id="final-text">0 pkt</div>
-
-      <!-- Final ad container (przed wynikiem) -->
       <div class="ad-final" id="adFinal" style="display:none;"></div>
 
       <div class="final-actions" style="margin-top:14px;">
@@ -155,16 +147,13 @@
   <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
   <script>
-    // helper
     const $ = id => document.getElementById(id);
 
-    // elements
     const questionEl = $('question'), answersEl = $('answers'), pointsEl = $('points'),
           progressEl = $('progress'), finalEl = $('final'), finalText = $('final-text'),
           adTop = $('adTop'), adBottom = $('adBottom'), adMid = $('adMid'), adFinal = $('adFinal');
     const bg = $('bg');
 
-    // QUESTIONS (pełna lista)
     const QUESTIONS = [
       { q: "Stolica Polski?", a: ["Warszawa","Kraków","Gdańsk","Wrocław"], correct: 0 },
       { q: "Największy polski port morski?", a: ["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct: 0 },
@@ -182,21 +171,15 @@
       { q: "Polski król zwany „Lwem Lechistanu”?", a: ["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct: 0 }
     ];
 
-    // state
     let points = 0;
     let current = 0;
     function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
     let sessionQuestions = getRandomSession();
 
-    // register service worker if present
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
-    // autoplay background on first interaction
     document.body.addEventListener('click', () => { if(bg.paused) bg.play().catch(()=>{}); }, { once: true });
 
-    // Monetag: insert asynchronously into a container
     function insertMonetag(container, zone) {
-      // if already inserted, do nothing
       if (!container || container.dataset.monetagInserted === '1') return;
       try {
         const s = document.createElement('script');
@@ -208,42 +191,34 @@
       } catch(e){ console.warn('Monetag insert failed', e); }
     }
 
-    // insert top + bottom immediately (they can be hidden by CSS if needed)
-    insertMonetag(adTop, '10199144'); // top
-    insertMonetag(adBottom, '10199144'); // bottom
-    // insert mid/final but keep them hidden until needed
-    insertMonetag(adMid, '10199201'); // mid (po 7 pytaniu)
-    insertMonetag(adFinal, '10199204'); // final (przed wynikiem)
+    insertMonetag(adTop, '10199144');
+    insertMonetag(adBottom, '10199144');
 
-    // show question
+    function showMidAd() {
+      adTop.style.display = 'none';
+      adBottom.style.display = 'none';
+      adMid.style.display = 'flex';
+      questionEl.textContent = "Oglądaj reklamę, aby kontynuować";
+      answersEl.innerHTML = "";
+      insertMonetag(adMid, '10199201');
+      setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); }, 15000);
+    }
+
+    function showFinalAd() {
+      adTop.style.display = 'none';
+      adBottom.style.display = 'none';
+      adMid.style.display = 'none';
+      adFinal.style.display = 'flex';
+      questionEl.textContent = "Oglądaj reklamę, aby zobaczyć wynik";
+      answersEl.innerHTML = "";
+      insertMonetag(adFinal, '10199204');
+      setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); }, 15000);
+    }
+
     function showQuestion(){
-      // mid-ad before showing 8th question (index 7)
-      if (current === 7) {
-        // show mid ad container and pause quiz display
-        adTop.style.display = 'none';
-        adBottom.style.display = 'none';
-        adMid.style.display = 'flex';
-        questionEl.textContent = "Oglądaj reklamę, aby kontynuować";
-        answersEl.innerHTML = "";
-        // wait ~15s then continue
-        setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); }, 15000);
-        return;
-      }
+      if (current === 7) { showMidAd(); return; }
+      if (current >= sessionQuestions.length) { showFinalAd(); return; }
 
-      // finished questions -> show final ad first
-      if (current >= sessionQuestions.length) {
-        // show final ad then result
-        adTop.style.display = 'none';
-        adBottom.style.display = 'none';
-        adMid.style.display = 'none';
-        adFinal.style.display = 'flex';
-        questionEl.textContent = "Oglądaj reklamę, aby zobaczyć wynik";
-        answersEl.innerHTML = "";
-        setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); }, 15000);
-        return;
-      }
-
-      // normal question display
       adTop.style.display = 'flex';
       adBottom.style.display = 'flex';
       adMid.style.display = 'none';
@@ -288,7 +263,6 @@
       fireworkFinal();
     }
 
-    // controls
     $('retryBtn').onclick = () => { points = 0; current = 0; pointsEl.textContent = '0'; sessionQuestions = getRandomSession(); finalEl.style.display = 'none'; showQuestion(); };
     $('shareBtn').onclick = () => {
       const url = location.href;
@@ -301,7 +275,6 @@
     };
     $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
-    // fireworks
     function firework(realistic = false) {
       const canvas = document.getElementById('fx');
       const ctx = canvas.getContext('2d');
@@ -378,7 +351,6 @@
     function fireworkAnswer(){ firework(false); }
     function fireworkFinal(){ firework(true); }
 
-    // start
     showQuestion();
   </script>
 </body>
