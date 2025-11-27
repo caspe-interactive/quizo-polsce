@@ -95,7 +95,6 @@
   <canvas id="fx"></canvas>
 
   <div class="page">
-    <!-- Górna reklama -->
     <div class="ad-top" id="adTop"></div>
 
     <div class="card" id="quizCard">
@@ -112,7 +111,6 @@
       <div id="question" class="question">Ładowanie...</div>
       <div id="answers" class="answers"></div>
 
-      <!-- Mid ad container (po 7 pytaniu) -->
       <div class="ad-mid" id="adMid" style="display:none;"></div>
 
       <div class="meta">
@@ -123,7 +121,6 @@
 
     <div style="height:12px"></div>
 
-    <!-- Dolna reklama -->
     <div class="ad-bottom" id="adBottom"></div>
   </div>
 
@@ -132,7 +129,6 @@
       <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
       <div id="final-text">0 pkt</div>
 
-      <!-- Final ad container (przed wynikiem) -->
       <div class="ad-final" id="adFinal" style="display:none;"></div>
 
       <div class="final-actions" style="margin-top:14px;">
@@ -254,7 +250,8 @@
         btn.classList.add('good');
         $('snd-ding').play().catch(()=>{});
         points++;
-        fireworkAnswer();
+        // tutaj wracamy do Twoich oryginalnych fajerwerków, bez zmian
+        firework();
       } else {
         btn.classList.add('bad');
         $('snd-buzzer').play().catch(()=>{});
@@ -267,7 +264,8 @@
     function finishQuiz(){
       finalText.textContent = `${points} pkt`;
       finalEl.style.display = 'flex';
-      fireworkFinal();
+      // Twoje oryginalne fajerwerki przy końcu
+      firework();
     }
 
     $('retryBtn').onclick = () => { points = 0; current = 0; pointsEl.textContent = '0'; sessionQuestions = getRandomSession(); finalEl.style.display = 'none'; showQuestion(); };
@@ -282,14 +280,15 @@
     };
     $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
-    function firework(realistic = false) {
+    function firework() {
+      // Tutaj wklejamy dokładnie Twój stary kod fajerwerków
       const canvas = document.getElementById('fx');
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.height =      canvas.height = window.innerHeight;
       const particles = [];
       const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
-      const bursts = realistic ? 4 + Math.floor(Math.random()*4) : 2 + Math.floor(Math.random()*2);
+      const bursts = 3 + Math.floor(Math.random()*3);
       for(let b=0;b<bursts;b++){
         const x = Math.random()*canvas.width, y = Math.random()*canvas.height*0.5;
         for(let i=0;i<30;i++){
@@ -304,7 +303,8 @@
         }
       }
       function anim(){
-        ctx.fillStyle='rgba(0,0,0,0.1)';ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle='rgba(0,0,0,0.1)';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
         for(let i=particles.length-1;i>=0;i--){
           const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;
           if(p.alpha<=0) particles.splice(i,1);
@@ -318,10 +318,9 @@
       }
       anim();
     }
-    const fireworkAnswer = ()=>firework(false);
-    const fireworkFinal = ()=>firework(true);
 
     showQuestion();
   </script>
 </body>
 </html>
+
