@@ -95,7 +95,7 @@
   <canvas id="fx"></canvas>
 
   <div class="page">
-    <!-- Górna reklama (Monetag zone 10199144) -->
+    <!-- Górna reklama -->
     <div class="ad-top" id="adTop"></div>
 
     <div class="card" id="quizCard">
@@ -123,7 +123,7 @@
 
     <div style="height:12px"></div>
 
-    <!-- Dolna reklama (Monetag zone 10199144) -->
+    <!-- Dolna reklama -->
     <div class="ad-bottom" id="adBottom"></div>
   </div>
 
@@ -155,16 +155,13 @@
   <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
   <script>
-    // helper
     const $ = id => document.getElementById(id);
 
-    // elements
     const questionEl = $('question'), answersEl = $('answers'), pointsEl = $('points'),
           progressEl = $('progress'), finalEl = $('final'), finalText = $('final-text'),
           adTop = $('adTop'), adBottom = $('adBottom'), adMid = $('adMid'), adFinal = $('adFinal');
     const bg = $('bg');
 
-    // QUESTIONS (pełna lista)
     const QUESTIONS = [
       { q: "Stolica Polski?", a: ["Warszawa","Kraków","Gdańsk","Wrocław"], correct: 0 },
       { q: "Największy polski port morski?", a: ["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct: 0 },
@@ -182,63 +179,43 @@
       { q: "Polski król zwany „Lwem Lechistanu”?", a: ["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct: 0 }
     ];
 
-    // state
     let points = 0;
     let current = 0;
     function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
     let sessionQuestions = getRandomSession();
 
-    // register service worker if present
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
-    // autoplay background on first interaction
     document.body.addEventListener('click', () => { if(bg.paused) bg.play().catch(()=>{}); }, { once: true });
 
-    // Monetag: insert asynchronously into a container
-    function insertMonetag(container, zone) {
-      // if already inserted, do nothing
+    // Monetag ads
+    function insertMonetag(container, code) {
       if (!container || container.dataset.monetagInserted === '1') return;
       try {
         const s = document.createElement('script');
-        s.dataset.zone = zone;
-        s.src = 'https://nap5k.com/tag.min.js';
+        s.src = code;
         s.async = true;
         container.appendChild(s);
         container.dataset.monetagInserted = '1';
-        // ensure container visible so monetag can render
-        container.style.display = 'flex';
       } catch(e){ console.warn('Monetag insert failed', e); }
     }
 
-    // insert top + bottom on page load (DOM ready and visible)
-    window.addEventListener('load', () => {
-      insertMonetag(adTop, '10199144'); // top
-      insertMonetag(adBottom, '10199144'); // bottom
-      // do NOT insert mid/final here if they're hidden; we'll insert them when shown
-    });
+    insertMonetag(adTop, "https://groleegni.net/vignette.min.js?zone=10241819");
+    insertMonetag(adBottom, "https://groleegni.net/vignette.min.js?zone=10241836");
+    insertMonetag(adMid, "https://groleegni.net/vignette.min.js?zone=10241826");
+    insertMonetag(adFinal, "https://groleegni.net/vignette.min.js?zone=10241843");
 
-    // show question
     function showQuestion(){
-      // mid-ad before showing 8th question (index 7)
       if (current === 7) {
-        // ensure mid ad script is inserted right now (container made visible by insertMonetag)
-        insertMonetag(adMid, '10199201');
-        // show mid ad container and pause quiz display
         adTop.style.display = 'none';
         adBottom.style.display = 'none';
         adMid.style.display = 'flex';
         questionEl.textContent = "Oglądaj reklamę, aby kontynuować";
         answersEl.innerHTML = "";
-        // wait ~15s then continue
         setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); }, 15000);
         return;
       }
 
-      // finished questions -> show final ad first
       if (current >= sessionQuestions.length) {
-        // insert final ad script if needed and show it
-        insertMonetag(adFinal, '10199204');
-        // show final ad then result
         adTop.style.display = 'none';
         adBottom.style.display = 'none';
         adMid.style.display = 'none';
@@ -249,7 +226,6 @@
         return;
       }
 
-      // normal question display
       adTop.style.display = 'flex';
       adBottom.style.display = 'flex';
       adMid.style.display = 'none';
@@ -294,7 +270,6 @@
       fireworkFinal();
     }
 
-    // controls
     $('retryBtn').onclick = () => { points = 0; current = 0; pointsEl.textContent = '0'; sessionQuestions = getRandomSession(); finalEl.style.display = 'none'; showQuestion(); };
     $('shareBtn').onclick = () => {
       const url = location.href;
@@ -305,86 +280,47 @@
         navigator.clipboard?.writeText(url).then(()=>{ const msg = $('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); });
       }
     };
-    $('endBtn').onclick = ()=>{ finalEl.style.display = 'none'; };
+    $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
-    // fireworks
     function firework(realistic = false) {
       const canvas = document.getElementById('fx');
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-
       const particles = [];
       const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
       const bursts = realistic ? 4 + Math.floor(Math.random()*4) : 2 + Math.floor(Math.random()*2);
-
       for(let b=0;b<bursts;b++){
-        const centerX = Math.random()*canvas.width;
-        const centerY = Math.random()*canvas.height/3;
-        const numParticles = 30 + Math.floor(Math.random()*30);
-        for(let i=0;i<numParticles;i++){
-          const angle = Math.random()*2*Math.PI;
-          const speed = 2 + Math.random()*5;
-          const decay = 0.015 + Math.random()*0.02;
+        const x = Math.random()*canvas.width, y = Math.random()*canvas.height*0.5;
+        for(let i=0;i<30;i++){
           particles.push({
-            x: centerX,
-            y: centerY,
-            vx: Math.cos(angle)*speed,
-            vy: Math.sin(angle)*speed,
-            alpha: 1,
-            color: colors[Math.floor(Math.random()*colors.length)],
-            radius: 2 + Math.random()*3,
-            decay: decay,
-            stage: 0,
-            maxStage: 1 + Math.floor(Math.random()*2),
-            delay: Math.random()*15
+            x,y,
+            vx:(Math.random()-0.5)*6,
+            vy:(Math.random()-0.5)*6,
+            alpha:1,
+            color:colors[Math.floor(Math.random()*colors.length)],
+            decay:0.015+Math.random()*0.01
           });
         }
       }
-
-      function draw(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
+      function anim(){
+        ctx.fillStyle='rgba(0,0,0,0.1)';ctx.fillRect(0,0,canvas.width,canvas.height);
         for(let i=particles.length-1;i>=0;i--){
-          const p = particles[i];
-          if(p.delay > 0){ p.delay--; continue; }
-
-          const grad = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.radius*3);
-          grad.addColorStop(0,p.color);
-          grad.addColorStop(1,'rgba(0,0,0,0)');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-          ctx.fill();
-
-          p.x += p.vx;
-          p.y += p.vy;
-          p.alpha -= p.decay;
-          p.vx *= 0.98;
-          p.vy += 0.05;
-
-          if(p.alpha <= 0 && p.stage < p.maxStage){
-            p.stage++;
-            p.alpha = 1;
-            p.radius = 1 + Math.random()*3;
-            const angle = Math.random()*2*Math.PI;
-            const speed = 1 + Math.random()*4;
-            p.vx = Math.cos(angle)*speed;
-            p.vy = Math.sin(angle)*speed;
-            continue;
+          const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;
+          if(p.alpha<=0) particles.splice(i,1);
+          else{
+            ctx.fillStyle=p.color;ctx.globalAlpha=p.alpha;
+            ctx.beginPath();ctx.arc(p.x,p.y,4,0,2*Math.PI);ctx.fill();
           }
-
-          if(p.alpha <= 0) particles.splice(i,1);
         }
-
-        if(particles.length>0) requestAnimationFrame(draw);
+        if(particles.length>0) requestAnimationFrame(anim);
         else ctx.clearRect(0,0,canvas.width,canvas.height);
       }
-      draw();
+      anim();
     }
-    function fireworkAnswer(){ firework(false); }
-    function fireworkFinal(){ firework(true); }
+    const fireworkAnswer = ()=>firework(false);
+    const fireworkFinal = ()=>firework(true);
 
-    // start
     showQuestion();
   </script>
 </body>
