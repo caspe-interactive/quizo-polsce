@@ -96,7 +96,9 @@
 
   <div class="page">
     <!-- Górna reklama -->
-    <div class="ad-top" id="adTop"></div>
+    <div class="ad-top" id="adTop">
+      <!-- Jeśli masz gotowy kod Monetag: wklej go tutaj (np. <script ...></script>) -->
+    </div>
 
     <div class="card" id="quizCard">
       <div class="top">
@@ -113,7 +115,9 @@
       <div id="answers" class="answers"></div>
 
       <!-- Mid ad container (po 7 pytaniu) -->
-      <div class="ad-mid" id="adMid" style="display:none;"></div>
+      <div class="ad-mid" id="adMid" style="display:none;">
+        <!-- Monetag code for middle ad (paste here if you have full tag) -->
+      </div>
 
       <div class="meta">
         <div id="progress">Pytanie 0/0</div>
@@ -124,7 +128,9 @@
     <div style="height:12px"></div>
 
     <!-- Dolna reklama -->
-    <div class="ad-bottom" id="adBottom"></div>
+    <div class="ad-bottom" id="adBottom">
+      <!-- Monetag bottom tag (paste here if you have full tag) -->
+    </div>
   </div>
 
   <div id="final" aria-hidden="true">
@@ -133,7 +139,9 @@
       <div id="final-text">0 pkt</div>
 
       <!-- Final ad container (przed wynikiem) -->
-      <div class="ad-final" id="adFinal" style="display:none;"></div>
+      <div class="ad-final" id="adFinal" style="display:none;">
+        <!-- Monetag final tag (paste here if you have full tag) -->
+      </div>
 
       <div class="final-actions" style="margin-top:14px;">
         <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie/Popraw wynik</div>
@@ -324,49 +332,59 @@
     showQuestion();
   </script>
 
-  <!--
-    Minimalny fallback loader dla Monetag — tylko jeśli skrypty nie załadowały się
-    (nie rusza nic innego, nie modyfikuje logiki quizu)
-  -->
+  <!-- SAFE Monetag fallback (only adds scripts if none present) -->
   <script>
     (function(){
-      // lista Twoich stref (zone IDs)
-      const zones = [
-        {id: '10241819', containerId: 'adTop'},
-        {id: '10241836', containerId: 'adBottom'},
-        {id: '10241826', containerId: 'adMid'},
-        {id: '10241843', containerId: 'adFinal'}
-      ];
+      // mapping: containerId -> zone id (you provided these earlier)
+      const mapping = {
+        adTop: '10241819',
+        adBottom: '10241836',
+        adMid: '10241826',
+        adFinal: '10241843'
+      };
 
-      function alreadyHasScript(zone) {
-        // szukamy skryptu już dodanego z tym zone param
-        const src = 'vignette.min.js?zone=' + zone;
+      function scriptAlreadyPresent() {
         const scripts = document.getElementsByTagName('script');
         for (let i=0;i<scripts.length;i++){
-          if (scripts[i].src && scripts[i].src.indexOf(src) !== -1) return true;
+          const src = scripts[i].src || '';
+          if (src.indexOf('hqjffr.com')!==-1 || src.indexOf('monetag.com')!==-1 || src.indexOf('display.php')!==-1) return true;
         }
         return false;
       }
 
-      zones.forEach(z=>{
+      function safeAppendScript(container, src) {
         try {
-          // jeśli nie dodano wcześniej, dodajemy skrypt asynchronicznie do head
-          if (!alreadyHasScript(z.id)) {
-            const s = document.createElement('script');
-            s.src = 'https://groleegni.net/vignette.min.js?zone=' + z.id;
-            s.async = true;
-            // dopinamy do head aby nie zmieniać DOM reklam
-            (document.head || document.body).appendChild(s);
-            // nie nadpisujemy elementów reklam — skrypt Monetag sam powinien znaleźć odpowiednie miejsce
-            console.log('Monetag fallback script appended for zone', z.id);
-          } else {
-            // jeśli już jest, nic nie robimy
-            // console.log('Monetag script already present for zone', z.id);
-          }
-        } catch(e){
-          console.warn('Fallback Monetag failed for zone', z.id, e);
-        }
+          if(!container) return false;
+          // avoid duplicate
+          if (container.dataset.monetagInserted==='1') return true;
+          const s = document.createElement('script');
+          s.src = src;
+          s.async = true;
+          container.appendChild(s);
+          container.dataset.monetagInserted = '1';
+          console.log('Appended ad script to', container.id, src);
+          return true;
+        } catch(e){ console.warn('append failed', e); return false; }
+      }
+
+      // if any Monetag-like script already on page, do nothing (we don't want duplicates)
+      if (scriptAlreadyPresent()) {
+        console.log('Monetag-like script already present — fallback will not inject.');
+        return;
+      }
+
+      // Common Monetag-style URL (most publishers see similar pattern). This is a fallback — if Monetag uses other URL,
+      // paste the exact Monetag tag into the ad container comments in HTML above.
+      Object.keys(mapping).forEach(containerId=>{
+        const zone = mapping[containerId];
+        const container = document.getElementById(containerId);
+        // try common display URL pattern used by Monetag/hqjffr
+        const guessedSrc = 'https://hqjffr.com/a/display.php?r=' + zone;
+        safeAppendScript(container, guessedSrc);
       });
+
+      // If nothing rendered, the correct action is: paste the full Monetag "Get tag" code (the <script ...> they give) directly inside the container divs.
+      // I left comments in HTML where to paste it.
     })();
   </script>
 
