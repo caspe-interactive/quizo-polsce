@@ -60,6 +60,7 @@
     .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
     .small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
 
+    /* final overlay */
     #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
     #final-card{
       background:linear-gradient(180deg,#081322,#06121f);
@@ -74,6 +75,7 @@
     .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
     .final-actions .btn{font-size:1rem;padding:12px 14px}
 
+    /* install hint (PWA) */
     .install-hint { display:none; margin-top:8px; font-size:0.95rem; color:var(--muted); text-align:center; }
 
     .msg{
@@ -93,6 +95,7 @@
   <canvas id="fx"></canvas>
 
   <div class="page">
+    <!-- Górna reklama -->
     <div class="ad-top" id="adTop"></div>
 
     <div class="card" id="quizCard">
@@ -109,6 +112,7 @@
       <div id="question" class="question">Ładowanie...</div>
       <div id="answers" class="answers"></div>
 
+      <!-- Mid ad container (po 7 pytaniu) -->
       <div class="ad-mid" id="adMid" style="display:none;"></div>
 
       <div class="meta">
@@ -119,6 +123,7 @@
 
     <div style="height:12px"></div>
 
+    <!-- Dolna reklama -->
     <div class="ad-bottom" id="adBottom"></div>
   </div>
 
@@ -127,6 +132,7 @@
       <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
       <div id="final-text">0 pkt</div>
 
+      <!-- Final ad container (przed wynikiem) -->
       <div class="ad-final" id="adFinal" style="display:none;"></div>
 
       <div class="final-actions" style="margin-top:14px;">
@@ -181,23 +187,21 @@
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
     document.body.addEventListener('click', () => { if(bg.paused) bg.play().catch(()=>{}); }, { once: true });
 
-    // Testowe reklamy
-    function testAd(container, text) {
-      if (!container) return;
-      container.style.display = 'flex';
-      container.textContent = text;
-      container.style.background = '#444';
-      container.style.color = '#fff';
-      container.style.fontWeight = '700';
-      container.style.fontSize = '1rem';
-      container.style.justifyContent = 'center';
-      container.style.alignItems = 'center';
+    // Monetag ads
+    function insertMonetag(container, code) {
+      if (!container || container.dataset.monetagInserted === '1') return;
+      try {
+        const s = document.createElement('script');
+        s.src = code;
+        s.async = true;
+        container.appendChild(s);
+        container.dataset.monetagInserted = '1';
+      } catch(e){ console.warn('Monetag insert failed', e); }
     }
-
-    testAd(adTop, "Reklama TOP działa");
-    testAd(adBottom, "Reklama BOTTOM działa");
-    testAd(adMid, "Reklama MID działa");
-    testAd(adFinal, "Reklama FINAL działa");
+    insertMonetag(adTop, "https://groleegni.net/vignette.min.js?zone=10241819");
+    insertMonetag(adBottom, "https://groleegni.net/vignette.min.js?zone=10241836");
+    insertMonetag(adMid, "https://groleegni.net/vignette.min.js?zone=10241826");
+    insertMonetag(adFinal, "https://groleegni.net/vignette.min.js?zone=10241843");
 
     function showQuestion(){
       if (current === 7) {
@@ -283,38 +287,24 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const particles = [];
-      const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
-      const bursts = realistic ? 4 + Math.floor(Math.random()*4) : 2 + Math.floor(Math.random()*2);
-      for(let b=0;b<bursts;b++){
-        const x = Math.random()*canvas.width, y = Math.random()*canvas.height*0.5;
-        for(let i=0;i<30;i++){
-          particles.push({
-            x,y,
-            vx:(Math.random()-0.5)*6,
-            vy:(Math.random()-0.5)*6,
-            color:colors[Math.floor(Math.random()*colors.length)],
-            alpha:1,
-          });
-        }
+      const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0'];
+      for(let i=0;i<50;i++){
+        particles.push({x:Math.random()*canvas.width,y:canvas.height+10,dx:(Math.random()-0.5)*8,dy:-Math.random()*10-4,color:colors[Math.floor(Math.random()*colors.length)],radius:Math.random()*3+1});
       }
-      let ticks=0;
-      function draw(){
-        ticks++;
+      function animate(){
         ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(0,0,canvas.width,canvas.height);
         particles.forEach(p=>{
-          p.x+=p.vx;p.y+=p.vy;p.alpha-=0.02;
-          ctx.fillStyle=p.color;ctx.globalAlpha=p.alpha;
-          ctx.beginPath();ctx.arc(p.x,p.y,3,0,2*Math.PI);ctx.fill();
+          p.x+=p.dx;p.y+=p.dy;p.dy+=0.15;
+          ctx.beginPath();ctx.arc(p.x,p.y,p.radius,0,2*Math.PI);ctx.fillStyle=p.color;ctx.fill();
         });
-        ctx.globalAlpha=1;
-        if(ticks<30) requestAnimationFrame(draw);
-        else ctx.clearRect(0,0,canvas.width,canvas.height);
+        particles.forEach((p,i)=>{if(p.y>canvas.height) particles.splice(i,1)});
+        if(particles.length>0) requestAnimationFrame(animate);
       }
-      draw();
+      animate();
     }
 
-    function fireworkAnswer(){ firework(false); }
-    function fireworkFinal(){ firework(true); }
+    function fireworkAnswer(){ firework(true); }
+    function fireworkFinal(){ firework(); }
 
     showQuestion();
   </script>
