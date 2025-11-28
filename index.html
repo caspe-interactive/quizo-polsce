@@ -96,9 +96,8 @@
 
   <div class="page">
     <!-- Górna reklama -->
-    <div class="ad-top" id="adTop" data-zone="10241819">
-      <!-- oryginalnie był tu bezpośredni script; loader wstrzyknie go bez zmiany reszty -->
-      ładowanie reklamy...
+    <div class="ad-top" id="adTop">
+      <script>(function(s){s.dataset.zone='10241819',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     </div>
 
     <div class="card" id="quizCard">
@@ -116,8 +115,8 @@
       <div id="answers" class="answers"></div>
 
       <!-- Mid ad container (po 7 pytaniu) -->
-      <div class="ad-mid" id="adMid" data-zone="10241826" style="display:none;">
-        ładowanie reklamy...
+      <div class="ad-mid" id="adMid" style="display:none;">
+        <script>(function(s){s.dataset.zone='10241826',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
       </div>
 
       <div class="meta">
@@ -129,8 +128,8 @@
     <div style="height:12px"></div>
 
     <!-- Dolna reklama -->
-    <div class="ad-bottom" id="adBottom" data-zone="10241836">
-      ładowanie reklamy...
+    <div class="ad-bottom" id="adBottom">
+      <script>(function(s){s.dataset.zone='10241836',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     </div>
   </div>
 
@@ -140,8 +139,8 @@
       <div id="final-text">0 pkt</div>
 
       <!-- Final ad container (przed wynikiem) -->
-      <div class="ad-final" id="adFinal" data-zone="10241843" style="display:none;">
-        ładowanie reklamy...
+      <div class="ad-final" id="adFinal" style="display:none;">
+        <script>(function(s){s.dataset.zone='10241843',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
       </div>
 
       <div class="final-actions" style="margin-top:14px;">
@@ -164,44 +163,6 @@
   <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
   <script>
-    // --- BEZPIECZNY LOADER DLA MONETAG ---
-    // Wstrzykuje oryginalne skrypty reklamowe tylko w miejscach z data-zone,
-    // i robi to tak, żeby nie modyfikować reszty kodu quizu.
-    function loadAdScriptOnce(url, id){
-      if (document.getElementById(id)) return;
-      const s = document.createElement('script');
-      s.src = url;
-      s.async = true;
-      s.id = id;
-      s.onerror = function(e){ console.warn('Ad script load error:', url, e); };
-      document.head.appendChild(s);
-    }
-
-    function injectAds(){
-      const containers = document.querySelectorAll('[data-zone]');
-      containers.forEach(el => {
-        const zone = el.getAttribute('data-zone');
-        // **Używam dokładnie takiego formatu linku, jaki miałeś wcześniej.**
-        // Jeśli Monetag da Ci inny host/URL — podaj go, zamienię od razu.
-        const src = `https://groleegni.net/vignette.min.js?zone=${zone}`;
-        // Load immediately for top/bottom
-        if (el.id === 'adTop' || el.id === 'adBottom') {
-          loadAdScriptOnce(src, 'ad-script-' + zone);
-        } else {
-          // For adMid and adFinal, inject when container becomes visible
-          const obs = new MutationObserver(() => {
-            if (getComputedStyle(el).display !== 'none') {
-              loadAdScriptOnce(src, 'ad-script-' + zone);
-              obs.disconnect();
-            }
-          });
-          obs.observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
-        }
-      });
-    }
-    document.addEventListener('DOMContentLoaded', injectAds);
-    // --- KONIEC LOADERA ---
-
     const $ = id => document.getElementById(id);
 
     const questionEl = $('question'), answersEl = $('answers'), pointsEl = $('points'),
@@ -319,46 +280,35 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const particles = [];
-      const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
+      const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c'];
 
-      const bursts = 3 + Math.floor(Math.random()*3);
-      for(let b=0;b<bursts;b++){
-        const x = Math.random()*canvas.width, y = Math.random()*canvas.height*0.5;
-        for(let i=0;i<40;i++){
-          particles.push({
-            x,y,
-            vx:(Math.random()-0.5)*10,
-            vy:(Math.random()-0.5)*10,
-            alpha:1,
-            color:colors[Math.floor(Math.random()*colors.length)],
-            size:2+Math.random()*2
-          });
+      function rand(min,max){return Math.random()*(max-min)+min;}
+      function create(x,y){
+        for(let i=0;i<30;i++){
+          particles.push({x,y,vx:rand(-5,5),vy:rand(-5,5),alpha:1,color:colors[Math.floor(Math.random()*colors.length)]});
         }
       }
 
-      function animate(){
+      function draw(){
         ctx.fillStyle='rgba(0,0,0,0.1)';
         ctx.fillRect(0,0,canvas.width,canvas.height);
-        for(let i=particles.length-1;i>=0;i--){
-          const p = particles[i];
+        for(let i=0;i<particles.length;i++){
+          const p=particles[i];
+          p.x+=p.vx; p.y+=p.vy; p.alpha-=0.02;
           ctx.fillStyle=p.color;
           ctx.globalAlpha=p.alpha;
           ctx.beginPath();
-          ctx.arc(p.x,p.y,p.size,0,2*Math.PI);
+          ctx.arc(p.x,p.y,3,0,2*Math.PI);
           ctx.fill();
-          p.x+=p.vx;
-          p.y+=p.vy;
-          p.vy+=0.1;
-          p.alpha-=0.02;
-          if(p.alpha<=0) particles.splice(i,1);
         }
-        if(particles.length>0) requestAnimationFrame(animate);
-        else ctx.clearRect(0,0,canvas.width,canvas.height);
+        particles = particles.filter(p=>p.alpha>0);
+        requestAnimationFrame(draw);
       }
-      animate();
+      draw();
+      return create;
     }
-    function fireworkAnswer(){ firework(); }
-    function fireworkFinal(){ firework(); }
+    const fireworkAnswer = firework();
+    const fireworkFinal = firework();
 
     showQuestion();
   </script>
