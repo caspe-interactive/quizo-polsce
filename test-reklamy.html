@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Test reklam Monetag</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #051028; 
+      color: #fff; 
+      display:flex; 
+      flex-direction:column; 
+      align-items:center; 
+      justify-content:center; 
+      height:100vh; 
+      gap:20px;
+    }
+    .ad-container {
+      width:320px; 
+      height:120px; 
+      background:#000; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      border-radius:12px;
+      color:#fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test reklam Monetag</h1>
+
+  <div class="ad-container" id="adTop" data-zone="10241819">
+    Ładowanie reklamy Top...
+  </div>
+
+  <div class="ad-container" id="adMid" data-zone="10241826">
+    Ładowanie reklamy Mid...
+  </div>
+
+  <div class="ad-container" id="adBottom" data-zone="10241836">
+    Ładowanie reklamy Bottom...
+  </div>
+
+  <div class="ad-container" id="adFinal" data-zone="10241843">
+    Ładowanie reklamy Final...
+  </div>
+
+  <script>
+    function loadAdScriptOnce(url, id){
+      if(document.getElementById(id)) return;
+      const s = document.createElement('script');
+      s.src = url;
+      s.async = true;
+      s.id = id;
+      s.onerror = e => console.warn('Ad script load error:', url, e);
+      document.head.appendChild(s);
+    }
+
+    function injectAds(){
+      const containers = document.querySelectorAll('[data-zone]');
+      containers.forEach(el => {
+        const zone = el.getAttribute('data-zone');
+        const src = `https://groleegni.net/vignette.min.js?zone=${zone}`;
+        loadAdScriptOnce(src, 'ad-script-' + zone);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', injectAds);
+  </script>
+</body>
+</html>
