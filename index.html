@@ -97,7 +97,7 @@
   <div class="page">
     <!-- Górna reklama -->
     <div class="ad-top" id="adTop">
-      <script type="text/javascript" src="https://5gvci.com/act/files/vignette.min.js?zone=10241780"></script>
+      <script src="https://groleegni.net/vignette.min.js?zone=10241819" async></script>
     </div>
 
     <div class="card" id="quizCard">
@@ -116,7 +116,7 @@
 
       <!-- Mid ad container (po 7 pytaniu) -->
       <div class="ad-mid" id="adMid" style="display:none;">
-        <script type="text/javascript" src="https://5gvci.com/act/files/vignette.min.js?zone=10241780"></script>
+        <script src="https://groleegni.net/vignette.min.js?zone=10241826" async></script>
       </div>
 
       <div class="meta">
@@ -129,7 +129,7 @@
 
     <!-- Dolna reklama -->
     <div class="ad-bottom" id="adBottom">
-      <script type="text/javascript" src="https://5gvci.com/act/files/vignette.min.js?zone=10241780"></script>
+      <script src="https://groleegni.net/vignette.min.js?zone=10241836" async></script>
     </div>
   </div>
 
@@ -140,7 +140,7 @@
 
       <!-- Final ad container (przed wynikiem) -->
       <div class="ad-final" id="adFinal" style="display:none;">
-        <script type="text/javascript" src="https://5gvci.com/act/files/vignette.min.js?zone=10241780"></script>
+        <script src="https://groleegni.net/vignette.min.js?zone=10241843" async></script>
       </div>
 
       <div class="final-actions" style="margin-top:14px;">
@@ -273,44 +273,53 @@
     };
     $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
-    function firework(realistic = false) {
+    // Pełne fajerwerki
+    function firework(){
       const canvas = document.getElementById('fx');
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const particles = [];
       const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
-      const bursts = realistic ? 4 + Math.floor(Math.random()*4) : 2 + Math.floor(Math.random()*2);
+
+      const bursts = 3 + Math.floor(Math.random()*3);
       for(let b=0;b<bursts;b++){
         const x = Math.random()*canvas.width, y = Math.random()*canvas.height*0.5;
-        for(let i=0;i<30;i++){
+        for(let i=0;i<40;i++){
           particles.push({
             x,y,
-            vx:(Math.random()-0.5)*6,
-            vy:(Math.random()-0.5)*6,
+            vx:(Math.random()-0.5)*10,
+            vy:(Math.random()-0.5)*10,
             alpha:1,
             color:colors[Math.floor(Math.random()*colors.length)],
             size:2+Math.random()*2
           });
         }
       }
-      let t=0;
+
       function animate(){
-        t++;
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        particles.forEach(p=>{
-          p.x+=p.vx; p.y+=p.vy; p.alpha-=0.02;
-          ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha;
-          ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
-        });
-        ctx.globalAlpha=1;
-        particles.filter(p=>p.alpha>0);
-        if(t<50) requestAnimationFrame(animate);
+        ctx.fillStyle='rgba(0,0,0,0.1)';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        for(let i=particles.length-1;i>=0;i--){
+          const p = particles[i];
+          ctx.fillStyle=p.color;
+          ctx.globalAlpha=p.alpha;
+          ctx.beginPath();
+          ctx.arc(p.x,p.y,p.size,0,2*Math.PI);
+          ctx.fill();
+          p.x+=p.vx;
+          p.y+=p.vy;
+          p.vy+=0.1;
+          p.alpha-=0.02;
+          if(p.alpha<=0) particles.splice(i,1);
+        }
+        if(particles.length>0) requestAnimationFrame(animate);
+        else ctx.clearRect(0,0,canvas.width,canvas.height);
       }
       animate();
     }
     function fireworkAnswer(){ firework(); }
-    function fireworkFinal(){ firework(true); }
+    function fireworkFinal(){ firework(); }
 
     showQuestion();
   </script>
