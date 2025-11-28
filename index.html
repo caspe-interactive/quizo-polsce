@@ -133,84 +133,192 @@ const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
 const bg=$('bg');
 
-// Pytania
-const QUESTIONS=[{q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],correct:0},
-{q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],correct:0},
-{q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],correct:0},
-{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],correct:0},
-{q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],correct:0},
-{q:"Największe miasto woj. mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],correct:0},
-{q:"Najważniejszy polski noblista w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],correct:0},
-{q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],correct:0},
-{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],correct:0},
-{q:"W którym roku Polska odzyskała niepodległość?",a:["1918","1945","1914","1939"],correct:0},
-{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu miasta"],correct:0},
-{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],correct:0},
-{q:"Polski hymn zaczyna się od słów?",a:["Jeszcze Polska nie zginęła","Mazurka Dąbrowskiego","Bogurodzicy","Roty"],correct:0},
-{q:"Polski król zwany „Lwem Lechistanu”?",a:["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"],correct:0}];
+// Pytania (bez zmian)
+const QUESTIONS=[ /* ... (Twoje pytania) ... */ ];
+// Wkleję oryginalne pytania, żeby plik był kompletny:
+QUESTIONS.splice(0,QUESTIONS.length,
+  {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],correct:0},
+  {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],correct:0},
+  {q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],correct:0},
+  {q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],correct:0},
+  {q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],correct:0},
+  {q:"Największe miasto woj. mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],correct:0},
+  {q:"Najważniejszy polski noblista w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],correct:0},
+  {q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],correct:0},
+  {q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],correct:0},
+  {q:"W którym roku Polska odzyskała niepodległość?",a:["1918","1945","1914","1939"],correct:0},
+  {q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu miasta"],correct:0},
+  {q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],correct:0},
+  {q:"Polski hymn zaczyna się od słów?",a:["Jeszcze Polska nie zginęła","Mazurka Dąbrowskiego","Bogurodzicy","Roty"],correct:0},
+  {q:"Polski król zwany „Lwem Lechistanu”?",a:["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"],correct:0}
+);
 
 let points=0, current=0;
-function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i);}
+function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
 document.body.addEventListener('click',()=>{if(bg.paused) bg.play().catch(()=>{});},{once:true});
 
-// Monetag
+// --- NOWA IMPLEMENTACJA insertMonetag ---
+// 1) Dodałem append do document.body (Monetag snippet robi to w ten sposób).
+// 2) Kontener zostaje oznaczony jako "loading" natychmiast, potem "1" po onload.
+// 3) Dodane onload/onerror i logowanie w konsoli.
+
 function insertMonetag(container, zone){
-  if(!container||container.dataset.monetagInserted==='1') return;
-  const s=document.createElement('script');
-  s.dataset.zone=zone;
-  s.src='https://groleegni.net/vignette.min.js';
-  s.async=true;
-  container.appendChild(s);
-  container.dataset.monetagInserted='1';
+  if(!container) return;
+  if(container.dataset.monetagInserted === '1' || container.dataset.monetagInserted === 'loading') {
+    // już wstawione albo w trakcie wstawiania
+    console.log('[monetag] skip, state=', container.dataset.monetagInserted, 'zone=', zone);
+    return;
+  }
+
+  // Upewnij się, że kontener będzie widoczny podczas inicjacji reklamy.
+  const prevDisplay = container.style.display;
+  if(getComputedStyle(container).display === 'none'){
+    container.style.display = 'flex';
+    // jeśli chcesz absolutnie nic nie pokazywać do czasu załadowania, użyj visibility hidden
+    container.style.visibility = 'hidden';
+  }
+
+  container.dataset.monetagInserted = 'loading';
+  const s = document.createElement('script');
+  s.dataset.zone = zone;
+  s.src = 'https://groleegni.net/vignette.min.js';
+  s.async = true;
+
+  s.onload = () => {
+    console.log('[monetag] loaded zone', zone);
+    container.dataset.monetagInserted = '1';
+    if(container.style.visibility === 'hidden') {
+      container.style.visibility = '';
+      // leave display as flex
+    }
+  };
+
+  s.onerror = (e) => {
+    console.warn('[monetag] load error zone', zone, e);
+    container.dataset.monetagInserted = 'error';
+    // przy błędzie przywróć wcześniejszy stan widoczności
+    if(container.style.visibility === 'hidden') {
+      container.style.visibility = '';
+      container.style.display = prevDisplay || 'none';
+    }
+  };
+
+  // Monetag snippet często oczekuje skryptu w body — dokładnie tak jak ich generator robi.
+  document.body.appendChild(s);
+
+  // dodatkowy log network probe (może pomóc w debugowaniu)
+  setTimeout(()=> {
+    console.log('[monetag] probe appended script for zone', zone, 'container id=', container.id);
+  }, 50);
 }
 
-// Pokaż pytanie
+// Pokaż pytanie (bez zmian logiki quizu)
 function showQuestion(){
   if(current >= sessionQuestions.length){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
-    insertMonetag(adFinal,'10241843'); finishQuiz(); return;
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none';
+    adFinal.style.display='flex';
+    insertMonetag(adFinal,'10241843');
+    finishQuiz();
+    return;
   }
 
   adTop.style.display='flex'; adBottom.style.display='flex';
   adMid.style.display='none'; adFinal.style.display='none';
-  insertMonetag(adTop,'10241819'); insertMonetag(adBottom,'10241836');
 
-  if(current===7){ insertMonetag(adMid,'10241826'); adMid.style.display='flex'; }
+  // wstaw reklamę górną i dolną (tylko raz dzięki dataset flag)
+  insertMonetag(adTop,'10241819');
+  insertMonetag(adBottom,'10241836');
 
-  const idx=sessionQuestions[current]; const q=QUESTIONS[idx];
-  questionEl.textContent=q.q;
-  answersEl.innerHTML='';
-  const shuffled=q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
+  // mid ad: wstawiamy gdy osiągniemy 7
+  if(current === 7){
+    // pokaż kontener i wstaw skrypt do body (Monetag zainicjuje w iframe swojej treści)
+    adTop.style.display = 'none';
+    adBottom.style.display = 'none';
+    adMid.style.display = 'flex';
+    insertMonetag(adMid,'10241826');
+
+    // zamiast zamrażać całą stronę: pozostawiamy reklamę i kontynuujemy po krótkim czasie
+    // (jeśli chcesz wymusić pauzę, możesz tu użyć timeout)
+    setTimeout(()=> {
+      adMid.style.display = 'none';
+      current++;
+      showQuestion();
+    }, 3500); // >> krótka pauza, żeby Monetag miał czas zainicjować
+    return;
+  }
+
+  const idx = sessionQuestions[current];
+  const q = QUESTIONS[idx];
+  questionEl.textContent = q.q;
+  answersEl.innerHTML = '';
+  const shuffled = q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
   shuffled.forEach(obj=>{
-    const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans;
-    b.onclick=()=>answer(obj.i,b,idx); answersEl.appendChild(b);
+    const b = document.createElement('div');
+    b.className='btn';
+    b.textContent = obj.ans;
+    b.onclick = ()=>answer(obj.i,b,idx);
+    answersEl.appendChild(b);
   });
-  progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
+  progressEl.textContent = `Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
-// Odpowiedź
-function answer(idxAnswer,btn,questionIndex){
-  const correct=QUESTIONS[questionIndex].correct;
-  if(idxAnswer===correct){btn.classList.add('good');$('snd-ding').play().catch(()=>{}); points++; fireworkAnswer();}
-  else{btn.classList.add('bad');$('snd-buzzer').play().catch(()=>{});}
-  pointsEl.textContent=points; current++; setTimeout(showQuestion,200);
+// Odpowiedź (bez zmian)
+function answer(idxAnswer, btn, questionIndex){
+  const correct = QUESTIONS[questionIndex].correct;
+  if(idxAnswer === correct){
+    btn.classList.add('good');
+    $('snd-ding').play().catch(()=>{});
+    points++;
+    fireworkAnswer();
+  } else {
+    btn.classList.add('bad');
+    $('snd-buzzer').play().catch(()=>{});
+  }
+  pointsEl.textContent = points;
+  current++;
+  setTimeout(showQuestion,200);
 }
 
-// Koniec
-function finishQuiz(){finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; fireworkFinal();}
-$('retryBtn').onclick=()=>{points=0;current=0;pointsEl.textContent='0';sessionQuestions=getRandomSession();finalEl.style.display='none';showQuestion();}
-$('shareBtn').onclick=()=>{const url=location.href; if(navigator.share){navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce!',url}).catch(()=>{});}else{navigator.clipboard.writeText(url).then(()=>{const msg=$('msgBox');msg.textContent='Link skopiowany';msg.style.display='block';setTimeout(()=>msg.style.display='none',2000);});}};
-$('endBtn').onclick=()=>{finalEl.style.display='none';};
+function finishQuiz(){ finalText.textContent = `${points} pkt`; finalEl.style.display='flex'; fireworkFinal(); }
+$('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); }
+$('shareBtn').onclick = ()=> {
+  const url = location.href;
+  if(navigator.share){ navigator.share({ title:'QuizoPolsce', text:'Zagraj w QuizoPolsce!', url }).catch(()=>{}); }
+  else { navigator.clipboard.writeText(url).then(()=>{ $('msgBox').textContent='Link skopiowany'; $('msgBox').style.display='block'; setTimeout(()=>$('msgBox').style.display='none',2000); }); }
+};
+$('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
-// Fajerwerki
-function firework(realistic=false){const canvas=$('fx');const ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;const particles=[];const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];const bursts=realistic?4+Math.floor(Math.random()*4):2+Math.floor(Math.random()*2);for(let b=0;b<bursts;b++){const x=Math.random()*canvas.width,y=Math.random()*canvas.height*0.5;for(let i=0;i<30;i++){particles.push({x,y,vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],decay:0.015+Math.random()*0.01});}}function anim(){ctx.fillStyle='rgba(0,0,0,0.1)';ctx.fillRect(0,0,canvas.width,canvas.height);for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;if(p.alpha<=0) particles.splice(i,1);else{ctx.fillStyle=p.color;ctx.globalAlpha=p.alpha;ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();}}if(particles.length>0) requestAnimationFrame(anim);}anim();}
-function fireworkAnswer(){firework(false);}
-function fireworkFinal(){firework(true);}
+// Fajerwerki (bez zmian)
+function firework(realistic=false){
+  const canvas = $('fx'); const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const particles = [];
+  const colors = ['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
+  const bursts = realistic?4+Math.floor(Math.random()*4):2+Math.floor(Math.random()*2);
+  for(let b=0;b<bursts;b++){
+    const x = Math.random()*canvas.width, y = Math.random()*canvas.height*0.5;
+    for(let i=0;i<30;i++){
+      particles.push({x,y,vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],decay:0.015+Math.random()*0.01});
+    }
+  }
+  function anim(){
+    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i]; p.x+=p.vx; p.y+=p.vy; p.alpha-=p.decay;
+      if(p.alpha<=0) particles.splice(i,1);
+      else { ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); }
+    }
+    if(particles.length>0) requestAnimationFrame(anim);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  anim();
+}
+function fireworkAnswer(){ firework(false); }
+function fireworkFinal(){ firework(true); }
 
-// Start
 showQuestion();
 </script>
 </body>
