@@ -93,13 +93,6 @@
   <canvas id="fx"></canvas>
 
   <div class="page">
-    <!-- STATYCZNY WIDOCZNY ELEMENT DLA POPADS -->
-    <div style="text-align:center;margin-bottom:20px;">
-      <h1>QuizoPolsce — Sprawdź wiedzę o Polsce</h1>
-      <p>Wejdź do quizu i sprawdź swoją wiedzę o Polsce. Graj teraz!</p>
-    </div>
-
-    <!-- GÓRNA REKLAMA -->
     <div class="ad-top" id="adTop" data-zone="10241819">ładowanie reklamy...</div>
 
     <div class="card" id="quizCard">
@@ -116,7 +109,6 @@
       <div id="question" class="question">Ładowanie...</div>
       <div id="answers" class="answers"></div>
 
-      <!-- REKLAMA PO 7 PYTANIU -->
       <div class="ad-mid" id="adMid" data-zone="10241826" style="display:none;">ładowanie reklamy...</div>
 
       <div class="meta">
@@ -126,8 +118,6 @@
     </div>
 
     <div style="height:12px"></div>
-
-    <!-- DOLNA REKLAMA -->
     <div class="ad-bottom" id="adBottom" data-zone="10241836">ładowanie reklamy...</div>
   </div>
 
@@ -136,7 +126,6 @@
       <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
       <div id="final-text">0 pkt</div>
 
-      <!-- REKLAMA PRZED WYNIKIEM -->
       <div class="ad-final" id="adFinal" data-zone="10241843" style="display:none;">ładowanie reklamy...</div>
 
       <div class="final-actions" style="margin-top:14px;">
@@ -161,7 +150,7 @@
   <script>
     const $ = id => document.getElementById(id);
 
-    // --- MONETAG SAFE LOADER ---
+    // MONETAG SAFE LOADER
     function loadAdScriptOnce(url,id){ if(document.getElementById(id)) return; const s=document.createElement('script'); s.src=url; s.async=true; s.id=id; s.onerror=e=>console.warn('Ad script error',url,e); document.head.appendChild(s); }
     function injectAds(){
       document.querySelectorAll('[data-zone]').forEach(el=>{
@@ -175,7 +164,6 @@
       });
     }
     document.addEventListener('DOMContentLoaded',injectAds);
-    // --- END LOADER ---
 
     if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
     document.body.addEventListener('click',()=>{ if($('bg').paused) $('bg').play().catch(()=>{}); },{once:true});
@@ -236,15 +224,41 @@
     $('shareBtn').onclick=()=>{ const url=location.href; const text='Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!'; if(navigator.share){ navigator.share({title:'QuizoPolsce',text,url}).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
     $('endBtn').onclick=()=>{ finalEl.style.display='none'; };
 
-    function firework(){ const canvas=$('fx'); const ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-      const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
-      const bursts=3+Math.floor(Math.random()*3); for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width,y=Math.random()*canvas.height*0.5;
-      for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } }
-      function animate(){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-        for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill();
-          p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1); }
-        if(particles.length>0) requestAnimationFrame(animate); else ctx.clearRect(0,0,canvas.width,canvas.height);
-      } animate();
+    function firework(){ 
+      const canvas=$('fx'); 
+      const ctx=canvas.getContext('2d'); 
+      canvas.width=window.innerWidth; 
+      canvas.height=window.innerHeight;
+      const particles=[]; 
+      const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
+      const bursts=3+Math.floor(Math.random()*3); 
+      for(let b=0;b<bursts;b++){ 
+        const x=Math.random()*canvas.width,
+              y=Math.random()*canvas.height*0.5;
+        for(let i=0;i<40;i++){ 
+          particles.push({ x,y, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, alpha:1, color:colors[Math.floor(Math.random()*colors.length)], size:2+Math.random()*2 }); 
+        } 
+      }
+      function animate(){ 
+        ctx.fillStyle='rgba(0,0,0,0.1)'; 
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        for(let i=particles.length-1;i>=0;i--){ 
+          const p=particles[i]; 
+          ctx.fillStyle=p.color; 
+          ctx.globalAlpha=p.alpha; 
+          ctx.beginPath(); 
+          ctx.arc(p.x,p.y,p.size,0,2*Math.PI); 
+          ctx.fill();
+          p.x+=p.vx; 
+          p.y+=p.vy; 
+          p.vy+=0.1; 
+          p.alpha-=0.02; 
+          if(p.alpha<=0) particles.splice(i,1); 
+        }
+        if(particles.length>0) requestAnimationFrame(animate); 
+        else ctx.clearRect(0,0,canvas.width,canvas.height);
+      } 
+      animate();
     }
     function fireworkAnswer(){ firework(); }
     function fireworkFinal(){ firework(); }
