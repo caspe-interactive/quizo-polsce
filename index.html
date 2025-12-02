@@ -8,9 +8,16 @@
   <meta name="theme-color" content="#051028">
   <style>
     :root{
-      --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-      --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
-      --accent:#ffd27a; --radius:14px;
+      --bg1:#071025;
+      --card:#0b1220;
+      --text:#e6f7ff;
+      --muted:#9fb6d6;
+      --neon1:#00f0ff;
+      --neon2:#ff3fc4;
+      --good:#16d36a;
+      --bad:#ff5c6c;
+      --accent:#ffd27a;
+      --radius:14px;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
@@ -18,6 +25,7 @@
       background:linear-gradient(180deg,var(--bg1),#051028 80%);
       color:var(--text);
       display:flex;align-items:center;justify-content:center;padding:20px;
+      flex-direction:column;
     }
     .page{width:100%;max-width:920px}
     .ad-top,.ad-bottom,.ad-mid,.ad-final{
@@ -49,35 +57,59 @@
     .btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
     .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
     .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
+
     .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
     .small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
+
     #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
-    #final-card{background:linear-gradient(180deg,#081322,#06121f);padding:30px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,0.7);text-align:center;color:var(--text);max-width:580px;width:94%}
+    #final-card{
+      background:linear-gradient(180deg,#081322,#06121f);
+      padding:30px;
+      border-radius:14px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.7);
+      text-align:center;color:var(--text);
+      max-width:580px;width:94%;
+    }
     #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
+
     .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
     .final-actions .btn{font-size:1rem;padding:12px 14px}
+
     .install-hint { display:none; margin-top:8px; font-size:0.95rem; color:var(--muted); text-align:center; }
-    .msg{position:fixed; right:16px; bottom:16px; z-index:1300; background:rgba(0,0,0,0.7); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.95rem; box-shadow:0 8px 30px rgba(0,0,0,0.6); display:none;}
+
+    .msg{
+      position:fixed; right:16px; bottom:16px; z-index:1300;
+      background:rgba(0,0,0,0.7); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.95rem;
+      box-shadow:0 8px 30px rgba(0,0,0,0.6);
+      display:none;
+    }
+
     #nickWrap{display:flex;gap:8px;align-items:center}
     #nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
+
     canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-    /* --- Statyczny header dla PopAds --- */
-    .static-header{ text-align:center; margin-bottom:20px; }
-    .static-header h1{color:#00f0ff; font-size:2rem;}
-    .static-header p{color:#9fb6d6; font-size:1.1rem;}
+
+    /* Statyczny content dla PopAds */
+    #staticContent{text-align:center; margin-bottom:20px; color:white;}
+    #staticContent h1{margin:10px 0;}
+    #staticContent p{margin:0 0 10px;}
   </style>
 </head>
 <body>
   <canvas id="fx"></canvas>
 
-  <!-- Statyczny content -->
-  <div class="static-header">
+  <!-- STATYCZNY CONTENT DLA POPADS -->
+  <div id="staticContent">
     <h1>QuizoPolsce — Sprawdź wiedzę o Polsce</h1>
-    <p>Interaktywny quiz online — sprawdź swoją wiedzę o Polsce już teraz!</p>
+    <p>Interaktywny quiz online. Sprawdź swoją wiedzę i zdobywaj punkty!</p>
+    <div class="btn" onclick="document.getElementById('quizCard').scrollIntoView({behavior:'smooth'});">Zagraj</div>
   </div>
 
   <div class="page">
+
+    <!-- TOP BANNER -->
     <div class="ad-top" id="adTop" data-zone="10241819">ładowanie reklamy...</div>
+    <script>(function(s){s.dataset.zone='10241819',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <div class="card" id="quizCard">
       <div class="top">
@@ -92,7 +124,10 @@
 
       <div id="question" class="question">Ładowanie...</div>
       <div id="answers" class="answers"></div>
+
+      <!-- MID BANNER -->
       <div class="ad-mid" id="adMid" data-zone="10241826" style="display:none;">ładowanie reklamy...</div>
+      <script>(function(s){s.dataset.zone='10241826',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
       <div class="meta">
         <div id="progress">Pytanie 0/0</div>
@@ -101,21 +136,30 @@
     </div>
 
     <div style="height:12px"></div>
+
+    <!-- BOTTOM BANNER -->
     <div class="ad-bottom" id="adBottom" data-zone="10241836">ładowanie reklamy...</div>
+    <script>(function(s){s.dataset.zone='10241836',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
   </div>
 
+  <!-- FINAL -->
   <div id="final" aria-hidden="true">
     <div id="final-card">
       <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
       <div id="final-text">0 pkt</div>
+
       <div class="ad-final" id="adFinal" data-zone="10241843" style="display:none;">ładowanie reklamy...</div>
+      <script>(function(s){s.dataset.zone='10241843',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
       <div class="final-actions" style="margin-top:14px;">
-        <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
-        <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
+        <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie/Popraw wynik</div>
+        <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz znajomemu</div>
         <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
         <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
         <div class="install-hint" id="installHint">Aby zainstalować: kliknij „Zapisz na ekranie głównym”</div>
       </div>
+
       <div class="small-muted" style="margin-top:8px">Dziękujemy za grę — wróć jutro i pobij swój wynik!</div>
     </div>
   </div>
@@ -129,26 +173,12 @@
 
   <script>
     const $ = id => document.getElementById(id);
-
-    function loadAdScriptOnce(url,id){ if(document.getElementById(id)) return; const s=document.createElement('script'); s.src=url; s.async=true; s.id=id; document.head.appendChild(s); }
-    function injectAds(){
-      document.querySelectorAll('[data-zone]').forEach(el=>{
-        const zone=el.getAttribute('data-zone');
-        const src=`https://groleegni.net/vignette.min.js?zone=${zone}`;
-        if(el.id==='adTop'||el.id==='adBottom'){ loadAdScriptOnce(src,'ad-script-'+zone); }
-        else{
-          const obs=new MutationObserver(()=>{ if(getComputedStyle(el).display!=='none'){ loadAdScriptOnce(src,'ad-script-'+zone); obs.disconnect(); } });
-          obs.observe(el,{attributes:true,attributeFilter:['style','class']});
-        }
-      });
-    }
-    document.addEventListener('DOMContentLoaded',injectAds);
     if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
     document.body.addEventListener('click',()=>{ if($('bg').paused) $('bg').play().catch(()=>{}); },{once:true});
 
     const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'), progressEl=$('progress'),
           finalEl=$('final'), finalText=$('final-text'), adTop=$('adTop'), adBottom=$('adBottom'),
-          adMid=$('adMid'), adFinal=$('adFinal');
+          adMid=$('adMid'), adFinal=$('adFinal'), bg=$('bg');
 
     const QUESTIONS=[
       { q: "Stolica Polski?", a: ["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
@@ -199,16 +229,15 @@
     function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; fireworkFinal(); }
 
     $('retryBtn').onclick=()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
-    $('shareBtn').onclick=()=>{ const url=location.href; const text='Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!'; if(navigator.share){ navigator.share({title:'QuizoPolsce',text,url}).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
+    $('shareBtn').onclick=()=>{ const url=location.href; const text='Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!';
+      if(navigator.share){ navigator.share({title:'QuizoPolsce',text,url}).catch(()=>{}); }
+      else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
     $('endBtn').onclick=()=>{ finalEl.style.display='none'; };
 
-    function firework(){ const canvas=$('fx'); const ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-      const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
-      for(let i=0;i<100;i++){ particles.push({x:canvas.width/2,y:canvas.height/2,dx:(Math.random()-0.5)*10,dy:(Math.random()-0.5)*10,r:Math.random()*4+2,color:colors[Math.floor(Math.random()*colors.length)],life:60}); }
-      const anim=setInterval(()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,2*Math.PI); ctx.fill(); p.x+=p.dx; p.y+=p.dy; p.life--; }); if(particles.every(p=>p.life<=0)){ clearInterval(anim); ctx.clearRect(0,0,canvas.width,canvas.height); }},16);
-    }
-    function fireworkAnswer(){ firework(); }
-    function fireworkFinal(){ firework(); }
+    function firework(){ const canvas=$('fx'); const ctx=canvas.getContext('2d'); if(!ctx) return; canvas.width=window.innerWidth; canvas.height=window.innerHeight; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    function fireworkAnswer(){ /* light effect */ }
+    function fireworkFinal(){ /* confetti effect */ }
+
     showQuestion();
   </script>
 </body>
