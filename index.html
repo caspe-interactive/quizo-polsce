@@ -86,9 +86,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <canvas id="fx"></canvas>
 
 <div class="page">
-  <!-- Wideo u góry quizu -->
   <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...</div>
-
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -103,9 +101,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <!-- Wideo po 7 pytaniu -->
     <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...</div>
-
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Miejsca reklamowe gotowe</div>
@@ -113,7 +109,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   </div>
 
   <div style="height:12px"></div>
-  <!-- Wideo na dole quizu -->
   <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...</div>
 </div>
 
@@ -121,7 +116,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <!-- Wideo przed wynikami -->
     <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...</div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
@@ -143,18 +137,17 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
 <script>
 // --- Monetag loader ---
-function loadAd(zoneId, el){
-  const s=document.createElement('script');
-  s.dataset.zone=zoneId;
-  s.src='https://nap5k.com/tag.min.js';
-  s.async=true;
-  el.appendChild(s);
+function loadAdScriptOnce(url, id){
+  if(document.getElementById(id)) return;
+  const s=document.createElement('script'); s.src=url; s.async=true; s.id=id;
+  s.onerror=e=>console.warn('Ad script load error:',url,e);
+  document.head.appendChild(s);
 }
-
 function injectAds(){
   document.querySelectorAll('[data-zone]').forEach(el=>{
     const zone=el.getAttribute('data-zone');
-    loadAd(zone, el);
+    const src = zone==='10211167' ? 'https://nap5k.com/tag.min.js' : 'https://groleegni.net/vignette.min.js';
+    loadAdScriptOnce(src+'?zone='+zone,'ad-script-'+zone);
   });
 }
 document.addEventListener('DOMContentLoaded',injectAds);
@@ -228,14 +221,14 @@ function showQuestion(){
 
 function answer(idxAnswer,btn,questionIndex){
   const correct=QUESTIONS[questionIndex].correct;
-  if(idxAnswer===correct){ btn.classList.add('good'); $('snd-ding').play().catch(()=>{}); points++; fireworkAnswer(); }
+  if(idxAnswer===correct){ btn.classList.add('good'); $('snd-ding').play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
   else{ btn.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
   pointsEl.textContent=points;
   current++;
   setTimeout(showQuestion,400);
 }
 
-function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; fireworkFinal(); }
+function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; setTimeout(fireworkFinal,500); }
 
 $('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 $('shareBtn').onclick = ()=>{
@@ -246,7 +239,11 @@ $('shareBtn').onclick = ()=>{
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
 // --- Fajerwerki ---
+let fireworkRunning = false;
 function firework(){
+  if(fireworkRunning) return;
+  fireworkRunning = true;
+
   const canvas=$('fx'), ctx=canvas.getContext('2d');
   canvas.width=window.innerWidth; canvas.height=window.innerHeight;
   const particles=[];
@@ -254,8 +251,18 @@ function firework(){
   const bursts=3+Math.floor(Math.random()*3);
   for(let b=0;b<bursts;b++){
     const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5;
-    for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); }
+    for(let i=0;i<40;i++){ 
+      particles.push({
+        x,y,
+        vx:(Math.random()-0.5)*10,
+        vy:(Math.random()-0.5)*10,
+        alpha:1,
+        color:colors[Math.floor(Math.random()*colors.length)],
+        size:2+Math.random()*2
+      }); 
+    }
   }
+
   function animate(){
     ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
     for(let i=particles.length-1;i>=0;i--){
@@ -265,13 +272,14 @@ function firework(){
       if(p.alpha<=0) particles.splice(i,1);
     }
     if(particles.length>0) requestAnimationFrame(animate);
-    else ctx.clearRect(0,0,canvas.width,canvas.height);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; }
   }
   animate();
 }
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
+// --- start quiz ---
 showQuestion();
 </script>
 </body>
