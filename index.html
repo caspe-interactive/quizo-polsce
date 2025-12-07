@@ -86,7 +86,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <canvas id="fx"></canvas>
 
 <div class="page">
-  <div class="ad-top" id="adTop" data-zone="10241819">ładowanie reklamy...</div>
+  <!-- Wideo u góry quizu -->
+  <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...</div>
+
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -101,7 +103,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <div class="ad-mid" id="adMid" data-zone="10241826" style="display:none;">ładowanie reklamy...</div>
+    <!-- Wideo po 7 pytaniu -->
+    <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...</div>
+
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Miejsca reklamowe gotowe</div>
@@ -109,14 +113,16 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   </div>
 
   <div style="height:12px"></div>
-  <div class="ad-bottom" id="adBottom" data-zone="10241836">ładowanie reklamy...</div>
+  <!-- Wideo na dole quizu -->
+  <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...</div>
 </div>
 
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" data-zone="10241843" style="display:none;">ładowanie reklamy...</div>
+    <!-- Wideo przed wynikami -->
+    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...</div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -136,26 +142,19 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// --- PopAds / Monetag loader ---
-function loadAdScriptOnce(url, id){
-  if(document.getElementById(id)) return;
-  const s=document.createElement('script'); s.src=url; s.async=true; s.id=id;
-  s.onerror=e=>console.warn('Ad script load error:',url,e);
-  document.head.appendChild(s);
+// --- Monetag loader ---
+function loadAd(zoneId, el){
+  const s=document.createElement('script');
+  s.dataset.zone=zoneId;
+  s.src='https://nap5k.com/tag.min.js';
+  s.async=true;
+  el.appendChild(s);
 }
+
 function injectAds(){
   document.querySelectorAll('[data-zone]').forEach(el=>{
     const zone=el.getAttribute('data-zone');
-    const src=`https://groleegni.net/vignette.min.js?zone=${zone}`;
-    if(el.id==='adTop'||el.id==='adBottom'){ loadAdScriptOnce(src,'ad-script-'+zone); }
-    else{
-      const obs=new MutationObserver(()=>{ 
-        if(getComputedStyle(el).display!=='none'){ 
-          loadAdScriptOnce(src,'ad-script-'+zone); obs.disconnect(); 
-        } 
-      });
-      obs.observe(el,{attributes:true,attributeFilter:['style','class']});
-    }
+    loadAd(zone, el);
   });
 }
 document.addEventListener('DOMContentLoaded',injectAds);
