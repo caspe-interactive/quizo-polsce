@@ -40,13 +40,24 @@
 
   <script>
     const $=id=>document.getElementById(id);
+
+    // --- Poprawione referencje do elementów ---
+    const questionEl = $('question');
+    const answersEl = $('answers');
+    const progressEl = $('progress');
+    const finalEl = $('final');
+    const finalText = $('finalText');
+    const pointsEl = $('points');
+    const adTop = $('adTop');
+    const adBottom = $('adBottom');
+    const adMid = $('adMid');
+    const adFinal = $('adFinal');
+    const bg = $('bg');
   </script>
 
   <!-- ⭐ POPADS POPUNDER — WSTAWIONE TUTAJ ⭐ -->
   <script type="text/javascript" data-cfasync="false">
-  /*<![CDATA[/* */
   (function(){var e=window,q="d31a1dee2b6abd0ee20b164c660efc53",b=[["siteId",511+755*496-654+4883867],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],c=["d3d3LmNkbjRhZHMuY29tL2tuQXYvZGVtb2ppZnkubWluLmpz","ZDNnNW92Zm5nanc5YncuY2xvdWRmcm9udC5uZXQvYmRxL04vcWNvb2tpZXMubWluLmNzcw=="],i=-1,r,j,z=function(){clearTimeout(j);i++;if(c[i]&&!(1791102328000<(new Date).getTime()&&1<i)){r=e.document.createElement("script");r.type="text/javascript";r.async=!0;var l=e.document.getElementsByTagName("script")[0];r.src="https://"+atob(c[i]);r.crossOrigin="anonymous";r.onerror=z;r.onload=function(){clearTimeout(j);e[q.slice(0,16)+q.slice(0,16)]||z()};j=setTimeout(z,5E3);l.parentNode.insertBefore(r,l)}};if(!e[q]){try{Object.freeze(e[q]=b)}catch(e){}z()}})();
-  /*]]>/* */
   </script>
   <!-- ⭐ KONIEC POPADS ⭐ -->
 
@@ -229,9 +240,7 @@ $('shareBtn').onclick=()=>{
   }
 };
 
-$('endBtn').onclick=()=>{
-  finalEl.style.display='none';
-};
+$('endBtn').onclick=()=>{ finalEl.style.display='none'; };
 
 let fireworkRunning=false;
 
