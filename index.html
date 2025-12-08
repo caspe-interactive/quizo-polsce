@@ -1,164 +1,90 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#051028">
-<style>
-:root{
-  --bg1:#071025;
-  --card:#0b1220;
-  --text:#e6f7ff;
-  --muted:#9fb6d6;
-  --neon1:#00f0ff;
-  --neon2:#ff3fc4;
-  --good:#16d36a;
-  --bad:#ff5c6c;
-  --accent:#ffd27a;
-  --radius:14px;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
-body{
-  background:linear-gradient(180deg,var(--bg1),#051028 80%);
-  color:var(--text);
-  display:flex;align-items:center;justify-content:center;padding:20px;
-}
-.page{width:100%;max-width:920px}
-.ad-top,.ad-bottom,.ad-mid,.ad-final{
-  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px;
-}
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius);
-  padding:22px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.6);
-  border:1px solid rgba(0,255,255,0.04);
-}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-.score{display:none;color:var(--accent)}
-.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
-.btn{
-  display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
-  user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
-  background:linear-gradient(90deg,var(--neon1),var(--neon2));
-  box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);
-  border:1px solid rgba(255,255,255,0.02);
-}
-.btn:active{transform:translateY(2px)}
-.btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
-.meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
-.small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
-#final-card{
-  background:linear-gradient(180deg,#081322,#06121f);
-  padding:30px;
-  border-radius:14px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.7);
-  text-align:center;color:var(--text);
-  max-width:580px;width:94%;
-}
-#final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
-.final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
-.final-actions .btn{font-size:1rem;padding:12px 14px}
-.install-hint { display:none; margin-top:8px; font-size:0.95rem; color:var(--muted); text-align:center; }
-.msg{
-  position:fixed; right:16px; bottom:16px; z-index:1300;
-  background:rgba(0,0,0,0.7); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.95rem;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6);
-  display:none;
-}
-#nickWrap{display:flex;gap:8px;align-items:center}
-#nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
-canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-</style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#051028">
+
+  <style>
+    :root{
+      --btn-bg:#0d6efd; --btn-hover:#0b5ed7;
+      --neon:#00f0ff; --neon2:#ff3fc4;
+    }
+    body{
+      margin:0; font-family:Arial,Helvetica,sans-serif;
+      background:#000 url('bg.jpg') center/cover fixed;
+      color:#fff; overflow-x:hidden;
+    }
+    #app{max-width:900px;margin:auto;padding:20px;text-align:center;}
+    #question{font-size:1.6rem;margin:20px 0;font-weight:700;}
+    #answers .btn{
+      padding:12px;margin:8px 0;background:#111;border:2px solid var(--neon);
+      border-radius:10px;cursor:pointer;font-size:1.2rem;
+      transition:.2s; box-shadow:0 0 10px var(--neon);
+    }
+    #answers .btn:hover{background:#022;transform:scale(1.03);}
+    .good{background:#053!important;border-color:#0f0!important;box-shadow:0 0 15px #0f0!important;}
+    .bad{background:#300!important;border-color:#f00!important;box-shadow:0 0 15px #f00!important;}
+
+    #final{display:none;position:fixed;left:0;top:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.92);z-index:20;justify-content:center;align-items:center;flex-direction:column;}
+    #finalText{font-size:3rem;margin-bottom:20px;}
+    #fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:30;}
+
+    .adBox{width:100%;min-height:90px;background:#111;border:2px dashed #555;
+      border-radius:12px;margin:10px 0;display:flex;justify-content:center;align-items:center;color:#777;
+      font-size:1.2rem;}
+  </style>
+
+  <script>
+    const $=id=>document.getElementById(id);
+  </script>
+
+  <!-- ⭐ POPADS POPUNDER — WSTAWIONE TUTAJ ⭐ -->
+  <script type="text/javascript" data-cfasync="false">
+  /*<![CDATA[/* */
+  (function(){var e=window,q="d31a1dee2b6abd0ee20b164c660efc53",b=[["siteId",511+755*496-654+4883867],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],c=["d3d3LmNkbjRhZHMuY29tL2tuQXYvZGVtb2ppZnkubWluLmpz","ZDNnNW92Zm5nanc5YncuY2xvdWRmcm9udC5uZXQvYmRxL04vcWNvb2tpZXMubWluLmNzcw=="],i=-1,r,j,z=function(){clearTimeout(j);i++;if(c[i]&&!(1791102328000<(new Date).getTime()&&1<i)){r=e.document.createElement("script");r.type="text/javascript";r.async=!0;var l=e.document.getElementsByTagName("script")[0];r.src="https://"+atob(c[i]);r.crossOrigin="anonymous";r.onerror=z;r.onload=function(){clearTimeout(j);e[q.slice(0,16)+q.slice(0,16)]||z()};j=setTimeout(z,5E3);l.parentNode.insertBefore(r,l)}};if(!e[q]){try{Object.freeze(e[q]=b)}catch(e){}z()}})();
+  /*]]>/* */
+  </script>
+  <!-- ⭐ KONIEC POPADS ⭐ -->
+
 </head>
+
 <body>
+
 <canvas id="fx"></canvas>
 
-<div class="page">
-  <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...</div>
-  <div class="card" id="quizCard">
-    <div class="top">
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
-        <div id="nickWrap">
-          <input id="nick" placeholder="Twój nick" aria-label="Nick gracza" />
-        </div>
-      </div>
-      <div class="score">Punkty: <span id="points">0</span></div>
-    </div>
+<div id="app">
+  <h1>QuizoPolsce</h1>
 
-    <div id="question" class="question">Ładowanie...</div>
-    <div id="answers" class="answers"></div>
+  <div id="progress" style="margin:10px 0;font-size:1.1rem;"></div>
+  <div id="pointsBox">Punkty: <span id="points">0</span></div>
 
-    <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...</div>
-    <div class="meta">
-      <div id="progress">Pytanie 0/0</div>
-      <div class="small-muted">Miejsca reklamowe gotowe</div>
-    </div>
-  </div>
+  <div id="adTop" class="adBox">Reklama</div>
 
-  <div style="height:12px"></div>
-  <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...</div>
+  <div id="question"></div>
+  <div id="answers"></div>
+
+  <div id="adBottom" class="adBox">Reklama</div>
+  <div id="adMid" class="adBox" style="display:none;">Reklama wideo</div>
+  <div id="adFinal" class="adBox" style="display:none;">Reklama końcowa</div>
 </div>
 
-<div id="final" aria-hidden="true">
-  <div id="final-card">
-    <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
-    <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...</div>
-    <div class="final-actions" style="margin-top:14px;">
-      <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
-      <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
-      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
-      <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
-      <div class="install-hint" id="installHint">Aby zainstalować: kliknij „Zapisz na ekranie głównym”</div>
-    </div>
-    <div class="small-muted" style="margin-top:8px">Dziękujemy za grę — wróć jutro i pobij swój wynik!</div>
-  </div>
+<div id="final">
+  <div id="finalText"></div>
+  <button class="btn" id="retryBtn">Spróbuj jeszcze raz</button>
+  <button class="btn" id="shareBtn">Poleć quiz</button>
+  <button class="btn" id="endBtn">Zakończ</button>
+  <div id="msgBox" style="display:none;margin-top:10px;color:#0f0;"></div>
 </div>
 
-<div class="msg" id="msgBox"></div>
-
-<audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="snd-ding" src="sounds/ding.mp3"></audio>
-<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
-<audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
+<audio id="snd-ding" src="ding.mp3" preload="auto"></audio>
+<audio id="snd-buzzer" src="buzzer.mp3" preload="auto"></audio>
+<audio id="bg" src="music.mp3" loop preload="auto"></audio>
 
 <script>
-// --- Monetag loader ---
-function loadAdScriptOnce(url, id){
-  if(document.getElementById(id)) return;
-  const s=document.createElement('script'); s.src=url; s.async=true; s.id=id;
-  s.onerror=e=>console.warn('Ad script load error:',url,e);
-  document.head.appendChild(s);
-}
-function injectAds(){
-  document.querySelectorAll('[data-zone]').forEach(el=>{
-    const zone=el.getAttribute('data-zone');
-    const src = zone==='10211167' ? 'https://nap5k.com/tag.min.js' : 'https://groleegni.net/vignette.min.js';
-    loadAdScriptOnce(src+'?zone='+zone,'ad-script-'+zone);
-  });
-}
-document.addEventListener('DOMContentLoaded',injectAds);
-
-// --- Quiz logic ---
-const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
-      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
-const bg=$('bg');
-
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
@@ -177,37 +103,68 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0;
-function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
+
+function getRandomSession(){
+  return QUESTIONS.map((q,i)=>({q,i}))
+    .sort(()=>Math.random()-0.5)
+    .slice(0,14)
+    .map(o=>o.i);
+}
+
 let sessionQuestions=getRandomSession();
 
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-document.body.addEventListener('click',()=>{ if(bg.paused) bg.play().catch(()=>{}); },{once:true});
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+
+document.body.addEventListener('click',()=>{
+  if(bg.paused) bg.play().catch(()=>{});
+},{once:true});
 
 function showQuestion(){
   if(current===7){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    adTop.style.display='none';
+    adBottom.style.display='none';
+    adMid.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
-    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
+    setTimeout(()=>{
+      adMid.style.display='none';
+      current++;
+      showQuestion();
+    },15000);
     return;
   }
 
   if(current>=sessionQuestions.length){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
+    adTop.style.display='none';
+    adBottom.style.display='none';
+    adMid.style.display='none';
+    adFinal.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
-    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
+
+    setTimeout(()=>{
+      adFinal.style.display='none';
+      finishQuiz();
+    },15000);
     return;
   }
 
-  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+  adTop.style.display='flex';
+  adBottom.style.display='flex';
+  adMid.style.display='none';
+  adFinal.style.display='none';
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
+
   questionEl.textContent=q.q;
   answersEl.innerHTML='';
 
-  const shuffled=q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
+  const shuffled=q.a.map((ans,i)=>({ans,i}))
+                     .sort(()=>Math.random()-0.5);
+
   shuffled.forEach(obj=>{
     const b=document.createElement('div');
     b.className='btn';
@@ -221,37 +178,83 @@ function showQuestion(){
 
 function answer(idxAnswer,btn,questionIndex){
   const correct=QUESTIONS[questionIndex].correct;
-  if(idxAnswer===correct){ btn.classList.add('good'); $('snd-ding').play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
-  else{ btn.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
+
+  if(idxAnswer===correct){
+    btn.classList.add('good');
+    $('snd-ding').play().catch(()=>{});
+    setTimeout(fireworkAnswer,500);
+    points++;
+  } else {
+    btn.classList.add('bad');
+    $('snd-buzzer').play().catch(()=>{});
+  }
+
   pointsEl.textContent=points;
   current++;
   setTimeout(showQuestion,400);
 }
 
-function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; setTimeout(fireworkFinal,500); }
+function finishQuiz(){
+  finalText.textContent=`${points} pkt`;
+  finalEl.style.display='flex';
+  setTimeout(fireworkFinal,500);
+}
 
-$('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
-$('shareBtn').onclick = ()=>{
-  const url=location.href;
-  if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); }
-  else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); }
+$('retryBtn').onclick=()=>{
+  points=0; current=0;
+  pointsEl.textContent='0';
+  sessionQuestions=getRandomSession();
+  finalEl.style.display='none';
+  showQuestion();
 };
-$('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
-// --- Fajerwerki ---
-let fireworkRunning = false;
+$('shareBtn').onclick=()=>{
+  const url=location.href;
+
+  if(navigator.share){
+    navigator.share({
+      title:'QuizoPolsce',
+      text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',
+      url
+    }).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(url).then(()=>{
+      const msg=$('msgBox');
+      msg.textContent='Link skopiowany do schowka';
+      msg.style.display='block';
+      setTimeout(()=>msg.style.display='none',2000);
+    }).catch(()=>{
+      alert('Skopiuj link: '+url);
+    });
+  }
+};
+
+$('endBtn').onclick=()=>{
+  finalEl.style.display='none';
+};
+
+let fireworkRunning=false;
+
 function firework(){
   if(fireworkRunning) return;
-  fireworkRunning = true;
+  fireworkRunning=true;
 
-  const canvas=$('fx'), ctx=canvas.getContext('2d');
-  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const canvas=$('fx'),
+        ctx=canvas.getContext('2d');
+
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+
   const particles=[];
   const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
+
   const bursts=3+Math.floor(Math.random()*3);
+
   for(let b=0;b<bursts;b++){
-    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5;
-    for(let i=0;i<40;i++){ 
+    const x=Math.random()*canvas.width;
+    const y=Math.random()*canvas.height*0.5;
+
+    for(let i=0;i<40;i++){
       particles.push({
         x,y,
         vx:(Math.random()-0.5)*10,
@@ -259,28 +262,47 @@ function firework(){
         alpha:1,
         color:colors[Math.floor(Math.random()*colors.length)],
         size:2+Math.random()*2
-      }); 
+      });
     }
   }
 
   function animate(){
-    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='rgba(0,0,0,0.1)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
     for(let i=particles.length-1;i>=0;i--){
       const p=particles[i];
-      ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill();
-      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02;
+
+      ctx.fillStyle=p.color;
+      ctx.globalAlpha=p.alpha;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.size,0,2*Math.PI);
+      ctx.fill();
+
+      p.x+=p.vx;
+      p.y+=p.vy;
+      p.vy+=0.1;
+      p.alpha-=0.02;
+
       if(p.alpha<=0) particles.splice(i,1);
     }
-    if(particles.length>0) requestAnimationFrame(animate);
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; }
+
+    if(particles.length>0){
+      requestAnimationFrame(animate);
+    } else {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      fireworkRunning=false;
+    }
   }
+
   animate();
 }
+
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
-// --- start quiz ---
 showQuestion();
 </script>
+
 </body>
 </html>
