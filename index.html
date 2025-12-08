@@ -136,37 +136,27 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
-<!-- --- PopAds scripts --- -->
 <script>
-function loadPopAdsForZone(zoneId){
-  if(document.getElementById('popads-script-' + zoneId)) return;
-  const s = document.createElement('script');
-  s.src = 'https://nap5k.com/tag.min.js?zone=' + zoneId;
-  s.async = true;
-  s.id = 'popads-script-' + zoneId;
+// --- Load PopAds ---
+function loadAdScriptOnce(url,id){
+  if(document.getElementById(id)) return;
+  const s=document.createElement('script'); s.src=url; s.async=true; s.id=id;
   document.head.appendChild(s);
 }
-
-// Ładowanie wszystkich stref reklam
 function injectAds(){
-  const zones = document.querySelectorAll('[data-zone]');
-  zones.forEach(el => {
-    const zoneId = el.getAttribute('data-zone');
-    el.style.display = 'flex'; // pokazujemy kontener
-    loadPopAdsForZone(zoneId);
+  document.querySelectorAll('[data-zone]').forEach(el=>{
+    const zone=el.getAttribute('data-zone');
+    loadAdScriptOnce('https://nap5k.com/tag.min.js?zone='+zone,'ad-script-'+zone);
   });
 }
+document.addEventListener('DOMContentLoaded',injectAds);
 
-document.addEventListener('DOMContentLoaded', injectAds);
-</script>
-
-<script>
 // --- Quiz logic ---
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
       adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
-const bg=$('bg');
+const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
@@ -190,7 +180,13 @@ function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.
 let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-document.body.addEventListener('click',()=>{ if(bg.paused) bg.play().catch(()=>{}); },{once:true});
+
+// --- Auto-play audio ---
+function playAudio(audio){
+    audio.play().catch(()=>{});
+}
+document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
+document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
 function showQuestion(){
   if(current===7){
@@ -200,7 +196,6 @@ function showQuestion(){
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
     return;
   }
-
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
@@ -208,14 +203,12 @@ function showQuestion(){
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
-
   adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
   answersEl.innerHTML='';
-
   const shuffled=q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
   shuffled.forEach(obj=>{
     const b=document.createElement('div');
@@ -224,14 +217,13 @@ function showQuestion(){
     b.onclick=()=>answer(obj.i,b,idx);
     answersEl.appendChild(b);
   });
-
   progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
 function answer(idxAnswer,btn,questionIndex){
   const correct=QUESTIONS[questionIndex].correct;
-  if(idxAnswer===correct){ btn.classList.add('good'); $('snd-ding').play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
-  else{ btn.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
+  if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
+  else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
   pointsEl.textContent=points;
   current++;
   setTimeout(showQuestion,400);
