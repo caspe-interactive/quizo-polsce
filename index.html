@@ -1,78 +1,55 @@
 <!doctype html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#051028">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#051028">
 
-  <style>
-    :root{
-      --btn-bg:#0d6efd; --btn-hover:#0b5ed7;
-      --neon:#00f0ff; --neon2:#ff3fc4;
-    }
-    body{
-      margin:0; font-family:Arial,Helvetica,sans-serif;
-      background:#000 url('bg.jpg') center/cover fixed;
-      color:#fff; overflow-x:hidden;
-    }
-    #app{max-width:900px;margin:auto;padding:20px;text-align:center;}
-    #question{font-size:1.6rem;margin:20px 0;font-weight:700;}
-    #answers .btn{
-      padding:12px;margin:8px 0;background:#111;border:2px solid var(--neon);
-      border-radius:10px;cursor:pointer;font-size:1.2rem;
-      transition:.2s; box-shadow:0 0 10px var(--neon);
-    }
-    #answers .btn:hover{background:#022;transform:scale(1.03);}
-    .good{background:#053!important;border-color:#0f0!important;box-shadow:0 0 15px #0f0!important;}
-    .bad{background:#300!important;border-color:#f00!important;box-shadow:0 0 15px #f00!important;}
+<style>
+:root{--btn-bg:#0d6efd; --btn-hover:#0b5ed7; --neon:#00f0ff; --neon2:#ff3fc4;}
+body{margin:0; font-family:Arial,Helvetica,sans-serif; background:#000 url('bg.jpg') center/cover fixed; color:#fff; overflow-x:hidden;}
+#app{max-width:900px;margin:auto;padding:20px;text-align:center;}
+#question{font-size:1.6rem;margin:20px 0;font-weight:700;}
+#answers .btn{padding:12px;margin:8px 0;background:#111;border:2px solid var(--neon);border-radius:10px;cursor:pointer;font-size:1.2rem;transition:.2s; box-shadow:0 0 10px var(--neon);}
+#answers .btn:hover{background:#022;transform:scale(1.03);}
+.good{background:#053!important;border-color:#0f0!important;box-shadow:0 0 15px #0f0!important;}
+.bad{background:#300!important;border-color:#f00!important;box-shadow:0 0 15px #f00!important;}
+#adTop, #adBottom, #adMid, #adFinal{width:100%;min-height:90px;background:#111;border:2px dashed #555;border-radius:12px;margin:10px 0;display:flex;justify-content:center;align-items:center;color:#777;font-size:1.2rem;}
+#adMid, #adFinal{display:none;}
+#final{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:20;justify-content:center;align-items:center;flex-direction:column;}
+#finalText{font-size:3rem;margin-bottom:20px;}
+#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:30;}
+</style>
 
-    #final{display:none;position:fixed;left:0;top:0;width:100%;height:100%;
-      background:rgba(0,0,0,0.92);z-index:20;justify-content:center;align-items:center;flex-direction:column;}
-    #finalText{font-size:3rem;margin-bottom:20px;}
-    #fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:30;}
-
-    .adBox{width:100%;min-height:90px;background:#111;border:2px dashed #555;
-      border-radius:12px;margin:10px 0;display:flex;justify-content:center;align-items:center;color:#777;
-      font-size:1.2rem;}
-  </style>
-
-  <!-- ⭐ POPADS POPUNDER — WSTAWIONE TUTAJ ⭐ -->
-  <script type="text/javascript" data-cfasync="false">
-  /*<![CDATA[/* */
-  (function(){var e=window,q="d31a1dee2b6abd0ee20b164c660efc53",b=[["siteId",511+755*496-654+4883867],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],c=["d3d3LmNkbjRhZHMuY29tL2tuQXYvZGVtb2ppZnkubWluLmpz","ZDNnNW92Zm5nanc5YncuY2xvdWRmcm9udC5uZXQvYmRxL04vcWNvb2tpZXMubWluLmNzcw=="],i=-1,r,j,z=function(){clearTimeout(j);i++;if(c[i]&&!(1791102328000<(new Date).getTime()&&1<i)){r=e.document.createElement("script");r.type="text/javascript";r.async=!0;var l=e.document.getElementsByTagName("script")[0];r.src="https://"+atob(c[i]);r.crossOrigin="anonymous";r.onerror=z;r.onload=function(){clearTimeout(j);e[q.slice(0,16)+q.slice(0,16)]||z()};j=setTimeout(z,5E3);l.parentNode.insertBefore(r,l)}};if(!e[q]){try{Object.freeze(e[q]=b)}catch(e){}z()}})();
-  /*]]>/* */
-  </script>
-  <!-- ⭐ KONIEC POPADS ⭐ -->
-
+<!-- POPADS -->
+<script type="text/javascript" data-cfasync="false">
+(function(){var e=window,q="d31a1dee2b6abd0ee20b164c660efc53",b=[["siteId",511+755*496-654+4883867],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],c=["d3d3LmNkbjRhZHMuY29tL2tuQXYvZGVtb2ppZnkubWluLmpz","ZDNnNW92Zm5nanc5YncuY2xvdWRmcm9udC5uZXQvYmRxL04vcWNvb2tpZXMubWluLmNzcw=="],i=-1,r,j,z=function(){clearTimeout(j);i++;if(c[i]&&!(1791102328000<(new Date).getTime()&&1<i)){r=e.document.createElement("script");r.type="text/javascript";r.async=!0;var l=e.document.getElementsByTagName("script")[0];r.src="https://"+atob(c[i]);r.crossOrigin="anonymous";r.onerror=z;r.onload=function(){clearTimeout(j);e[q.slice(0,16)+q.slice(0,16)]||z()};j=setTimeout(z,5E3);l.parentNode.insertBefore(r,l)}};if(!e[q]){try{Object.freeze(e[q]=b)}catch(e){}z()}})();
+</script>
 </head>
 
 <body>
 <canvas id="fx"></canvas>
 
 <div id="app">
-  <h1>QuizoPolsce</h1>
-
-  <div id="progress" style="margin:10px 0;font-size:1.1rem;"></div>
-  <div id="pointsBox">Punkty: <span id="points">0</span></div>
-
-  <div id="adTop" class="adBox">Reklama</div>
-
-  <div id="question"></div>
-  <div id="answers"></div>
-
-  <div id="adBottom" class="adBox">Reklama</div>
-  <div id="adMid" class="adBox" style="display:none;">Reklama wideo</div>
-  <div id="adFinal" class="adBox" style="display:none;">Reklama końcowa</div>
+<h1>QuizoPolsce</h1>
+<div id="progress" style="margin:10px 0;font-size:1.1rem;"></div>
+<div id="pointsBox">Punkty: <span id="points">0</span></div>
+<div id="adTop">Reklama</div>
+<div id="question"></div>
+<div id="answers"></div>
+<div id="adBottom">Reklama</div>
+<div id="adMid">Reklama wideo</div>
+<div id="adFinal">Reklama końcowa</div>
 </div>
 
 <div id="final">
-  <div id="finalText"></div>
-  <button class="btn" id="retryBtn">Spróbuj jeszcze raz</button>
-  <button class="btn" id="shareBtn">Poleć quiz</button>
-  <button class="btn" id="endBtn">Zakończ</button>
-  <div id="msgBox" style="display:none;margin-top:10px;color:#0f0;"></div>
+<div id="finalText"></div>
+<button class="btn" id="retryBtn">Spróbuj jeszcze raz</button>
+<button class="btn" id="shareBtn">Poleć quiz</button>
+<button class="btn" id="endBtn">Zakończ</button>
+<div id="msgBox" style="display:none;margin-top:10px;color:#0f0;"></div>
 </div>
 
 <audio id="snd-ding" src="ding.mp3" preload="auto"></audio>
@@ -81,199 +58,83 @@
 
 <script>
 window.onload = () => {
-  const $=id=>document.getElementById(id);
+const $=id=>document.getElementById(id);
+const questionEl=$('question'), answersEl=$('answers'), progressEl=$('progress'), finalEl=$('final'), finalText=$('finalText'), pointsEl=$('points');
+const adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal'), bg=$('bg');
 
-  const questionEl = $('question');
-  const answersEl = $('answers');
-  const progressEl = $('progress');
-  const finalEl = $('final');
-  const finalText = $('finalText');
-  const pointsEl = $('points');
-  const adTop = $('adTop');
-  const adBottom = $('adBottom');
-  const adMid = $('adMid');
-  const adFinal = $('adFinal');
-  const bg = $('bg');
+const QUESTIONS=[
+{ q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
+{ q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
+{ q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
+{ q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
+{ q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:0 },
+{ q:"Największe miasto woj. mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
+{ q:"Najważniejszy polski noblista w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
+{ q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
+{ q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
+{ q:"W którym roku Polska odzyskała niepodległość?", a:["1918","1945","1914","1939"], correct:0 },
+{ q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu miasta"], correct:0 },
+{ q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
+{ q:"Polski hymn zaczyna się od słów?", a:["Jeszcze Polska nie zginęła","Mazurka Dąbrowskiego","Bogurodzicy","Roty"], correct:0 },
+{ q:"Polski król zwany „Lwem Lechistanu”?", a:["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct:0 }
+];
 
-  const QUESTIONS=[
-    { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
-    { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
-    { q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
-    { q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
-    { q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:0 },
-    { q:"Największe miasto woj. mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
-    { q:"Najważniejszy polski noblista w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
-    { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
-    { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
-    { q:"W którym roku Polska odzyskała niepodległość?", a:["1918","1945","1914","1939"], correct:0 },
-    { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu miasta"], correct:0 },
-    { q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
-    { q:"Polski hymn zaczyna się od słów?", a:["Jeszcze Polska nie zginęła","Mazurka Dąbrowskiego","Bogurodzicy","Roty"], correct:0 },
-    { q:"Polski król zwany „Lwem Lechistanu”?", a:["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct:0 }
-  ];
+let points=0, current=0;
+function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
+let sessionQuestions=getRandomSession();
 
-  let points=0, current=0;
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+document.body.addEventListener('click',()=>{ if(bg.paused) bg.play().catch(()=>{}); },{once:true});
 
-  function getRandomSession(){
-    return QUESTIONS.map((q,i)=>({q,i}))
-      .sort(()=>Math.random()-0.5)
-      .slice(0,14)
-      .map(o=>o.i);
+function showQuestion(){
+  if(current===7){ adMid.style.display='flex'; setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },3000); return; }
+  if(current>=sessionQuestions.length){ adFinal.style.display='flex'; setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },3000); return; }
+
+  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+
+  const idx=sessionQuestions[current], q=QUESTIONS[idx];
+  questionEl.textContent=q.q; answersEl.innerHTML='';
+  const shuffled=q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
+  shuffled.forEach(obj=>{
+    const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans;
+    b.onclick=()=>answer(obj.i,b,idx);
+    answersEl.appendChild(b);
+  });
+  progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
+}
+
+function answer(idxAnswer,btn,questionIndex){
+  const correct=QUESTIONS[questionIndex].correct;
+  if(idxAnswer===correct){ btn.classList.add('good'); $('snd-ding').play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
+  else { btn.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
+  pointsEl.textContent=points; current++; setTimeout(showQuestion,400);
+}
+
+function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; setTimeout(fireworkFinal,500); }
+$('retryBtn').onclick=()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
+$('shareBtn').onclick=()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce', text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!', url}).catch(()=>{});} 
+else{ navigator.clipboard?.writeText(url).then(()=>{$('msgBox').textContent='Link skopiowany do schowka'; $('msgBox').style.display='block'; setTimeout(()=>$('msgBox').style.display='none',2000);}).catch(()=>{ alert('Skopiuj link: '+url); });}};
+$('endBtn').onclick=()=>{ finalEl.style.display='none'; };
+
+let fireworkRunning=false;
+function firework(){
+  if(fireworkRunning) return; fireworkRunning=true;
+  const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
+  const bursts=3+Math.floor(Math.random()*3);
+  for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width; const y=Math.random()*canvas.height*0.5;
+    for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); }
   }
+  function animate(){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1);}
+    if(particles.length>0) requestAnimationFrame(animate); else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; }
+  } animate();
+}
+function fireworkAnswer(){ firework(); }
+function fireworkFinal(){ firework(); }
 
-  let sessionQuestions=getRandomSession();
-
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('/sw.js').catch(()=>{});
-  }
-
-  document.body.addEventListener('click',()=>{
-    if(bg.paused) bg.play().catch(()=>{});
-  },{once:true});
-
-  function showQuestion(){
-    if(current===7){
-      adTop.style.display='none';
-      adBottom.style.display='none';
-      adMid.style.display='flex';
-      questionEl.textContent="Oglądaj reklamę, aby kontynuować";
-      answersEl.innerHTML="";
-      setTimeout(()=>{
-        adMid.style.display='none';
-        current++;
-        showQuestion();
-      },15000);
-      return;
-    }
-
-    if(current>=sessionQuestions.length){
-      adTop.style.display='none';
-      adBottom.style.display='none';
-      adMid.style.display='none';
-      adFinal.style.display='flex';
-      questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
-      answersEl.innerHTML="";
-      setTimeout(()=>{
-        adFinal.style.display='none';
-        finishQuiz();
-      },15000);
-      return;
-    }
-
-    adTop.style.display='flex';
-    adBottom.style.display='flex';
-    adMid.style.display='none';
-    adFinal.style.display='none';
-
-    const idx=sessionQuestions[current];
-    const q=QUESTIONS[idx];
-
-    questionEl.textContent=q.q;
-    answersEl.innerHTML='';
-
-    const shuffled=q.a.map((ans,i)=>({ans,i}))
-                       .sort(()=>Math.random()-0.5);
-
-    shuffled.forEach(obj=>{
-      const b=document.createElement('div');
-      b.className='btn';
-      b.textContent=obj.ans;
-      b.onclick=()=>answer(obj.i,b,idx);
-      answersEl.appendChild(b);
-    });
-
-    progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
-  }
-
-  function answer(idxAnswer,btn,questionIndex){
-    const correct=QUESTIONS[questionIndex].correct;
-    if(idxAnswer===correct){
-      btn.classList.add('good');
-      $('snd-ding').play().catch(()=>{});
-      setTimeout(fireworkAnswer,500);
-      points++;
-    } else {
-      btn.classList.add('bad');
-      $('snd-buzzer').play().catch(()=>{});
-    }
-    pointsEl.textContent=points;
-    current++;
-    setTimeout(showQuestion,400);
-  }
-
-  function finishQuiz(){
-    finalText.textContent=`${points} pkt`;
-    finalEl.style.display='flex';
-    setTimeout(fireworkFinal,500);
-  }
-
-  $('retryBtn').onclick=()=>{
-    points=0; current=0;
-    pointsEl.textContent='0';
-    sessionQuestions=getRandomSession();
-    finalEl.style.display='none';
-    showQuestion();
-  };
-
-  $('shareBtn').onclick=()=>{
-    const url=location.href;
-    if(navigator.share){
-      navigator.share({
-        title:'QuizoPolsce',
-        text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',
-        url
-      }).catch(()=>{});
-    } else {
-      navigator.clipboard?.writeText(url).then(()=>{
-        const msg=$('msgBox');
-        msg.textContent='Link skopiowany do schowka';
-        msg.style.display='block';
-        setTimeout(()=>msg.style.display='none',2000);
-      }).catch(()=>{
-        alert('Skopiuj link: '+url);
-      });
-    }
-  };
-
-  $('endBtn').onclick=()=>{ finalEl.style.display='none'; };
-
-  let fireworkRunning=false;
-  function firework(){
-    if(fireworkRunning) return;
-    fireworkRunning=true;
-    const canvas=$('fx'), ctx=canvas.getContext('2d');
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-    const particles=[];
-    const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
-    const bursts=3+Math.floor(Math.random()*3);
-    for(let b=0;b<bursts;b++){
-      const x=Math.random()*canvas.width;
-      const y=Math.random()*canvas.height*0.5;
-      for(let i=0;i<40;i++){
-        particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2});
-      }
-    }
-    function animate(){
-      ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      for(let i=particles.length-1;i>=0;i--){
-        const p=particles[i];
-        ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha;
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill();
-        p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02;
-        if(p.alpha<=0) particles.splice(i,1);
-      }
-      if(particles.length>0) requestAnimationFrame(animate);
-      else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; }
-    }
-    animate();
-  }
-  function fireworkAnswer(){ firework(); }
-  function fireworkFinal(){ firework(); }
-
-  showQuestion();
+showQuestion();
 };
 </script>
-
 </body>
 </html>
