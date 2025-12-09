@@ -7,16 +7,18 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- === MONETAG STATYCZNE === -->
-<script data-zone="10206851" src="https://groleegni.net/vignette.min.js" async></script>
-<script data-zone="10206858" src="https://groleegni.net/vignette.min.js" async></script>
-<script data-zone="10206862" src="https://groleegni.net/vignette.min.js" async></script>
-<script data-zone="10211167" src="https://groleegni.net/vignette.min.js" async></script>
+<!-- === STATYCZNE TAGI MONETAG === -->
+<script data-zone="10241819" src="https://groleegni.net/vignette.min.js" async></script>
+<script data-zone="10241826" src="https://groleegni.net/vignette.min.js" async></script>
+<script data-zone="10241836" src="https://groleegni.net/vignette.min.js" async></script>
+<script data-zone="10241843" src="https://groleegni.net/vignette.min.js" async></script>
+<!-- === KONIEC TAGÓW === -->
 
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a; --radius:14px;
+  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a;
+  --radius:14px;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
@@ -159,23 +161,26 @@ let sessionQuestions=getRandomSession();
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ bg.play().catch(()=>{}); });
 
+function showAd(url){ 
+  const a=document.createElement('a'); 
+  a.href=url; 
+  a.target='_blank'; 
+  a.rel='noopener noreferrer'; 
+  a.click(); 
+}
+
 function showQuestion(){
-  if(current===7){ 
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
-    questionEl.textContent="Oglądaj reklamę, aby kontynuować";
-    answersEl.innerHTML="";
-    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
-    return;
-  }
+  // --- Reklama po 7 pytaniu ---
+  if(current===7){ showAd('https://otieu.com/4/10205644'); }
+
+  // --- Koniec quizu przed wynikiem ---
   if(current>=sessionQuestions.length){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
-    questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
-    answersEl.innerHTML="";
-    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
-    return;
+    showAd('https://otieu.com/4/10205644');
+    finishQuiz(); return;
   }
 
   adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
@@ -207,26 +212,7 @@ $('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navi
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
 let fireworkRunning = false;
-function firework(){ 
-  if(fireworkRunning) return; fireworkRunning = true; const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
-  const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
-  const bursts=3+Math.floor(Math.random()*3); 
-  for(let b=0;b<bursts;b++){ 
-    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
-    for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } 
-  } 
-  function animate(){ 
-    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
-    for(let i=particles.length-1;i>=0;i--){ 
-      const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
-      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
-      if(p.alpha<=0) particles.splice(i,1); 
-    } 
-    if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); 
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
-  } 
-  animate(); 
-}
+function firework(){ if(fireworkRunning) return; fireworkRunning = true; const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; const bursts=3+Math.floor(Math.random()*3); for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } } function animate(){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1); } if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } } animate(); }
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
