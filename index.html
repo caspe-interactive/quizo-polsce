@@ -7,7 +7,7 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- === STATYCZNE TAGI MONETAG === -->
+<!-- === TAGI MONETAG === -->
 <script data-zone="10241819" src="https://groleegni.net/vignette.min.js" async></script>
 <script data-zone="10241826" src="https://groleegni.net/vignette.min.js" async></script>
 <script data-zone="10241836" src="https://groleegni.net/vignette.min.js" async></script>
@@ -161,6 +161,7 @@ let sessionQuestions=getRandomSession();
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ bg.play().catch(()=>{}); });
 
+// Funkcja wyświetlająca automatyczne reklamy Monetag
 function showAd(url){ 
   const a=document.createElement('a'); 
   a.href=url; 
@@ -170,15 +171,16 @@ function showAd(url){
 }
 
 function showQuestion(){
-  // --- Reklama po 7 pytaniu ---
+  // Reklama po 7 pytaniu
   if(current===7){ showAd('https://otieu.com/4/10205644'); }
 
-  // --- Koniec quizu przed wynikiem ---
+  // Koniec quizu
   if(current>=sessionQuestions.length){
     showAd('https://otieu.com/4/10205644');
     finishQuiz(); return;
   }
 
+  // Stałe reklamy u góry i na dole
   adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
 
   const idx=sessionQuestions[current];
