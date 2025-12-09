@@ -131,20 +131,26 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
 <script>
 // --- Monetag loader ---
-function loadMonetag(){
-  document.querySelectorAll('[data-zone]').forEach(el=>{
-    const zone=el.getAttribute('data-zone');
-    if(!document.getElementById('monetag-'+zone)){
-      const s=document.createElement('script');
-      s.src='https://groleegni.net/vignette.min.js';
-      s.dataset.zone=zone;
-      s.async=true;
-      s.id='monetag-'+zone;
-      document.body.appendChild(s);
-    }
-  });
+function loadMonetag(el){
+  const zone = el.dataset.zone;
+  if(!document.getElementById('monetag-'+zone)){
+    const s = document.createElement('script');
+    s.src = 'https://groleegni.net/vignette.min.js';
+    s.dataset.zone = zone;
+    s.async = true;
+    s.id = 'monetag-'+zone;
+    el.innerHTML='ładowanie reklamy...';
+    el.appendChild(s);
+  }
 }
-document.addEventListener('DOMContentLoaded',loadMonetag);
+
+// --- Quiz loader ---
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Top i bottom reklamy
+  loadMonetag(document.getElementById('adTop'));
+  loadMonetag(document.getElementById('adBottom'));
+  showQuestion();
+});
 
 // --- Quiz logic ---
 const $=id=>document.getElementById(id);
@@ -177,12 +183,12 @@ let sessionQuestions=getRandomSession();
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 
 function playAudio(audio){ audio.play().catch(()=>{}); }
-document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
 function showQuestion(){
   if(current===7){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    loadMonetag(adMid); // wczytanie reklamy w momencie pokazu
     questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
@@ -190,6 +196,7 @@ function showQuestion(){
   }
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
+    loadMonetag(adFinal); // reklama końcowa
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
@@ -228,47 +235,9 @@ $('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navi
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
 let fireworkRunning = false;
-function firework(){
-  if(fireworkRunning) return;
-  fireworkRunning = true;
-  const canvas=$('fx'), ctx=canvas.getContext('2d');
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-  const particles=[];
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90'];
-  const bursts=3+Math.floor(Math.random()*3);
-  for(let b=0;b<bursts;b++){
-    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5;
-    for(let i=0;i<40;i++){
-      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2});
-    }
-  }
-  function animate(){
-    ctx.fillStyle='rgba(0,0,0,0.1)';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    for(let i=particles.length-1;i>=0;i--){
-      const p=particles[i];
-      ctx.fillStyle=p.color;
-      ctx.globalAlpha=p.alpha;
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.size,0,2*Math.PI);
-      ctx.fill();
-      p.x+=p.vx;
-      p.y+=p.vy;
-      p.vy+=0.1;
-      p.alpha-=0.02;
-      if(p.alpha<=0) particles.splice(i,1);
-    }
-    if(particles.length>0) requestAnimationFrame(animate);
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; }
-  }
-  animate();
-}
-
-function fireworkAnswer(){ firework(); }
-function fireworkFinal(){ firework(); }
-
-showQuestion();
+function firework(){ if(fireworkRunning) return; fireworkRunning = true; const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; const bursts=3+Math.floor(Math.random()*3); for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } } function animate(){ ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(const p of particles){ ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.alpha-=0.02; } if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); else fireworkRunning=false; } animate(); }
+function fireworkAnswer(){ firework(); fanfare.play().catch(()=>{}); }
+function fireworkFinal(){ firework(); fanfare.play().catch(()=>{}); }
 </script>
 </body>
 </html>
