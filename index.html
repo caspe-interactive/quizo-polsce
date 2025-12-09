@@ -7,12 +7,9 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- === TAGI MONETAG === -->
+<!-- === TAG MONETAG === -->
 <script data-zone="10241819" src="https://groleegni.net/vignette.min.js" async></script>
-<script data-zone="10241826" src="https://groleegni.net/vignette.min.js" async></script>
-<script data-zone="10241836" src="https://groleegni.net/vignette.min.js" async></script>
-<script data-zone="10241843" src="https://groleegni.net/vignette.min.js" async></script>
-<!-- === KONIEC TAGÓW === -->
+<!-- === KONIEC TAGU === -->
 
 <style>
 :root{
@@ -112,7 +109,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...</div>
+    <div class="ad-final" id="adFinal" data-zone="10211167">ładowanie reklamy...</div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -161,27 +158,20 @@ let sessionQuestions=getRandomSession();
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ bg.play().catch(()=>{}); });
 
-// Funkcja wyświetlająca automatyczne reklamy Monetag
-function showAd(url){ 
-  const a=document.createElement('a'); 
-  a.href=url; 
-  a.target='_blank'; 
-  a.rel='noopener noreferrer'; 
-  a.click(); 
-}
+// Funkcja wyświetlająca reklamy Monetag w strefach
+function showMidAd(){ adMid.style.display='flex'; }
+function showFinalAd(){ adFinal.style.display='flex'; }
 
 function showQuestion(){
-  // Reklama po 7 pytaniu
-  if(current===7){ showAd('https://otieu.com/4/10205644'); }
+  // Po 7 pytaniu pokazujemy adMid
+  if(current===7){ showMidAd(); }
 
-  // Koniec quizu
   if(current>=sessionQuestions.length){
-    showAd('https://otieu.com/4/10205644');
+    showFinalAd(); // reklama na końcu
     finishQuiz(); return;
   }
 
-  // Stałe reklamy u góry i na dole
-  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+  adTop.style.display='flex'; adBottom.style.display='flex';
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
