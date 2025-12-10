@@ -1,162 +1,113 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#051028">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizoPolsce</title>
 <style>
-:root{
-  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
-  --accent:#ffd27a; --radius:14px;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
 body{
-  background:linear-gradient(180deg,var(--bg1),#051028 80%);
-  color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
+  background:#000;
+  color:#fff;
+  font-family:Arial, sans-serif;
+  margin:0;
+  padding:0;
+  text-align:center;
+  overflow-x:hidden;
 }
-.page{width:100%;max-width:920px}
-.ad-top,.ad-bottom,.ad-mid,.ad-final{
-  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
-}
-.ad-status{
-  position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
-}
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius); padding:22px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.6);
-  border:1px solid rgba(0,255,255,0.04);
-}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-.score{display:none;color:var(--accent)}
-.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
+#quizBox{ max-width:600px; margin:auto; padding:20px; }
 .btn{
-  display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
-  user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
-  background:linear-gradient(90deg,var(--neon1),var(--neon2));
-  box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);
-  border:1px solid rgba(255,255,255,0.02);
+  background:#111;
+  border:2px solid #0ff;
+  padding:12px;
+  margin:10px 0;
+  cursor:pointer;
+  border-radius:12px;
+  transition:0.2s;
 }
-.btn:active{transform:translateY(2px)}
-.btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
-.meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
-.small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
-#final-card{
-  background:linear-gradient(180deg,#081322,#06121f);
-  padding:30px;
-  border-radius:14px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.7);
-  text-align:center;color:var(--text);
-  max-width:580px;width:94%;
-}
-#final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
-.final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
-.final-actions .btn{font-size:1rem;padding:12px 14px}
-.install-hint { display:none; margin-top:8px; font-size:0.95rem; color:var(--muted); text-align:center; }
-.msg{
-  position:fixed; right:16px; bottom:16px; z-index:1300;
-  background:rgba(0,0,0,0.7); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.95rem;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6);
+.btn:hover{ background:#0ff; color:#000; }
+.good{ background:#00ff84 !important; color:#000; }
+.bad{ background:#ff0055 !important; color:#fff; }
+
+#adTop,#adBottom,#adMid,#adFinal{
   display:none;
+  justify-content:center;
+  align-items:center;
+  padding:10px;
 }
-#nickWrap{display:flex;gap:8px;align-items:center}
-#nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
-canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+#adTop{ background:#111; }
+#adBottom{ background:#111; }
+#adMid{ background:#222; height:120px; }
+#adFinal{ background:#222; height:140px; }
+
+#final{
+  display:none;
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.9);
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+#fx{
+  position:fixed;
+  top:0;left:0;width:100vw;height:100vh;
+  pointer-events:none;
+}
 </style>
 </head>
 <body>
-<canvas id="fx"></canvas>
-<div class="page">
-  <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...
-    <span class="ad-status" id="statusTop">Ładowanie...</span>
-  </div>
-  <div class="card" id="quizCard">
-    <div class="top">
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
-        <div id="nickWrap">
-          <input id="nick" placeholder="Twój nick" aria-label="Nick gracza" />
-        </div>
-      </div>
-      <div class="score">Punkty: <span id="points">0</span></div>
-    </div>
-    <div id="question" class="question">Ładowanie...</div>
-    <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...
-      <span class="ad-status" id="statusMid">Ładowanie...</span>
-    </div>
-    <div class="meta">
-      <div id="progress">Pytanie 0/0</div>
-      <div class="small-muted">Miejsca reklamowe gotowe</div>
-    </div>
-  </div>
-  <div style="height:12px"></div>
-  <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...
-    <span class="ad-status" id="statusBottom">Ładowanie...</span>
-  </div>
-</div>
-<div id="final" aria-hidden="true">
-  <div id="final-card">
-    <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
-    <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...
-      <span class="ad-status" id="statusFinal">Ładowanie...</span>
-    </div>
-    <div class="final-actions" style="margin-top:14px;">
-      <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
-      <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
-      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
-      <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
-      <div class="install-hint" id="installHint">Aby zainstalować: kliknij „Zapisz na ekranie głównym”</div>
-    </div>
-    <div class="small-muted" style="margin-top:8px">Dziękujemy za grę — wróć jutro i pobij swój wynik!</div>
-  </div>
-</div>
-<div class="msg" id="msgBox"></div>
 
-<audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="snd-ding" src="sounds/ding.mp3"></audio>
-<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
-<audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
+<canvas id="fx"></canvas>
+
+<div id="quizBox">
+  <h2 id="question">Ładowanie…</h2>
+  <div id="answers"></div>
+
+  <div id="progress"></div>
+  <div>Punkty: <span id="points">0</span></div>
+
+  <div id="adTop">[Reklama top]</div>
+  <div id="adMid">[Reklama mid — po 7 pytaniu]</div>
+  <div id="adBottom">[Reklama dół]</div>
+  <div id="adFinal">[Reklama przed wynikiem]</div>
+</div>
+
+<div id="final">
+  <h1 id="finalText"></h1>
+  <button id="retryBtn" class="btn">Spróbuj ponownie</button>
+  <button id="shareBtn" class="btn">Udostępnij</button>
+  <button id="endBtn" class="btn">Zakończ</button>
+  <div id="msgBox" style="display:none;margin-top:10px;"></div>
+</div>
+
+<audio id="bg" src="bg.mp3" loop></audio>
+<audio id="ding" src="ding.mp3"></audio>
+<audio id="buzzer" src="buzzer.mp3"></audio>
+<audio id="fanfare" src="fanfare.mp3"></audio>
 
 <script>
-// --- Monetag loader z debugiem ---
-function loadMonetagAd(el, statusEl){
-  const zone = el.getAttribute('data-zone');
-  const s = document.createElement('script');
-  s.src = `https://cdn.monetag.com/${zone}.js`;
-  s.async = true;
-  s.onload = ()=>{ statusEl.textContent = 'Załadowano'; };
-  s.onerror = ()=>{ statusEl.textContent = 'Błąd ładowania'; };
-  document.head.appendChild(s);
-}
+function $(id){ return document.getElementById(id); }
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  loadMonetagAd(document.getElementById('adTop'), document.getElementById('statusTop'));
-  loadMonetagAd(document.getElementById('adBottom'), document.getElementById('statusBottom'));
-  loadMonetagAd(document.getElementById('adMid'), document.getElementById('statusMid'));
-  loadMonetagAd(document.getElementById('adFinal'), document.getElementById('statusFinal'));
-});
+const questionEl=$('question');
+const answersEl=$('answers');
+const progressEl=$('progress');
+const pointsEl=$('points');
 
-// --- Quiz logic (unchanged) ---
-const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
-      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
-const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
+const adTop=$('adTop');
+const adBottom=$('adBottom');
+const adMid=$('adMid');
+const adFinal=$('adFinal');
 
+const finalEl=$('final');
+const finalText=$('finalText');
+
+const bg=$('bg');
+const ding=$('ding');
+const buzzer=$('buzzer');
+const fanfare=$('fanfare');
+</script>
+
+<script>
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
@@ -238,5 +189,14 @@ function fireworkFinal(){ firework(); }
 
 showQuestion();
 </script>
+
+<!-- ⭐⭐ MONETAG POPUNDER (TWOJA WYBRANA REKLAMA) ⭐⭐ -->
+<script>
+(function(s){
+    s.dataset.zone='10304695';
+    s.src='https://al5sm.com/tag.min.js';
+})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+</script>
+
 </body>
 </html>
