@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 <style>
 :root{
@@ -19,6 +18,13 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
+.ad-top,.ad-bottom,.ad-mid,.ad-final{
+  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+}
+.ad-status{
+  position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
+}
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -44,6 +50,7 @@ body{
 .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
 .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
 .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
+.small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
 #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
 #final-card{
   background:linear-gradient(180deg,#081322,#06121f);
@@ -57,12 +64,23 @@ body{
 .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
 .final-actions .btn{font-size:1rem;padding:12px 14px}
 .install-hint { display:none; margin-top:8px; font-size:0.95rem; color:var(--muted); text-align:center; }
+.msg{
+  position:fixed; right:16px; bottom:16px; z-index:1300;
+  background:rgba(0,0,0,0.7); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.95rem;
+  box-shadow:0 8px 30px rgba(0,0,0,0.6);
+  display:none;
+}
+#nickWrap{display:flex;gap:8px;align-items:center}
+#nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
+  <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...
+    <span class="ad-status" id="statusTop">Ładowanie...</span>
+  </div>
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -75,22 +93,37 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
+    <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...
+      <span class="ad-status" id="statusMid">Ładowanie...</span>
+    </div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
+      <div class="small-muted">Miejsca reklamowe gotowe</div>
     </div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...
+    <span class="ad-status" id="statusBottom">Ładowanie...</span>
   </div>
 </div>
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="final-actions" style="margin-top:14px;">
-      <div class="btn big" id="retryBtn">Zagraj ponownie</div>
-      <div class="btn big" id="shareBtn">Poleć quiz</div>
-      <div class="btn big" id="endBtn">Koniec</div>
+    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...
+      <span class="ad-status" id="statusFinal">Ładowanie...</span>
     </div>
+    <div class="final-actions" style="margin-top:14px;">
+      <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
+      <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
+      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
+      <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
+      <div class="install-hint" id="installHint">Aby zainstalować: kliknij „Zapisz na ekranie głównym”</div>
+    </div>
+    <div class="small-muted" style="margin-top:8px">Dziękujemy za grę — wróć jutro i pobij swój wynik!</div>
   </div>
 </div>
+<div class="msg" id="msgBox"></div>
 
 <audio id="bg" loop src="sounds/background.mp3"></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
@@ -98,6 +131,24 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
+// --- Monetag loader ---
+function loadMonetagAd(el, statusEl){
+  const zone = el.getAttribute('data-zone');
+  const s = document.createElement('script');
+  s.src = `https://cdn.monetag.com/${zone}.js`;
+  s.async = true;
+  s.onload = ()=>{ statusEl.textContent = 'Załadowano'; };
+  s.onerror = ()=>{ statusEl.textContent = 'Błąd ładowania'; };
+  document.head.appendChild(s);
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadMonetagAd(document.getElementById('adTop'), document.getElementById('statusTop'));
+  loadMonetagAd(document.getElementById('adBottom'), document.getElementById('statusBottom'));
+  loadMonetagAd(document.getElementById('adMid'), document.getElementById('statusMid'));
+  loadMonetagAd(document.getElementById('adFinal'), document.getElementById('statusFinal'));
+});
+
+// --- Quiz logic ---
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
@@ -119,19 +170,27 @@ let points=0, current=0;
 function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
-const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
-      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text');
-const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
-
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
 function showQuestion(){
-  if(current>=sessionQuestions.length){ finishQuiz(); return; }
+  if(current===7){
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    questionEl.textContent="Oglądaj reklamę, aby kontynuować";
+    answersEl.innerHTML="";
+    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
+    return;
+  }
+  if(current>=sessionQuestions.length){
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
+    questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
+    answersEl.innerHTML="";
+    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
+    return;
+  }
+  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
@@ -141,7 +200,7 @@ function showQuestion(){
     const b=document.createElement('div');
     b.className='btn';
     b.textContent=obj.ans;
-    b.onclick=()=>answer(obj.i, b, idx);
+    b.onclick=()=>answer(obj.i,b,idx);
     answersEl.appendChild(b);
   });
   progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
@@ -149,33 +208,65 @@ function showQuestion(){
 
 function answer(idxAnswer,btn,questionIndex){
   const correct=QUESTIONS[questionIndex].correct;
-  if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); points++; }
+  if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
   else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
   pointsEl.textContent=points;
   current++;
   setTimeout(showQuestion,400);
 }
 
-function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; }
+function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; setTimeout(fireworkFinal,500); }
 
 $('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
-$('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ alert('Link skopiowany do schowka'); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
+$('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
-function firework(){ /* ...pozostałe funkcje animacji... */ }
+let fireworkRunning = false;
+function firework(){ 
+  if(fireworkRunning) return; 
+  fireworkRunning = true; 
+  const canvas=$('fx'), ctx=canvas.getContext('2d'); 
+  canvas.width=window.innerWidth; 
+  canvas.height=window.innerHeight; 
+  const particles=[]; 
+  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
+  const bursts=3+Math.floor(Math.random()*3); 
+  for(let b=0;b<bursts;b++){ 
+    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
+    for(let i=0;i<40;i++){ 
+      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); 
+    } 
+  } 
+  function animate(){ 
+    ctx.fillStyle='rgba(0,0,0,0.1)'; 
+    ctx.fillRect(0,0,canvas.width,canvas.height); 
+    for(let i=particles.length-1;i>=0;i--){ 
+      const p=particles[i]; 
+      ctx.fillStyle=p.color; 
+      ctx.globalAlpha=p.alpha; 
+      ctx.beginPath(); 
+      ctx.arc(p.x,p.y,p.size,0,2*Math.PI); 
+      ctx.fill(); 
+      p.x+=p.vx; 
+      p.y+=p.vy; 
+      p.vy+=0.1; 
+      p.alpha-=0.02; 
+      if(p.alpha<=0) particles.splice(i,1); 
+    } 
+    if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); 
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
+  } 
+  animate(); 
+}
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
+const $=id=>document.getElementById(id);
+const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'), progressEl=$('progress'),
+      finalEl=$('final'), finalText=$('final-text'), adTop=$('adTop'), adBottom=$('adBottom'),
+      adMid=$('adMid'), adFinal=$('adFinal'), bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
+
 showQuestion();
 </script>
-
-<!-- Monetag Popunder -->
-<script>
-(function(s){
-    s.dataset.zone='10304695';
-    s.src='https://al5sm.com/tag.min.js';
-})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-</script>
-
 </body>
 </html>
