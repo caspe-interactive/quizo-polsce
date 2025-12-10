@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 <style>
 :root{
@@ -78,9 +79,12 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...
+
+  <!-- GÓRA -->
+  <div class="ad-top" id="adTop">ładowanie reklamy...
     <span class="ad-status" id="statusTop">Ładowanie...</span>
   </div>
+
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -93,26 +97,36 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...
+
+    <!-- PO 7 PYTANIU -->
+    <div class="ad-mid" id="adMid" style="display:none;">ładowanie reklamy...
       <span class="ad-status" id="statusMid">Ładowanie...</span>
     </div>
+
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Miejsca reklamowe gotowe</div>
     </div>
   </div>
+
   <div style="height:12px"></div>
-  <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...
+
+  <!-- DÓŁ -->
+  <div class="ad-bottom" id="adBottom">ładowanie reklamy...
     <span class="ad-status" id="statusBottom">Ładowanie...</span>
   </div>
 </div>
+
+<!-- PRZED WYNIKIEM -->
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...
+
+    <div class="ad-final" id="adFinal" style="display:none;">ładowanie reklamy...
       <span class="ad-status" id="statusFinal">Ładowanie...</span>
     </div>
+
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -123,6 +137,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div class="small-muted" style="margin-top:8px">Dziękujemy za grę — wróć jutro i pobij swój wynik!</div>
   </div>
 </div>
+
 <div class="msg" id="msgBox"></div>
 
 <audio id="bg" loop src="sounds/background.mp3"></audio>
@@ -131,24 +146,41 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// --- Monetag loader ---
-function loadMonetagAd(el, statusEl){
-  const zone = el.getAttribute('data-zone');
+// --- Reklamy Monetag ---
+function loadMonetag(zone, statusEl){
   const s = document.createElement('script');
-  s.src = `https://cdn.monetag.com/${zone}.js`;
+  s.src = {
+    'adTop': 'https://groleegni.net/vignette.min.js',
+    'adBottom': 'https://gizokraijaw.net/vignette.min.js',
+    'adMid': 'https://al5sm.com/tag.min.js',
+    'adFinal': 'https://al5sm.com/tag.min.js'
+  }[zone];
+  s.dataset.zone = {
+    'adTop':'10306623',
+    'adBottom':'10306648',
+    'adMid':'10306651',
+    'adFinal':'10306655'
+  }[zone];
   s.async = true;
-  s.onload = ()=>{ statusEl.textContent = 'Załadowano'; };
-  s.onerror = ()=>{ statusEl.textContent = 'Błąd ładowania'; };
-  document.head.appendChild(s);
+  s.onload = ()=>{ statusEl.textContent='Załadowano'; };
+  s.onerror = ()=>{ statusEl.textContent='Błąd ładowania'; };
+  document.body.appendChild(s);
 }
-document.addEventListener('DOMContentLoaded', ()=>{
-  loadMonetagAd(document.getElementById('adTop'), document.getElementById('statusTop'));
-  loadMonetagAd(document.getElementById('adBottom'), document.getElementById('statusBottom'));
-  loadMonetagAd(document.getElementById('adMid'), document.getElementById('statusMid'));
-  loadMonetagAd(document.getElementById('adFinal'), document.getElementById('statusFinal'));
+
+document.addEventListener('DOMContentLoaded',()=>{
+  loadMonetag('adTop', document.getElementById('statusTop'));
+  loadMonetag('adBottom', document.getElementById('statusBottom'));
+  loadMonetag('adMid', document.getElementById('statusMid'));
+  loadMonetag('adFinal', document.getElementById('statusFinal'));
 });
 
-// --- Quiz logic ---
+// --- Quiz logic (niezmienione) ---
+const $=id=>document.getElementById(id);
+const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
+      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
+      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
+const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
+
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
@@ -169,6 +201,8 @@ const QUESTIONS=[
 let points=0, current=0;
 function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
+
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
@@ -222,49 +256,9 @@ $('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navi
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
 let fireworkRunning = false;
-function firework(){ 
-  if(fireworkRunning) return; 
-  fireworkRunning = true; 
-  const canvas=$('fx'), ctx=canvas.getContext('2d'); 
-  canvas.width=window.innerWidth; 
-  canvas.height=window.innerHeight; 
-  const particles=[]; 
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
-  const bursts=3+Math.floor(Math.random()*3); 
-  for(let b=0;b<bursts;b++){ 
-    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
-    for(let i=0;i<40;i++){ 
-      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); 
-    } 
-  } 
-  function animate(){ 
-    ctx.fillStyle='rgba(0,0,0,0.1)'; 
-    ctx.fillRect(0,0,canvas.width,canvas.height); 
-    for(let i=particles.length-1;i>=0;i--){ 
-      const p=particles[i]; 
-      ctx.fillStyle=p.color; 
-      ctx.globalAlpha=p.alpha; 
-      ctx.beginPath(); 
-      ctx.arc(p.x,p.y,p.size,0,2*Math.PI); 
-      ctx.fill(); 
-      p.x+=p.vx; 
-      p.y+=p.vy; 
-      p.vy+=0.1; 
-      p.alpha-=0.02; 
-      if(p.alpha<=0) particles.splice(i,1); 
-    } 
-    if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); 
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
-  } 
-  animate(); 
-}
+function firework(){ if(fireworkRunning) return; fireworkRunning = true; const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; const bursts=3+Math.floor(Math.random()*3); for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } } function animate(){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1); } if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } } animate(); }
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
-
-const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'), progressEl=$('progress'),
-      finalEl=$('final'), finalText=$('final-text'), adTop=$('adTop'), adBottom=$('adBottom'),
-      adMid=$('adMid'), adFinal=$('adFinal'), bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 showQuestion();
 </script>
