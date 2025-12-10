@@ -8,33 +8,27 @@
 <meta name="theme-color" content="#051028">
 <style>
 :root{
-  --bg1:#071025;
-  --card:#0b1220;
-  --text:#e6f7ff;
-  --muted:#9fb6d6;
-  --neon1:#00f0ff;
-  --neon2:#ff3fc4;
-  --good:#16d36a;
-  --bad:#ff5c6c;
-  --accent:#ffd27a;
-  --radius:14px;
+  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
+  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
+  --accent:#ffd27a; --radius:14px;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
 body{
   background:linear-gradient(180deg,var(--bg1),#051028 80%);
-  color:var(--text);
-  display:flex;align-items:center;justify-content:center;padding:20px;
+  color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+}
+.ad-status{
+  position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
 }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius);
-  padding:22px;
+  border-radius:var(--radius); padding:22px;
   box-shadow:0 10px 40px rgba(0,0,0,0.6);
   border:1px solid rgba(0,255,255,0.04);
 }
@@ -85,7 +79,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...</div>
+  <div class="ad-top" id="adTop" data-zone="10206851">ładowanie reklamy...
+    <span class="ad-status" id="statusTop">Ładowanie...</span>
+  </div>
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -98,20 +94,26 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...</div>
+    <div class="ad-mid" id="adMid" data-zone="10206858" style="display:none;">ładowanie reklamy...
+      <span class="ad-status" id="statusMid">Ładowanie...</span>
+    </div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Miejsca reklamowe gotowe</div>
     </div>
   </div>
   <div style="height:12px"></div>
-  <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...</div>
+  <div class="ad-bottom" id="adBottom" data-zone="10206862">ładowanie reklamy...
+    <span class="ad-status" id="statusBottom">Ładowanie...</span>
+  </div>
 </div>
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...</div>
+    <div class="ad-final" id="adFinal" data-zone="10211167" style="display:none;">ładowanie reklamy...
+      <span class="ad-status" id="statusFinal">Ładowanie...</span>
+    </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -130,19 +132,25 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// --- Monetag loader ---
-function loadMonetag(){
-  document.querySelectorAll('[data-zone]').forEach(el=>{
-    const zone = el.getAttribute('data-zone');
-    const s = document.createElement('script');
-    s.src = `https://cdn.monetag.com/${zone}.js`;
-    s.async = true;
-    document.head.appendChild(s);
-  });
+// --- Monetag loader z debugiem ---
+function loadMonetagAd(el, statusEl){
+  const zone = el.getAttribute('data-zone');
+  const s = document.createElement('script');
+  s.src = `https://cdn.monetag.com/${zone}.js`;
+  s.async = true;
+  s.onload = ()=>{ statusEl.textContent = 'Załadowano'; };
+  s.onerror = ()=>{ statusEl.textContent = 'Błąd ładowania'; };
+  document.head.appendChild(s);
 }
-document.addEventListener('DOMContentLoaded', loadMonetag);
 
-// --- Quiz logic ---
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadMonetagAd(document.getElementById('adTop'), document.getElementById('statusTop'));
+  loadMonetagAd(document.getElementById('adBottom'), document.getElementById('statusBottom'));
+  loadMonetagAd(document.getElementById('adMid'), document.getElementById('statusMid'));
+  loadMonetagAd(document.getElementById('adFinal'), document.getElementById('statusFinal'));
+});
+
+// --- Quiz logic (unchanged) ---
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
