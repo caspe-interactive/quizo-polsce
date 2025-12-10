@@ -87,7 +87,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <canvas id="fx"></canvas>
 
 <div class="page">
-  <div class="ad-top" id="adTop" data-zone="3126911">ładowanie reklamy...</div>
+  <div class="ad-top" id="adTop" data-zone="10302772">ładowanie reklamy...</div>
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -102,7 +102,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <div class="ad-mid" id="adMid" data-zone="3126911" style="display:none;">ładowanie reklamy...</div>
+    <div class="ad-mid" id="adMid" data-zone="10302809" style="display:none;">ładowanie reklamy...</div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Miejsca reklamowe gotowe</div>
@@ -110,14 +110,14 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   </div>
 
   <div style="height:12px"></div>
-  <div class="ad-bottom" id="adBottom" data-zone="3126911">ładowanie reklamy...</div>
+  <div class="ad-bottom" id="adBottom" data-zone="10302772">ładowanie reklamy...</div>
 </div>
 
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal" data-zone="3126911" style="display:none;">ładowanie reklamy...</div>
+    <div class="ad-final" id="adFinal" data-zone="10302772" style="display:none;">ładowanie reklamy...</div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -137,7 +137,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// --- Wstrzyknięcie reklam Monetag ---
+// --- Wstrzyknięcie reklam PopAds ---
 function loadAdScriptOnce(url,id){
   if(document.getElementById(id)) return;
   const s=document.createElement('script'); s.src=url; s.async=true; s.id=id;
