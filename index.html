@@ -5,46 +5,74 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#071025;color:#fff;display:flex;justify-content:center;padding:20px;}
-.page{width:100%;max-width:920px;}
-.card{background:#0b1220;padding:20px;border-radius:14px;}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-.btn{padding:12px;border-radius:12px;cursor:pointer;background:linear-gradient(90deg,#00f0ff,#ff3fc4);color:#fff;font-weight:800;}
+body{margin:0;font-family:Inter,system-ui,Roboto,Arial;background:#051028;color:#e6f7ff;display:flex;justify-content:center;padding:20px;}
+.page{max-width:920px;width:100%;}
+.ad-top,.ad-bottom,.ad-mid,.ad-final{background:#000;color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border-radius:12px;padding:8px;text-align:center;}
+.ad-mid,.ad-final{position:fixed;inset:0;z-index:1000;display:none;flex-direction:column;justify-content:center;}
+.card{background:#0b1220;border-radius:14px;padding:22px;box-shadow:0 10px 40px rgba(0,0,0,0.6);border:1px solid rgba(0,255,255,0.04);}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:700px){.answers{grid-template-columns:1fr}}
+.btn{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;font-weight:800;color:white;font-size:0.98rem;min-height:52px;background:linear-gradient(90deg,#00f0ff,#ff3fc4);border:1px solid rgba(255,255,255,0.02);}
 .btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0);}
 .btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94);}
-.ad-banner{background:#000;color:#fff;text-align:center;margin:10px 0;padding:8px;border-radius:12px;}
-#adFullscreen{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9999;color:#fff;font-size:1.5rem;}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.85);z-index:1200;}
+#final-card{background:#081322;padding:30px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,0.7);text-align:center;color:#e6f7ff;max-width:580px;width:94%;}
+#final-text{font-size:2.2rem;font-weight:800;color:#ffd27a;margin:16px 0;}
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="ad-banner" id="adTop">Ładowanie reklamy (góra)...</div>
+  <!-- GÓRA -->
+  <div class="ad-top" id="adTop">Ładowanie reklamy...</div>
 
-  <div class="card">
-    <div id="question">Ładowanie pytania...</div>
+  <div class="card" id="quizCard">
+    <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div id="progress" style="margin-top:10px;">Pytanie 0/0</div>
   </div>
 
-  <div class="ad-banner" id="adBottom">Ładowanie reklamy (dół)...</div>
+  <!-- DÓŁ -->
+  <div class="ad-bottom" id="adBottom">Ładowanie reklamy...</div>
 </div>
 
-<div id="adFullscreen">Reklama pełnoekranowa...</div>
+<!-- PO 7 PYTANIU -->
+<div class="ad-mid" id="adMid">Oglądaj reklamę, aby kontynuować</div>
+
+<!-- PRZED WYNIKIEM -->
+<div id="final" aria-hidden="true">
+  <div id="final-card">
+    <h1>Twój wynik</h1>
+    <div id="final-text">0 pkt</div>
+    <div class="ad-final" id="adFinal">Oglądaj reklamę, aby zobaczyć wynik</div>
+    <div class="btn" id="retryBtn">Zagraj ponownie</div>
+  </div>
+</div>
 
 <script>
-// --- Quiz ---
-const $ = id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), progressEl=$('progress');
-const adTop=$('adTop'), adBottom=$('adBottom'), adFullscreen=$('adFullscreen');
+// --- MonetaGads ---
+function loadAd(el, zone, src){
+  const s=document.createElement('script');
+  s.dataset.zone=zone; s.src=src; s.async=true;
+  el.appendChild(s);
+}
 
+// Góra
+loadAd(document.getElementById('adTop'),'10306623','https://groleegni.net/vignette.min.js');
+// Dół
+loadAd(document.getElementById('adBottom'),'10306648','https://gizokraijaw.net/vignette.min.js');
+// Po 7 pytaniu
+loadAd(document.getElementById('adMid'),'10306651','https://al5sm.com/tag.min.js');
+// Przed wynikiem
+loadAd(document.getElementById('adFinal'),'10306655','https://al5sm.com/tag.min.js');
+
+// --- Quiz ---
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
   { q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
   { q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
-  { q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:0 },
+  { q:"Polski skoczek narciarski z medalami olimpijskimi?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:0 },
   { q:"Największe miasto woj. mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
-  { q:"Najważniejszy polski noblista w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
+  { q:"Najważniejszy polski noblista w chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
   { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
   { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
   { q:"W którym roku Polska odzyskała niepodległość?", a:["1918","1945","1914","1939"], correct:0 },
@@ -54,72 +82,49 @@ const QUESTIONS=[
   { q:"Polski król zwany „Lwem Lechistanu”?", a:["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct:0 }
 ];
 
-let current=0, points=0;
-
+let points=0, current=0;
 function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-function showQuestion(){
-  if(current===7){ showFullscreenAd(()=>{ current++; showQuestion(); }); return; }
-  if(current>=sessionQuestions.length){ showFullscreenAd(()=>{ alert("Twój wynik: "+points+" pkt"); current=0; points=0; sessionQuestions=getRandomSession(); showQuestion(); }); return; }
+const questionEl=document.getElementById('question'), answersEl=document.getElementById('answers');
+const adTop=document.getElementById('adTop'), adBottom=document.getElementById('adBottom');
+const adMid=document.getElementById('adMid'), adFinal=document.getElementById('adFinal');
+const finalEl=document.getElementById('final'), finalText=document.getElementById('final-text');
 
-  adTop.style.display='block';
-  adBottom.style.display='block';
-  const idx=sessionQuestions[current];
-  const q=QUESTIONS[idx];
-  questionEl.textContent=q.q;
-  answersEl.innerHTML='';
+function showQuestion(){
+  if(current===7){
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    answersEl.innerHTML=''; questionEl.textContent='';
+    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
+    return;
+  }
+  if(current>=sessionQuestions.length){
+    adTop.style.display='none'; adBottom.style.display='none'; adFinal.style.display='flex';
+    answersEl.innerHTML=''; questionEl.textContent='';
+    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
+    return;
+  }
+
+  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+
+  const idx=sessionQuestions[current]; const q=QUESTIONS[idx];
+  questionEl.textContent=q.q; answersEl.innerHTML='';
   const shuffled=q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
   shuffled.forEach(obj=>{
-    const b=document.createElement('div');
-    b.className='btn';
-    b.textContent=obj.ans;
-    b.onclick=()=>answer(obj.i,obj,idx);
-    answersEl.appendChild(b);
+    const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans;
+    b.onclick=()=>answer(obj.i, obj.i===q.correct); answersEl.appendChild(b);
   });
-  progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
-function answer(idx,btn,questionIndex){
-  const correct=QUESTIONS[questionIndex].correct;
-  if(idx===correct){ points++; btn.classList.add('good'); }
-  else{ btn.classList.add('bad'); }
+function answer(idx,isCorrect){
+  if(isCorrect) points++;
   current++;
-  setTimeout(showQuestion,300);
+  showQuestion();
 }
 
-function showFullscreenAd(callback){
-  adTop.style.display='none';
-  adBottom.style.display='none';
-  adFullscreen.style.display='flex';
-  adFullscreen.textContent="Ładowanie reklamy pełnoekranowej...";
-  // wstaw tutaj swój kod Monetag pełnoekranowy:
-  const s=document.createElement('script');
-  s.dataset.zone = current===7?'10306651':'10306655';
-  s.src = 'https://al5sm.com/tag.min.js';
-  s.onload = ()=>{ setTimeout(()=>{ adFullscreen.style.display='none'; callback(); },15000); };
-  document.body.appendChild(s);
-}
+document.getElementById('retryBtn').onclick=()=>{ points=0; current=0; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 
 showQuestion();
-
-// --- Banners ---
-(function loadBanner(zone,el){
-  const s=document.createElement('script');
-  s.dataset.zone=zone;
-  s.src='https://groleegni.net/vignette.min.js';
-  s.async=true;
-  el.appendChild(s);
-})('10306623',adTop);
-
-(function loadBanner(zone,el){
-  const s=document.createElement('script');
-  s.dataset.zone=zone;
-  s.src='https://gizokraijaw.net/vignette.min.js';
-  s.async=true;
-  el.appendChild(s);
-})('10306648',adBottom);
-
 </script>
 </body>
 </html>
