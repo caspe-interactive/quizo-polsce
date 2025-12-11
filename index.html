@@ -79,9 +79,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-
-  <!-- GÓRA -->
-  <div class="ad-top" id="adTop">ładowanie reklamy...
+  <div class="ad-top" id="adTop" data-zone="10306623">Ładowanie reklamy...
     <span class="ad-status" id="statusTop">Ładowanie...</span>
   </div>
 
@@ -95,11 +93,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
       </div>
       <div class="score">Punkty: <span id="points">0</span></div>
     </div>
+
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <!-- PO 7 PYTANIU -->
-    <div class="ad-mid" id="adMid" style="display:none;">ładowanie reklamy...
+    <div class="ad-mid" id="adMid" data-zone="10306651" style="display:none;">Ładowanie reklamy...
       <span class="ad-status" id="statusMid">Ładowanie...</span>
     </div>
 
@@ -111,22 +109,18 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
   <div style="height:12px"></div>
 
-  <!-- DÓŁ -->
-  <div class="ad-bottom" id="adBottom">ładowanie reklamy...
+  <div class="ad-bottom" id="adBottom" data-zone="10306648">Ładowanie reklamy...
     <span class="ad-status" id="statusBottom">Ładowanie...</span>
   </div>
 </div>
 
-<!-- PRZED WYNIKIEM -->
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-
-    <div class="ad-final" id="adFinal" style="display:none;">ładowanie reklamy...
+    <div class="ad-final" id="adFinal" data-zone="10306655" style="display:none;">Ładowanie reklamy...
       <span class="ad-status" id="statusFinal">Ładowanie...</span>
     </div>
-
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -146,35 +140,25 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// --- Reklamy Monetag ---
-function loadMonetag(zone, statusEl){
+// --- Monetag loader ---
+function loadMonetagAd(el, statusEl){
+  const zone = el.getAttribute('data-zone');
   const s = document.createElement('script');
-  s.src = {
-    'adTop': 'https://groleegni.net/vignette.min.js',
-    'adBottom': 'https://gizokraijaw.net/vignette.min.js',
-    'adMid': 'https://al5sm.com/tag.min.js',
-    'adFinal': 'https://al5sm.com/tag.min.js'
-  }[zone];
-  s.dataset.zone = {
-    'adTop':'10306623',
-    'adBottom':'10306648',
-    'adMid':'10306651',
-    'adFinal':'10306655'
-  }[zone];
+  s.src = `https://cdn.monetag.com/${zone}.js`;
   s.async = true;
-  s.onload = ()=>{ statusEl.textContent='Załadowano'; };
-  s.onerror = ()=>{ statusEl.textContent='Błąd ładowania'; };
-  document.body.appendChild(s);
+  s.onload = ()=>{ statusEl.textContent = 'Załadowano'; };
+  s.onerror = ()=>{ statusEl.textContent = 'Błąd ładowania'; };
+  document.head.appendChild(s);
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  loadMonetag('adTop', document.getElementById('statusTop'));
-  loadMonetag('adBottom', document.getElementById('statusBottom'));
-  loadMonetag('adMid', document.getElementById('statusMid'));
-  loadMonetag('adFinal', document.getElementById('statusFinal'));
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadMonetagAd(document.getElementById('adTop'), document.getElementById('statusTop'));
+  loadMonetagAd(document.getElementById('adBottom'), document.getElementById('statusBottom'));
+  loadMonetagAd(document.getElementById('adMid'), document.getElementById('statusMid'));
+  loadMonetagAd(document.getElementById('adFinal'), document.getElementById('statusFinal'));
 });
 
-// --- Quiz logic (niezmienione) ---
+// --- Quiz logic ---
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
@@ -210,20 +194,27 @@ document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); pla
 
 function showQuestion(){
   if(current===7){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    adTop.style.display='none';
+    adBottom.style.display='none';
+    adMid.style.display='flex'; // reklama po 7 pytaniu
     questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
     return;
   }
   if(current>=sessionQuestions.length){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
+    adTop.style.display='none';
+    adBottom.style.display='none';
+    adFinal.style.display='flex'; // reklama przed wynikiem
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
-  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+  adTop.style.display='flex';
+  adBottom.style.display='flex';
+  adMid.style.display='none';
+  adFinal.style.display='none';
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
