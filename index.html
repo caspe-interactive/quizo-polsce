@@ -19,39 +19,13 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-
-/* Góra i dół */
-.ad-top, .ad-bottom {
-  width: 100%;
-  max-width: 920px;
-  margin: 12px auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 120px;
-  border-radius: 12px;
-  position: relative;
+.ad-top,.ad-bottom,.ad-mid,.ad-final{
+  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
 }
-
-/* Po 7 pytaniu i przed wynikiem */
-.ad-mid, .ad-final {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.85);
-  z-index: 1200;
-  border-radius: 14px;
-  padding: 16px;
-  max-width: 600px;
-  margin: auto;
-}
-
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
 }
-
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -109,12 +83,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- GÓRA -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
-    <script>
-      (function(s){
-        s.dataset.zone='10310895';
-        s.src='https://nap5k.com/tag.min.js';
-      })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-    </script>
+    <script>(function(s){s.dataset.zone='10310895',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
   </div>
 
   <div class="card" id="quizCard">
@@ -131,14 +100,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="answers" class="answers"></div>
 
     <!-- PO 7 PYTANIU -->
-    <div class="ad-mid" id="adMid">
+    <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
-      <script>
-        (function(s){
-          s.dataset.zone='10310897';
-          s.src='https://nap5k.com/tag.min.js';
-        })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-      </script>
+      <script>(function(s){s.dataset.zone='10310933',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     </div>
 
     <div class="meta">
@@ -150,30 +114,19 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- DÓŁ -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
-    <script>
-      (function(s){
-        s.dataset.zone='10310917';
-        s.src='https://nap5k.com/tag.min.js';
-      })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-    </script>
+    <script>(function(s){s.dataset.zone='10310917',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
   </div>
 </div>
 
 <!-- PRZED WYNIKIEM -->
-<div class="ad-final" id="adFinal">
-  <span class="ad-status">Ładowanie reklamy...</span>
-  <script>
-    (function(s){
-      s.dataset.zone='10310919';
-      s.src='https://nap5k.com/tag.min.js';
-    })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-  </script>
-</div>
-
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
+    <div class="ad-final" id="adFinal">
+      <span class="ad-status">Ładowanie reklamy...</span>
+      <script>(function(s){s.dataset.zone='10310949',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -193,7 +146,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// --- Quiz logic ---
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
@@ -222,35 +174,26 @@ function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.
 let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
 function showQuestion(){
   if(current===7){
-    adTop.style.display='none';
-    adBottom.style.display='none';
-    adMid.style.display='flex';
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
     return;
   }
   if(current>=sessionQuestions.length){
-    adTop.style.display='none';
-    adBottom.style.display='none';
-    adMid.style.display='none';
-    adFinal.style.display='flex';
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
-  adTop.style.display='flex';
-  adBottom.style.display='flex';
-  adMid.style.display='none';
-  adFinal.style.display='none';
+  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
