@@ -175,15 +175,11 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Adsterra Banner reklamy ---
-(function(){ const s=document.createElement('script'); s.type='text/javascript';
-  s.textContent = "atOptions = { key : '658ba2a4699a4eec2950eda582a40b1c', format : 'iframe', height : 250, width : 300, params : {} };";
-  document.head.appendChild(s);
-})();
-(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adTop.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adBottom.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adMid.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adFinal.appendChild(s); })();
+// --- Monetag Banner strefy ---
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310895'; s.src='https://nap5k.com/tag.min.js'; adTop.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310917'; s.src='https://nap5k.com/tag.min.js'; adBottom.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310945'; s.src='https://nap5k.com/tag.min.js'; adMid.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310963'; s.src='https://nap5k.com/tag.min.js'; adFinal.appendChild(s); })();
 
 // --- Quiz logic ---
 function showQuestion(){
@@ -240,16 +236,16 @@ function fireworkFinal(){ firework(); }
 
 showQuestion();
 
-// --- ZAPISZ NA EKRANIE GŁÓWNYM ---
+// --- Instalacja PWA na ekranie ---
+const saveBtn=$('saveBtn');
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt=e; });
-$('saveBtn').addEventListener('click', async ()=>{
-  if(deferredPrompt){ deferredPrompt.prompt(); const choice=await deferredPrompt.userChoice;
-    if(choice.outcome==='accepted'){ alert('Quiz został dodany na ekran główny!'); } 
-    else{ alert('Nie dodano quizu na ekran główny.'); }
-    deferredPrompt=null;
-  } else{ alert('Kliknij "Dodaj do ekranu głównego" w menu przeglądarki.'); }
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault(); deferredPrompt=e; saveBtn.style.display='block';
 });
+saveBtn.onclick=()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; }); }
+};
+
 </script>
 </body>
 </html>
