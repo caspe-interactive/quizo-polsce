@@ -21,7 +21,7 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+  border-radius:12px; padding:8px; text-align:center; height:50px; position:relative;
 }
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
@@ -80,19 +80,19 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <canvas id="fx"></canvas>
 <div class="page">
 
-  <!-- GÓRA: Banner 300x250 -->
+  <!-- GÓRA -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
     <script type="text/javascript">
       atOptions = {
-        'key' : '658ba2a4699a4eec2950eda582a40b1c',
+        'key' : '95672441c96a976671d1673abb11161b',
         'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
+        'height' : 50,
+        'width' : 320,
         'params' : {}
       };
     </script>
-    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/95672441c96a976671d1673abb11161b/invoke.js"></script>
   </div>
 
   <div class="card" id="quizCard">
@@ -108,10 +108,19 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <!-- PO 7 PYTANIU: Popunder -->
+    <!-- PO 7 PYTANIU -->
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
-      <script src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js"></script>
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '95672441c96a976671d1673abb11161b',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/95672441c96a976671d1673abb11161b/invoke.js"></script>
     </div>
 
     <div class="meta">
@@ -120,21 +129,39 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
   </div>
 
-  <!-- DÓŁ: Popunder -->
+  <!-- DÓŁ -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
-    <script src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js"></script>
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '95672441c96a976671d1673abb11161b',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/95672441c96a976671d1673abb11161b/invoke.js"></script>
   </div>
 </div>
 
-<!-- PRZED WYNIKIEM: Popunder -->
+<!-- PRZED WYNIKIEM -->
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
     <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
-      <script src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js"></script>
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '95672441c96a976671d1673abb11161b',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/95672441c96a976671d1673abb11161b/invoke.js"></script>
     </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
@@ -155,7 +182,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// --- Quiz logic, audio i firework pozostaje bez zmian ---
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
@@ -189,7 +215,6 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Quiz logic ---
 function showQuestion(){
   if(current===7){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
