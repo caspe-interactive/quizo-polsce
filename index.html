@@ -21,7 +21,7 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; position:relative;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
 }
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
@@ -37,13 +37,7 @@ body{
 .score{display:none;color:var(--accent)}
 .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ 
-  .answers{grid-template-columns:1fr} 
-  .question{font-size:1.08rem} 
-  .ad-top,.ad-bottom,.ad-mid,.ad-final{
-    height:50px; padding:4px;
-  }
-}
+@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
@@ -86,9 +80,19 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <canvas id="fx"></canvas>
 <div class="page">
 
-  <!-- GÓRA -->
+  <!-- GÓRA: Banner 300x250 -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '658ba2a4699a4eec2950eda582a40b1c',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 
   <div class="card" id="quizCard">
@@ -104,9 +108,10 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <!-- PO 7 PYTANIU -->
+    <!-- PO 7 PYTANIU: Popunder -->
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
+      <script src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js"></script>
     </div>
 
     <div class="meta">
@@ -115,19 +120,21 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
   </div>
 
-  <!-- DÓŁ -->
+  <!-- DÓŁ: Popunder -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <script src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js"></script>
   </div>
 </div>
 
-<!-- PRZED WYNIKIEM -->
+<!-- PRZED WYNIKIEM: Popunder -->
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
     <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
+      <script src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js"></script>
     </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
@@ -148,6 +155,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
+// --- Quiz logic, audio i firework pozostaje bez zmian ---
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
@@ -180,31 +188,6 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
-
-// --- Adsterra banners mobile-friendly ---
-function createAd(el, key){
-  const s=document.createElement('script');
-  s.type='text/javascript';
-  s.dataset.key=key;
-  s.dataset.format='iframe';
-  s.dataset.height=window.innerWidth<=700?'50':'120';
-  s.dataset.width=window.innerWidth<=700?'320':'300';
-  s.src='https://www.highperformanceformat.com/invoke.js';
-  el.appendChild(s);
-}
-
-createAd(adTop,'AD_TOP_KEY');
-createAd(adBottom,'AD_BOTTOM_KEY');
-createAd(adMid,'AD_MID_KEY');
-createAd(adFinal,'AD_FINAL_KEY');
-
-window.addEventListener('resize',()=>{
-  [adTop,adBottom,adMid,adFinal].forEach(el=>el.innerHTML='');
-  createAd(adTop,'AD_TOP_KEY');
-  createAd(adBottom,'AD_BOTTOM_KEY');
-  createAd(adMid,'AD_MID_KEY');
-  createAd(adFinal,'AD_FINAL_KEY');
-});
 
 // --- Quiz logic ---
 function showQuestion(){
