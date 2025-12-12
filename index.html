@@ -170,22 +170,20 @@ function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.
 let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
+document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Wstawienie reklam Adsterra ---
-function loadAd(container, src){
-  const s=document.createElement('script');
-  s.src=src;
-  container.innerHTML=''; // wyczyść container
-  container.appendChild(s);
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  loadAd(adTop, "https://pl28244034.effectivegatecpm.com/3d/9e/1b/3d9e1b3db14931e69e82cfc9681951a4.js");
-  loadAd(adBottom, "https://pl28244034.effectivegatecpm.com/3d/9e/1b/3d9e1b3db14931e69e82cfc9681951a4.js");
-  loadAd(adMid, "https://pl28244034.effectivegatecpm.com/3d/9e/1b/3d9e1b3db14931e69e82cfc9681951a4.js");
-  loadAd(adFinal, "https://pl28244034.effectivegatecpm.com/3d/9e/1b/3d9e1b3db14931e69e82cfc9681951a4.js");
-});
+// --- Adsterra Banner reklamy ---
+(function(){ const s=document.createElement('script'); s.type='text/javascript';
+  s.textContent = "atOptions = { key : '658ba2a4699a4eec2950eda582a40b1c', format : 'iframe', height : 250, width : 300, params : {} };";
+  document.head.appendChild(s);
+})();
+(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adTop.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adBottom.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adMid.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; adFinal.appendChild(s); })();
 
 // --- Quiz logic ---
 function showQuestion(){
@@ -242,11 +240,16 @@ function fireworkFinal(){ firework(); }
 
 showQuestion();
 
-// --- PWA Save to Home Screen ---
-$('saveBtn').onclick = ()=>{
-  if(window.matchMedia('(display-mode: standalone)').matches){ alert('Już zapisane!'); return; }
-  alert('Kliknij Dodaj do ekranu głównego w przeglądarce aby zapisać quiz.');
-};
+// --- ZAPISZ NA EKRANIE GŁÓWNYM ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt=e; });
+$('saveBtn').addEventListener('click', async ()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); const choice=await deferredPrompt.userChoice;
+    if(choice.outcome==='accepted'){ alert('Quiz został dodany na ekran główny!'); } 
+    else{ alert('Nie dodano quizu na ekran główny.'); }
+    deferredPrompt=null;
+  } else{ alert('Kliknij "Dodaj do ekranu głównego" w menu przeglądarki.'); }
+});
 </script>
 </body>
 </html>
