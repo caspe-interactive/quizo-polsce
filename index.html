@@ -21,7 +21,7 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+  border-radius:12px; padding:8px; text-align:center; height:auto; position:relative;
 }
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
@@ -148,6 +148,30 @@ const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
+// --- Banner Adsterra dynamiczny ---
+let adBanner;
+function loadBanner(parent){
+  // usuń poprzedni jeśli istnieje
+  if(adBanner && adBanner.parentNode) adBanner.parentNode.removeChild(adBanner);
+  // stwórz nowy banner
+  const s1=document.createElement('script');
+  s1.type='text/javascript';
+  s1.text=`atOptions = {
+    'key' : '95672441c96a976671d1673abb11161b',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };`;
+  const s2=document.createElement('script');
+  s2.type='text/javascript';
+  s2.src='https://www.highperformanceformat.com/95672441c96a976671d1673abb11161b/invoke.js';
+  parent.appendChild(s1);
+  parent.appendChild(s2);
+  adBanner = s2; // referencja do dynamicznego banneru
+}
+
+// --- Pytania quizu ---
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
@@ -170,21 +194,14 @@ function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.
 let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
 function playAudio(audio){ audio.play().catch(()=>{}); }
-document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
+document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); loadBanner(adTop); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Monetag Banner strefy ---
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310895'; s.src='https://nap5k.com/tag.min.js'; adTop.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310917'; s.src='https://nap5k.com/tag.min.js'; adBottom.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310945'; s.src='https://nap5k.com/tag.min.js'; adMid.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310963'; s.src='https://nap5k.com/tag.min.js'; adFinal.appendChild(s); })();
-
-// --- Quiz logic ---
 function showQuestion(){
   if(current===7){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    loadBanner(adMid);
     questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
@@ -192,13 +209,13 @@ function showQuestion(){
   }
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
+    loadBanner(adFinal);
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
   adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
-
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
