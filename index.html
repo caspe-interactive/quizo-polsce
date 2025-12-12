@@ -21,7 +21,7 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+  border-radius:12px; padding:8px; text-align:center; position:relative;
 }
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
@@ -37,7 +37,13 @@ body{
 .score{display:none;color:var(--accent)}
 .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
+@media(max-width:700px){ 
+  .answers{grid-template-columns:1fr} 
+  .question{font-size:1.08rem} 
+  .ad-top,.ad-bottom,.ad-mid,.ad-final{
+    height:50px; padding:4px;
+  }
+}
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
@@ -170,51 +176,35 @@ function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.
 let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Adsterra banners ---
-(function(){
+// --- Adsterra banners mobile-friendly ---
+function createAd(el, key){
   const s=document.createElement('script');
   s.type='text/javascript';
-  s.dataset.key='AD_TOP_KEY';   // Wstaw swój key górny
+  s.dataset.key=key;
   s.dataset.format='iframe';
-  s.dataset.height='50';
-  s.dataset.width='320';
+  s.dataset.height=window.innerWidth<=700?'50':'120';
+  s.dataset.width=window.innerWidth<=700?'320':'300';
   s.src='https://www.highperformanceformat.com/invoke.js';
-  adTop.appendChild(s);
-})();
-(function(){
-  const s=document.createElement('script');
-  s.type='text/javascript';
-  s.dataset.key='AD_BOTTOM_KEY'; // Wstaw key dolny
-  s.dataset.format='iframe';
-  s.dataset.height='50';
-  s.dataset.width='320';
-  s.src='https://www.highperformanceformat.com/invoke.js';
-  adBottom.appendChild(s);
-})();
-(function(){
-  const s=document.createElement('script');
-  s.type='text/javascript';
-  s.dataset.key='AD_MID_KEY'; // Wstaw key po 7 pytaniu
-  s.dataset.format='iframe';
-  s.dataset.height='50';
-  s.dataset.width='320';
-  s.src='https://www.highperformanceformat.com/invoke.js';
-  adMid.appendChild(s);
-})();
-(function(){
-  const s=document.createElement('script');
-  s.type='text/javascript';
-  s.dataset.key='AD_FINAL_KEY'; // Wstaw key przed wynikiem
-  s.dataset.format='iframe';
-  s.dataset.height='50';
-  s.dataset.width='320';
-  s.src='https://www.highperformanceformat.com/invoke.js';
-  adFinal.appendChild(s);
-})();
+  el.appendChild(s);
+}
+
+createAd(adTop,'AD_TOP_KEY');
+createAd(adBottom,'AD_BOTTOM_KEY');
+createAd(adMid,'AD_MID_KEY');
+createAd(adFinal,'AD_FINAL_KEY');
+
+window.addEventListener('resize',()=>{
+  [adTop,adBottom,adMid,adFinal].forEach(el=>el.innerHTML='');
+  createAd(adTop,'AD_TOP_KEY');
+  createAd(adBottom,'AD_BOTTOM_KEY');
+  createAd(adMid,'AD_MID_KEY');
+  createAd(adFinal,'AD_FINAL_KEY');
+});
 
 // --- Quiz logic ---
 function showQuestion(){
