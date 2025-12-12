@@ -83,6 +83,17 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- GÓRA -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <!-- Banner Ad -->
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '658ba2a4699a4eec2950eda582a40b1c',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 
   <div class="card" id="quizCard">
@@ -101,6 +112,17 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <!-- PO 7 PYTANIU -->
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
+      <!-- Banner Ad -->
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '658ba2a4699a4eec2950eda582a40b1c',
+          'format' : 'iframe',
+          'height' : 250,
+          'width' : 300,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
     </div>
 
     <div class="meta">
@@ -112,6 +134,17 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- DÓŁ -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <!-- Banner Ad -->
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '658ba2a4699a4eec2950eda582a40b1c',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 </div>
 
@@ -122,6 +155,17 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="final-text">0 pkt</div>
     <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
+      <!-- Banner Ad -->
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '658ba2a4699a4eec2950eda582a40b1c',
+          'format' : 'iframe',
+          'height' : 250,
+          'width' : 300,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
     </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
@@ -175,11 +219,14 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Monetag / Adsterra banners ---
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310895'; s.src='https://nap5k.com/tag.min.js'; adTop.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310917'; s.src='https://nap5k.com/tag.min.js'; adBottom.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310945'; s.src='https://nap5k.com/tag.min.js'; adMid.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310963'; s.src='https://nap5k.com/tag.min.js'; adFinal.appendChild(s); })();
+// --- Popunder ---
+function openPopunder(url){
+  try {
+    let pop = window.open(url,'_blank','width=1,height=1,top=0,left=0');
+    if(pop) pop.blur();
+    window.focus();
+  } catch(e){ console.log('Popunder blocked'); }
+}
 
 // --- Quiz logic ---
 function showQuestion(){
@@ -187,6 +234,9 @@ function showQuestion(){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
+
+    openPopunder('https://twoj_popunder_link_adsterra.com'); // <- tu wstaw link popundera
+
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
     return;
   }
@@ -194,6 +244,9 @@ function showQuestion(){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
+
+    openPopunder('https://twoj_popunder_link_adsterra.com'); // <- tu wstaw link popundera
+
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
