@@ -21,12 +21,11 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; width:100%;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+  width:100%;
 }
-.ad-top iframe, .ad-bottom iframe, .ad-mid iframe, .ad-final iframe {
-  width:100% !important;
-  height:100% !important;
-  position:relative !important;
+.ad-top iframe,.ad-bottom iframe,.ad-mid iframe,.ad-final iframe{
+  width:100%; height:100%; border:none;
 }
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
@@ -88,6 +87,10 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- GÓRA -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <script type="text/javascript">
+      atOptions = { 'key' : '658ba2a4699a4eec2950eda582a40b1c', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+    </script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 
   <div class="card" id="quizCard">
@@ -106,6 +109,10 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <!-- PO 7 PYTANIU -->
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
+      <script type="text/javascript">
+        atOptions = { 'key' : '658ba2a4699a4eec2950eda582a40b1c', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
     </div>
 
     <div class="meta">
@@ -117,6 +124,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- DÓŁ -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <script src="https://pl28244034.effectivegatecpm.com/3d/9e/1b/3d9e1b3db14931e69e82cfc9681951a4.js"></script>
   </div>
 </div>
 
@@ -127,11 +135,15 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="final-text">0 pkt</div>
     <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
+      <script type="text/javascript">
+        atOptions = { 'key' : '658ba2a4699a4eec2950eda582a40b1c', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
     </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
-      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322; display:none;">📲 Zapisz na ekranie głównym</div>
+      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
       <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
       <div class="install-hint" id="installHint">Aby zainstalować: kliknij „Zapisz na ekranie głównym”</div>
     </div>
@@ -175,16 +187,9 @@ function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.
 let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
-
-// --- Ads: Banner iframe top/bottom/mid/final ---
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310895'; s.src='https://nap5k.com/tag.min.js'; adTop.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310917'; s.src='https://nap5k.com/tag.min.js'; adBottom.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310945'; s.src='https://nap5k.com/tag.min.js'; adMid.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310963'; s.src='https://nap5k.com/tag.min.js'; adFinal.appendChild(s); })();
 
 // --- Quiz logic ---
 function showQuestion(){
@@ -233,49 +238,10 @@ function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.disp
 $('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 $('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
-
-// --- PWA: Save to home screen ---
-let deferredPrompt;
-const saveBtn = $('saveBtn');
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredPrompt = e;
-  saveBtn.style.display = 'flex';
-});
-saveBtn.addEventListener('click', async ()=>{
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const {outcome} = await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  saveBtn.style.display = 'none';
-});
+$('saveBtn').onclick = ()=>{ alert('Funkcja zapisu na ekranie wymaga PWA i manifest.json'); };
 
 let fireworkRunning = false;
-function firework(){ 
-  if(fireworkRunning) return; 
-  fireworkRunning = true; 
-  const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
-  const particles=[]; 
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
-  const bursts=3+Math.floor(Math.random()*3); 
-  for(let b=0;b<bursts;b++){ 
-    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
-    for(let i=0;i<40;i++){ 
-      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); 
-    } 
-  } 
-  function animate(){ 
-    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
-    for(let i=particles.length-1;i>=0;i--){ 
-      const p=particles[i]; 
-      ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
-      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
-      if(p.alpha<=0) particles.splice(i,1); 
-    } 
-    if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); 
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
-  } animate(); 
-}
+function firework(){ if(fireworkRunning) return; fireworkRunning = true; const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; const bursts=3+Math.floor(Math.random()*3); for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } } function animate(){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1); } if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } } animate(); }
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
