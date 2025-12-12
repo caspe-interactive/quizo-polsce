@@ -83,17 +83,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- GÓRA -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
-    <!-- Adsterra iframe -->
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '658ba2a4699a4eec2950eda582a40b1c',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 
   <div class="card" id="quizCard">
@@ -112,8 +101,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <!-- PO 7 PYTANIU -->
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
-      <!-- SocialBar Ad -->
-      <script type="text/javascript" src="https://pl28244034.effectivegatecpm.com/3d/9e/1b/3d9e1b3db14931e69e82cfc9681951a4.js"></script>
     </div>
 
     <div class="meta">
@@ -125,17 +112,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- DÓŁ -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
-    <!-- Adsterra iframe -->
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '658ba2a4699a4eec2950eda582a40b1c',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 </div>
 
@@ -146,8 +122,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="final-text">0 pkt</div>
     <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
-      <!-- SocialBar Ad -->
-      <script type="text/javascript" src="https://pl28244034.effectivegatecpm.com/3d/9e/1b/3d9e1b3db14931e69e82cfc9681951a4.js"></script>
     </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
@@ -201,6 +175,20 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
+// --- Banner/iframe Ads ---
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310895'; s.src='https://nap5k.com/tag.min.js'; adTop.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310917'; s.src='https://nap5k.com/tag.min.js'; adBottom.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310945'; s.src='https://nap5k.com/tag.min.js'; adMid.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310963'; s.src='https://nap5k.com/tag.min.js'; adFinal.appendChild(s); })();
+
+// --- Popunder ---
+function openPopunder(){
+  var url = "YOUR_POPUNDER_LINK_HERE"; // tu wstaw link z Adsterra
+  var popunder = window.open(url, "_blank");
+  if(popunder){ popunder.blur(); window.focus(); }
+}
+
+// --- Quiz logic ---
 function showQuestion(){
   if(current===7){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
@@ -238,6 +226,10 @@ function answer(idxAnswer,btn,questionIndex){
   if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
   else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
   pointsEl.textContent=points;
+
+  // Popunder po 3 i 10 pytaniu
+  if(current===2 || current===9){ openPopunder(); }
+
   current++;
   setTimeout(showQuestion,400);
 }
