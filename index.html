@@ -20,14 +20,8 @@ body{
 }
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
-  display:flex !important;
-  justify-content:center !important;
-  align-items:center;
-  width:300px;
-  height:250px;
-  max-width:100%;
-  margin:0 auto 12px;
-  background:#000;color:white;border-radius:12px;position:relative;
+  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+  border-radius:12px; padding:8px; text-align:center; height:250px; position:relative;
 }
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
@@ -89,17 +83,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- GÓRA -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
-    <!-- REKLAMA 300x250 -->
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '658ba2a4699a4eec2950eda582a40b1c',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 
   <div class="card" id="quizCard">
@@ -118,16 +101,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <!-- PO 7 PYTANIU -->
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
-      <script type="text/javascript">
-        atOptions = {
-          'key' : '658ba2a4699a4eec2950eda582a40b1c',
-          'format' : 'iframe',
-          'height' : 250,
-          'width' : 300,
-          'params' : {}
-        };
-      </script>
-      <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
     </div>
 
     <div class="meta">
@@ -139,16 +112,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- DÓŁ -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '658ba2a4699a4eec2950eda582a40b1c',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
   </div>
 </div>
 
@@ -159,16 +122,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div id="final-text">0 pkt</div>
     <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
-      <script type="text/javascript">
-        atOptions = {
-          'key' : '658ba2a4699a4eec2950eda582a40b1c',
-          'format' : 'iframe',
-          'height' : 250,
-          'width' : 300,
-          'params' : {}
-        };
-      </script>
-      <script type="text/javascript" src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js"></script>
     </div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
@@ -222,6 +175,32 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
+// --- Monetag / Adsterra iframe banners ---
+(function(){ 
+  const s=document.createElement('script'); 
+  s.type='text/javascript';
+  s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; 
+  adTop.appendChild(s); 
+})();
+(function(){ 
+  const s=document.createElement('script'); 
+  s.type='text/javascript';
+  s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; 
+  adBottom.appendChild(s); 
+})();
+(function(){ 
+  const s=document.createElement('script'); 
+  s.type='text/javascript';
+  s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; 
+  adMid.appendChild(s); 
+})();
+(function(){ 
+  const s=document.createElement('script'); 
+  s.type='text/javascript';
+  s.src='https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js'; 
+  adFinal.appendChild(s); 
+})();
+
 // --- Quiz logic ---
 function showQuestion(){
   if(current===7){
@@ -269,7 +248,6 @@ function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.disp
 $('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 $('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
-
 $('saveBtn').onclick = (e)=>{ alert('Funkcja zapisu na ekranie głównym działa tylko na urządzeniach mobilnych z obsługą PWA.'); };
 
 let fireworkRunning = false;
