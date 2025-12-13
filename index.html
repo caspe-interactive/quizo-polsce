@@ -79,10 +79,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <!-- GÓRA -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <!-- Wklej tutaj swój klucz reklamy 300x250 -->
     <script>
       (function(){
         const s=document.createElement('script');
-        s.src="https://www.highperformanceformat.com/658ba2a4699a4eec2950eda582a40b1c/invoke.js";
+        s.src="https://www.highperformanceformat.com/YOUR_KEY_HERE/invoke.js";
         s.type="text/javascript"; s.async=true;
         document.getElementById('adTop').appendChild(s);
       })();
@@ -105,10 +106,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <!-- PO 7 PYTANIU -->
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
+      <!-- Klucz wideo HighPerformanceFormat -->
       <script>
         (function(){
           const s=document.createElement('script');
-          s.src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js";
+          s.src="https://www.highperformanceformat.com/YOUR_KEY_HERE/invoke.js";
           s.type="text/javascript"; s.async=true;
           document.getElementById('adMid').appendChild(s);
         })();
@@ -127,7 +129,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <script>
       (function(){
         const s=document.createElement('script');
-        s.src="https://www.highperformanceformat.com/95672441c96a976671d1673abb11161b/invoke.js";
+        s.src="https://www.highperformanceformat.com/YOUR_KEY_HERE/invoke.js";
         s.type="text/javascript"; s.async=true;
         document.getElementById('adBottom').appendChild(s);
       })();
@@ -145,7 +147,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
       <script>
         (function(){
           const s=document.createElement('script');
-          s.src="https://pl28246454.effectivegatecpm.com/10/e5/22/10e5220f0ef399e0c966fc4e8e153fed.js";
+          s.src="https://www.highperformanceformat.com/YOUR_KEY_HERE/invoke.js";
           s.type="text/javascript"; s.async=true;
           document.getElementById('adFinal').appendChild(s);
         })();
@@ -202,6 +204,7 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
+// --- Quiz logic ---
 function showQuestion(){
   if(current===7){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
@@ -215,9 +218,7 @@ function showQuestion(){
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
-
   adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
-
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
