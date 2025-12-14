@@ -21,7 +21,7 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+  border-radius:12px; padding:8px; text-align:center; height:auto; min-height:100px; position:relative;
 }
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
@@ -172,23 +172,20 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Monetag Banner strefy ---
+// --- Monetag In-Page responsive banners ---
 function loadMonetag(adContainer, zoneId){
+  adContainer.innerHTML='';
   const s=document.createElement('script');
   s.src='https://nap5k.com/tag.min.js';
   s.dataset.zone=zoneId;
   s.async=true;
-  adContainer.innerHTML='';
   adContainer.appendChild(s);
 }
 
-// Góra
+// Wstawienie reklam
 loadMonetag(adTop, '10310895');
-// Dół
 loadMonetag(adBottom, '10310917');
-// Po 7 pytaniu
 loadMonetag(adMid, '10310945');
-// Przed wynikiem
 loadMonetag(adFinal, '10310963');
 
 // --- Quiz logic ---
@@ -237,13 +234,7 @@ function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.disp
 
 $('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 $('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
-$('saveBtn').onclick = ()=>{
-  if('beforeinstallprompt' in window){
-    window.deferredPrompt?.prompt();
-  } else {
-    const hint=$('installHint'); hint.style.display='block';
-  }
-};
+$('saveBtn').onclick = ()=>{ const hint=$('installHint'); hint.style.display='block'; };
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
 let fireworkRunning = false;
