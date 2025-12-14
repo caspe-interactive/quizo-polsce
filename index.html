@@ -79,29 +79,19 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-
-  <!-- GÓRA -->
-  <div class="ad-top" id="adTop">
-    <span class="ad-status">Ładowanie reklamy...</span>
-  </div>
-
+  <div class="ad-top" id="adTop"><span class="ad-status">Ładowanie reklamy...</span></div>
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
         <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
-        <div id="nickWrap">
-          <input id="nick" placeholder="Twój nick" aria-label="Nick gracza" />
-        </div>
+        <div id="nickWrap"><input id="nick" placeholder="Twój nick" aria-label="Nick gracza" /></div>
       </div>
       <div class="score">Punkty: <span id="points">0</span></div>
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <!-- PO 7 PYTANIU -->
-    <div class="ad-mid" id="adMid" style="display:none;">
-      <span class="ad-status">Ładowanie reklamy...</span>
-    </div>
+    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">Ładowanie reklamy...</span></div>
 
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
@@ -109,20 +99,14 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
   </div>
 
-  <!-- DÓŁ -->
-  <div class="ad-bottom" id="adBottom">
-    <span class="ad-status">Ładowanie reklamy...</span>
-  </div>
+  <div class="ad-bottom" id="adBottom"><span class="ad-status">Ładowanie reklamy...</span></div>
 </div>
 
-<!-- PRZED WYNIKIEM -->
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal">
-      <span class="ad-status">Ładowanie reklamy...</span>
-    </div>
+    <div class="ad-final" id="adFinal"><span class="ad-status">Ładowanie reklamy...</span></div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -175,40 +159,29 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Monetag strefy (załadują się automatycznie w wyznaczonych miejscach) ---
-function loadMonetag(el,zoneId){
-  const s=document.createElement('script');
-  s.dataset.zone=zoneId;
-  s.src='https://nap5k.com/tag.min.js';
-  el.innerHTML=''; 
-  el.appendChild(s);
-}
+// --- Monetag Banner strefy ---
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310895'; s.src='https://nap5k.com/tag.min.js'; adTop.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310917'; s.src='https://nap5k.com/tag.min.js'; adBottom.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310945'; s.src='https://nap5k.com/tag.min.js'; adMid.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.dataset.zone='10310963'; s.src='https://nap5k.com/tag.min.js'; adFinal.appendChild(s); })();
 
 // --- Quiz logic ---
 function showQuestion(){
-  // po 7 pytaniu pokazujemy AdMid
   if(current===7){
-    adTop.style.display='none'; adBottom.style.display='none'; 
-    adMid.style.display='flex'; questionEl.textContent="Oglądaj reklamę, aby kontynuować"; 
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
-    loadMonetag(adMid,'10310945');
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
     return;
   }
-
-  // koniec quizu, przed wynikiem AdFinal
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
     questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
-    loadMonetag(adFinal,'10310963');
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
-
   adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
-  loadMonetag(adTop,'10310895');
-  loadMonetag(adBottom,'10310917');
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
