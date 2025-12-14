@@ -21,6 +21,7 @@ body{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
   border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
 }
+.ad-top, .ad-bottom, .ad-mid, .ad-final { text-align:center; display:flex; justify-content:center; align-items:center; }
 .ad-status{position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;}
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -80,12 +81,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
     <script>
-      (function(){
-        const s=document.createElement('script');
-        s.src='https://nap5k.com/tag.min.js';
-        s.dataset.zone='10310895';
-        document.getElementById('adTop').appendChild(s);
-      })();
+      (function(s){s.dataset.zone='10310895',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
     </script>
   </div>
 
@@ -106,12 +102,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
       <script>
-        (function(){
-          const s=document.createElement('script');
-          s.src='https://nap5k.com/tag.min.js';
-          s.dataset.zone='10310895';
-          document.getElementById('adMid').appendChild(s);
-        })();
+        (function(s){s.dataset.zone='10310895',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
       </script>
     </div>
 
@@ -125,12 +116,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
     <script>
-      (function(){
-        const s=document.createElement('script');
-        s.src='https://nap5k.com/tag.min.js';
-        s.dataset.zone='10310917';
-        document.getElementById('adBottom').appendChild(s);
-      })();
+      (function(s){s.dataset.zone='10310917',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
     </script>
   </div>
 </div>
@@ -143,12 +129,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
       <script>
-        (function(){
-          const s=document.createElement('script');
-          s.src='https://nap5k.com/tag.min.js';
-          s.dataset.zone='10310917';
-          document.getElementById('adFinal').appendChild(s);
-        })();
+        (function(s){s.dataset.zone='10310917',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
       </script>
     </div>
     <div class="final-actions" style="margin-top:14px;">
@@ -200,9 +181,7 @@ let sessionQuestions=getRandomSession();
 
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
-document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Quiz logic ---
 function showQuestion(){
   if(current===7){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
