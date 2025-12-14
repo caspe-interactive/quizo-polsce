@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <meta name="theme-color" content="#051028">
-
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -16,65 +15,114 @@
 html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
 body{background:linear-gradient(180deg,var(--bg1),#051028 80%); color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;}
 .page{width:100%;max-width:920px}
-.ad{background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border-radius:12px;padding:8px;text-align:center;height:120px;position:relative;}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
-.title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;text-align:center;margin-bottom:12px;}
-.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text);}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ad-top,.ad-bottom,.ad-mid,.ad-final{
+  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+}
+.ad-status{position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:var(--radius); padding:22px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.6);
+  border:1px solid rgba(0,255,255,0.04);
+}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
+.score{display:none;color:var(--accent)}
+.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
-.btn{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;transition:transform .12s ease, box-shadow .12s ease, opacity .12s; background:linear-gradient(90deg,var(--neon1),var(--neon2));box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);border:1px solid rgba(255,255,255,0.02);}
-.btn:active{transform:translateY(2px);}
+.btn{
+  display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
+  user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
+  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
+  background:linear-gradient(90deg,var(--neon1),var(--neon2));
+  box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);
+  border:1px solid rgba(255,255,255,0.02);
+}
+.btn:active{transform:translateY(2px)}
 .btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
 .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
 .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
+.small-muted{color:var(--muted);font-size:0.95rem;margin-top:8px}
 #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
-#final-card{background:linear-gradient(180deg,#081322,#06121f);padding:30px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,0.7);text-align:center;color:var(--text);max-width:580px;width:94%;}
+#final-card{
+  background:linear-gradient(180deg,#081322,#06121f);
+  padding:30px;
+  border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.7);
+  text-align:center;color:var(--text);
+  max-width:580px;width:94%;
+}
 #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
 .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
 .final-actions .btn{font-size:1rem;padding:12px 14px}
+canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 </head>
-
 <body>
+<canvas id="fx"></canvas>
 <div class="page">
 
   <!-- GÓRA -->
-  <div class="ad" id="adTop">
+  <div class="ad-top" id="adTop">
     <span class="ad-status">Ładowanie reklamy...</span>
   </div>
 
   <div class="card" id="quizCard">
-    <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
-    <div id="question" class="question">Ładowanie...</div>
+    <div class="top">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
+      </div>
+      <div class="score">Punkty: <span id="points">0</span></div>
+    </div>
+    <div id="question" class="question">Ładowanie pytań...</div>
     <div id="answers" class="answers"></div>
 
     <!-- PO 7 PYTANIU -->
-    <div class="ad" id="adMid" style="display:none;">
+    <div class="ad-mid" id="adMid" style="display:none;">
       <span class="ad-status">Ładowanie reklamy...</span>
+    </div>
+
+    <div class="meta">
+      <div id="progress">Pytanie 0/0</div>
+      <div class="small-muted">Miejsca reklamowe gotowe</div>
     </div>
   </div>
 
   <!-- DÓŁ -->
-  <div class="ad" id="adBottom">
+  <div class="ad-bottom" id="adBottom">
     <span class="ad-status">Ładowanie reklamy...</span>
   </div>
 </div>
 
 <!-- PRZED WYNIKIEM -->
-<div id="final">
+<div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad" id="adFinal">
+    <div class="ad-final" id="adFinal">
       <span class="ad-status">Ładowanie reklamy...</span>
     </div>
-    <div class="final-actions">
-      <div class="btn" id="retryBtn">Zagraj ponownie</div>
+    <div class="final-actions" style="margin-top:14px;">
+      <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
     </div>
   </div>
 </div>
 
+<audio id="bg" loop src="sounds/background.mp3"></audio>
+<audio id="snd-ding" src="sounds/ding.mp3"></audio>
+<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
+<audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
+
 <script>
+const $=id=>document.getElementById(id);
+const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
+      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
+      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
+const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
+
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
@@ -93,51 +141,71 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0;
-let sessionQuestions=QUESTIONS.map((q,i)=>i);
+function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
+let sessionQuestions=getRandomSession();
 
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+
+function playAudio(audio){ audio.play().catch(()=>{}); }
+document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
+document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
+
+// --- Monetag Banner strefy ---
+(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310895'; s.async=true; adTop.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310917'; s.async=true; adBottom.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310945'; s.async=true; adMid.appendChild(s); })();
+(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310963'; s.async=true; adFinal.appendChild(s); })();
+
+// --- Quiz logic ---
 function showQuestion(){
   if(current===7){
-    document.getElementById('adTop').style.display='none';
-    document.getElementById('adBottom').style.display='none';
-    document.getElementById('adMid').style.display='flex';
-    setTimeout(()=>{ document.getElementById('adMid').style.display='none'; current++; showQuestion(); },15000);
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    questionEl.textContent="Oglądaj reklamę, aby kontynuować";
+    answersEl.innerHTML="";
+    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
     return;
   }
   if(current>=sessionQuestions.length){
-    document.getElementById('adTop').style.display='none';
-    document.getElementById('adBottom').style.display='none';
-    document.getElementById('adMid').style.display='none';
-    document.getElementById('adFinal').style.display='flex';
-    setTimeout(()=>{ document.getElementById('adFinal').style.display='none'; finishQuiz(); },15000);
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
+    questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
+    answersEl.innerHTML="";
+    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
-  const q=QUESTIONS[sessionQuestions[current]];
-  document.getElementById('question').textContent=q.q;
-  const answersEl=document.getElementById('answers');
+  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+
+  const idx=sessionQuestions[current];
+  const q=QUESTIONS[idx];
+  questionEl.textContent=q.q;
   answersEl.innerHTML='';
-  q.a.forEach((ans,idx)=>{
+  const shuffled=q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
+  shuffled.forEach(obj=>{
     const b=document.createElement('div');
     b.className='btn';
-    b.textContent=ans;
-    b.onclick=()=>{ if(idx===q.correct) points++; current++; showQuestion(); };
+    b.textContent=obj.ans;
+    b.onclick=()=>answer(obj.i,b,idx);
     answersEl.appendChild(b);
   });
+  progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
-function finishQuiz(){
-  document.getElementById('final-text').textContent=points+' pkt';
-  document.getElementById('final').style.display='flex';
+function answer(idxAnswer,btn,questionIndex){
+  const correct=QUESTIONS[questionIndex].correct;
+  if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
+  else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
+  pointsEl.textContent=points;
+  current++;
+  setTimeout(showQuestion,400);
 }
 
-document.getElementById('retryBtn').onclick=()=>{
-  points=0; current=0; document.getElementById('final').style.display='none'; showQuestion();
-};
+function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; setTimeout(fireworkFinal,500); }
 
-/* ===== ORYGINALNE KODY MONETAG ===== */
-(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310895'; s.async=true; document.getElementById('adTop').appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310917'; s.async=true; document.getElementById('adBottom').appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310945'; s.async=true; document.getElementById('adMid').appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.src='https://nap5k.com/tag.min.js'; s.dataset.zone='10310963'; s.async=true; document.getElementById('adFinal').appendChild(s); })();
+$('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
+
+let fireworkRunning = false;
+function firework(){ if(fireworkRunning) return; fireworkRunning = true; const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; const bursts=3+Math.floor(Math.random()*3); for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } } function animate(){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1); } if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } } animate(); }
+function fireworkAnswer(){ firework(); }
+function fireworkFinal(){ firework(); }
 
 showQuestion();
 </script>
