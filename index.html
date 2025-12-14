@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 <style>
 :root{
@@ -19,7 +18,7 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-top,.ad-bottom,.ad-mid,.ad-final{
+.ad-top,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
   border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
 }
@@ -90,20 +89,19 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">Ładowanie reklamy...</span></div>
+    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">Ładowanie reklamy wideo...</span></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Miejsca reklamowe gotowe</div>
     </div>
   </div>
-  <div class="ad-bottom" id="adBottom"><span class="ad-status">Ładowanie reklamy...</span></div>
 </div>
 
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal"><span class="ad-status">Ładowanie reklamy...</span></div>
+    <div class="ad-final" id="adFinal"><span class="ad-status">Ładowanie reklamy wideo...</span></div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -111,7 +109,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
       <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
       <div class="install-hint" id="installHint">Aby zainstalować: kliknij „Zapisz na ekranie głównym”</div>
     </div>
-    <div class="small-muted" style="margin-top:8px">Dziękujemy za grę — wróć jutro i pobij swój wynik!</div>
   </div>
 </div>
 
@@ -126,7 +123,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
+      adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -164,20 +161,20 @@ document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); pla
 // --- Quiz logic ---
 function showQuestion(){
   if(current===7){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
-    questionEl.textContent="Oglądaj reklamę wideo, aby kontynuować";
+    adTop.style.display='none'; adMid.style.display='flex';
+    questionEl.textContent="Oglądaj reklamę, aby kontynuować";
     answersEl.innerHTML="";
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
     return;
   }
   if(current>=sessionQuestions.length){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
-    questionEl.textContent="Oglądaj reklamę wideo, aby zobaczyć wynik";
+    adTop.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
+    questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
     answersEl.innerHTML="";
     setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
     return;
   }
-  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+  adTop.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
