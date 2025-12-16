@@ -18,7 +18,7 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-top,.ad-mid,.ad-final{
+.ad-banner, .ad-top{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
   border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
 }
@@ -76,12 +76,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <!-- Banner na górze -->
-  <div class="ad-top" id="adTop">
+  <div class="ad-banner" id="adBanner" style="display:none; text-align:center; margin-bottom:10px;">
     <span class="ad-status">Ładowanie reklamy...</span>
+    <!-- Monetag banner -->
     <script data-zone="10310895" src="https://nap5k.com/tag.min.js" async></script>
   </div>
-
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -98,11 +97,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
   </div>
 </div>
-
-<!-- Środkowa reklama po 7 pytaniu -->
-<div class="ad-mid" id="adMid" style="display:none;"></div>
-<!-- Ostatnia reklama przed wynikiem -->
-<div class="ad-final" id="adFinal" style="display:none;"></div>
 
 <div id="final" aria-hidden="true">
   <div id="final-card">
@@ -129,7 +123,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal');
+      adBanner=$('adBanner');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -158,29 +152,29 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// Multitag fullscreen ad
-function showFullscreenAd(adContainer){
-  adContainer.style.display='flex';
-  adContainer.innerHTML = '<script data-zone="10310895" src="https://nap5k.com/tag.min.js" async><\/script>';
+// Fullscreen video ad
+function showFullscreenAd(){ 
+  const s=document.createElement('script'); 
+  s.src='https://nap5k.com/interstitial.js'; 
+  document.body.appendChild(s); 
 }
 
-// Quiz logic
 function showQuestion(){
-  if(current===7){ // po 7 pytaniu
-    adMid.style.display='flex';
-    answersEl.innerHTML=''; questionEl.textContent="Krótka przerwa reklamowa";
-    showFullscreenAd(adMid);
-    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
+  if(current===7 || current>=sessionQuestions.length){
+    adBanner.style.display='none';
+    questionEl.textContent = current>=sessionQuestions.length ? "Ostatnia reklama przed wynikiem" : "Krótka przerwa reklamowa";
+    answersEl.innerHTML="";
+    showFullscreenAd();
+    setTimeout(()=>{
+      current++;
+      current<sessionQuestions.length?showQuestion():finishQuiz();
+    },15000);
     return;
   }
-  if(current>=sessionQuestions.length){ // przed wynikiem
-    adFinal.style.display='flex';
-    answersEl.innerHTML=''; questionEl.textContent="Ostatnia reklama przed wynikiem";
-    showFullscreenAd(adFinal);
-    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
-    return;
-  }
-  adTop.style.display='flex';
+
+  // Banner u góry dla pytań 1–6
+  adBanner.style.display = current<7 ? 'flex' : 'none';
+
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
