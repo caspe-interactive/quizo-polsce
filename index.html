@@ -76,7 +76,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop"><span class="ad-status">Ładowanie reklamy...</span></div>
+  <div class="ad-top" id="adTop">
+    <span class="ad-status">Ładowanie reklamy...</span>
+    <!-- Monetag banner wstawiony bezpośrednio -->
+    <script data-zone="10310895" src="https://nap5k.com/tag.min.js" async></script>
+  </div>
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -143,21 +147,10 @@ let points=0, current=0;
 function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// Service Worker Monetag
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
-// Autoplay audio
 function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
-
-// Monetag banner
-(function(){ 
-  const s=document.createElement('script'); 
-  s.dataset.zone='10310895';
-  s.src='https://nap5k.com/tag.min.js'; 
-  adTop.appendChild(s); 
-})();
 
 // Fullscreen video
 function showFullscreenAd(){ 
@@ -168,8 +161,8 @@ function showFullscreenAd(){
 
 // Quiz logic
 function showQuestion(){
-  if((current===7)||(current>=sessionQuestions.length)){
-    adTop.style.display='flex'; 
+  if(current===7 || current>=sessionQuestions.length){
+    adTop.style.display='flex';
     questionEl.textContent = current>=sessionQuestions.length ? "Ostatnia reklama przed wynikiem" : "Krótka przerwa reklamowa";
     answersEl.innerHTML="";
     showFullscreenAd();
