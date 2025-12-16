@@ -154,7 +154,7 @@ document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); pla
 // Monetag banner
 (function(){ 
   const s=document.createElement('script'); 
-  s.dataset.zone='10310895'; // Twój zoneId
+  s.dataset.zone='10310895';
   s.src='https://nap5k.com/tag.min.js'; 
   adTop.appendChild(s); 
 })();
@@ -168,7 +168,7 @@ function showFullscreenAd(){
 
 // Quiz logic
 function showQuestion(){
-  if(current===3 || current===7 || current>=sessionQuestions.length){
+  if((current===7)||(current>=sessionQuestions.length)){
     adTop.style.display='flex'; 
     questionEl.textContent = current>=sessionQuestions.length ? "Ostatnia reklama przed wynikiem" : "Krótka przerwa reklamowa";
     answersEl.innerHTML="";
