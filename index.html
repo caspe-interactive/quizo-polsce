@@ -18,13 +18,11 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-top,.ad-mid,.ad-final{
+.ad-top{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
   border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
 }
-.ad-status{
-  position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
-}
+.ad-status{position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;}
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -156,7 +154,7 @@ document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); pla
 // Monetag banner
 (function(){ 
   const s=document.createElement('script'); 
-  s.dataset.zone='TU_WSTAW_ZONE_ID'; 
+  s.dataset.zone='10310895'; // Twój zoneId
   s.src='https://nap5k.com/tag.min.js'; 
   adTop.appendChild(s); 
 })();
@@ -170,12 +168,15 @@ function showFullscreenAd(){
 
 // Quiz logic
 function showQuestion(){
-  if(current===7 || current>=sessionQuestions.length){
-    adTop.style.display='none';
-    questionEl.textContent=current===7 ? "Krótka przerwa reklamowa" : "Ostatnia reklama przed wynikiem";
+  if(current===3 || current===7 || current>=sessionQuestions.length){
+    adTop.style.display='flex'; 
+    questionEl.textContent = current>=sessionQuestions.length ? "Ostatnia reklama przed wynikiem" : "Krótka przerwa reklamowa";
     answersEl.innerHTML="";
     showFullscreenAd();
-    setTimeout(()=>{ current++; current<sessionQuestions.length?showQuestion():finishQuiz(); },15000);
+    setTimeout(()=>{
+      current++;
+      current<sessionQuestions.length?showQuestion():finishQuiz();
+    },15000);
     return;
   }
   adTop.style.display='flex';
