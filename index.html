@@ -1,136 +1,171 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-<meta name="theme-color" content="#051028">
-
-<!-- MONETAG – JEDEN RAZ -->
-<script async src="https://quge5.com/88/tag.min.js"
-        data-zone="193728"
-        data-cfasync="false"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuizoPolsce</title>
 
 <style>
-:root{
-  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
-  --accent:#ffd27a; --radius:14px;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
 body{
-  background:linear-gradient(180deg,var(--bg1),#051028 80%);
-  color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#071025;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
 }
-.page{width:100%;max-width:920px}
 .card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius); padding:22px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.6);
-  border:1px solid rgba(0,255,255,0.04);
+  width:100%;
+  max-width:700px;
+  background:#0b1220;
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(0,0,0,.6);
 }
-.top{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px}
-.title{font-weight:800;color:var(--neon1)}
-.question{font-size:1.4rem;text-align:center;margin:14px 0}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} }
+.question{
+  font-size:1.4rem;
+  text-align:center;
+  margin:20px 0;
+}
+.answers{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media(max-width:600px){
+  .answers{grid-template-columns:1fr;}
+}
 .btn{
-  padding:14px;border-radius:12px;cursor:pointer;font-weight:800;text-align:center;
-  background:linear-gradient(90deg,var(--neon1),var(--neon2));
+  padding:14px;
+  border-radius:10px;
+  background:#00f0ff;
+  color:#000;
+  font-weight:700;
+  text-align:center;
+  cursor:pointer;
 }
-.btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
-.btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
-.meta{display:flex;justify-content:space-between;color:var(--muted)}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-background:rgba(0,0,0,.85);z-index:999}
-#final-card{background:#081322;padding:30px;border-radius:14px;text-align:center}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:998}
+.btn.good{background:#16d36a;}
+.btn.bad{background:#ff5c6c;}
+#progress{text-align:center;color:#9fb6d6;}
+#final{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.85);
+}
+#finalBox{
+  background:#081322;
+  padding:30px;
+  border-radius:14px;
+  text-align:center;
+}
 </style>
+
+<!-- MONETAG – API (BEZ AUTOSTARTU) -->
+<script>
+window.monetag = window.monetag || [];
+</script>
+<script async src="https://quge5.com/88/tag.min.js" data-cfasync="false"></script>
 </head>
 
 <body>
-<canvas id="fx"></canvas>
 
-<div class="page">
 <div class="card">
-<div class="top">
-  <div class="title">QuizoPolsce</div>
-  <div id="progress">Pytanie 1/14</div>
-</div>
-
-<div id="question" class="question"></div>
-<div id="answers" class="answers"></div>
-</div>
+  <div id="progress"></div>
+  <div id="question" class="question"></div>
+  <div id="answers" class="answers"></div>
 </div>
 
 <div id="final">
-  <div id="final-card">
+  <div id="finalBox">
     <h2>Twój wynik</h2>
-    <div id="finalScore" style="font-size:2rem;margin:10px"></div>
+    <div id="score" style="font-size:2rem;margin:10px"></div>
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
 
-<audio id="ding" src="sounds/ding.mp3"></audio>
-<audio id="buzz" src="sounds/buzzer.mp3"></audio>
-
 <script>
 const QUESTIONS=[
-{q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
-{q:"Najdłuższa rzeka?",a:["Wisła","Odra","Bug","Warta"],c:0},
-{q:"Rok niepodległości?",a:["1918","1945","1939","1920"],c:0},
-{q:"Najwyższy szczyt?",a:["Rysy","Giewont","Śnieżka","Babia"],c:0},
-{q:"Port morski?",a:["Gdańsk","Łódź","Lublin","Zakopane"],c:0},
-{q:"Hymn?",a:["Jeszcze Polska…","Rota","Bogurodzica","Gaude"],c:0},
-{q:"Waluta?",a:["Złoty","Euro","Korona","Marka"],c:0},
-{q:"Orzeł to symbol?",a:["Godła","Flagi","Miasta","UE"],c:0},
-{q:"Morze?",a:["Bałtyckie","Czarne","Północne","Adriatyk"],c:0},
-{q:"Sąsiad?",a:["Niemcy","Włochy","Hiszpania","Norwegia"],c:0},
-{q:"Stolica Mazowsza?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
-{q:"Nobel chemia?",a:["Skłodowska","Banach","Lem","Miłosz"],c:0},
-{q:"Największe miasto Śląska?",a:["Katowice","Bytom","Gliwice","Zabrze"],c:0},
-{q:"Flaga kolory?",a:["Biały i czerwony","Niebieski","Zielony","Żółty"],c:0}
+ {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
+ {q:"Najdłuższa rzeka?",a:["Wisła","Odra","Bug","Warta"],c:0},
+ {q:"Rok niepodległości?",a:["1918","1945","1939","1920"],c:0},
+ {q:"Najwyższy szczyt?",a:["Rysy","Giewont","Śnieżka","Babia"],c:0},
+ {q:"Morze w Polsce?",a:["Bałtyckie","Czarne","Adriatyk","Egejskie"],c:0},
+ {q:"Waluta?",a:["Złoty","Euro","Korona","Marka"],c:0},
+ {q:"Godło to?",a:["Orzeł","Lew","Wilk","Ryś"],c:0},
+ {q:"Sąsiad Polski?",a:["Niemcy","Francja","Włochy","Hiszpania"],c:0},
+ {q:"Flaga?",a:["Biało-czerwona","Niebieska","Zielona","Żółta"],c:0},
+ {q:"Stolica Mazowsza?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
+ {q:"Nobel chemia?",a:["Skłodowska","Banach","Lem","Miłosz"],c:0},
+ {q:"Największe miasto Śląska?",a:["Katowice","Bytom","Zabrze","Rybnik"],c:0},
+ {q:"Hymn?",a:["Jeszcze Polska…","Rota","Bogurodzica","Gaude"],c:0},
+ {q:"Port morski?",a:["Gdańsk","Łódź","Lublin","Kielce"],c:0}
 ];
 
 let i=0, score=0;
 let ad7=false, adFinal=false;
+let adLock=false;
 
-function showAd(type){
- if(type==='7' && ad7) return;
- if(type==='f' && adFinal) return;
- if(type==='7') ad7=true;
- if(type==='f') adFinal=true;
- if(window.monetag) monetag.show();
+function showAd(){
+  if(adLock) return;
+  adLock=true;
+  try{
+    monetag.push({ zone:193728, type:"fullscreen" });
+  }catch(e){}
+  setTimeout(()=>adLock=false,13000);
 }
 
-function showQ(){
- if(i===7){ showAd('7'); setTimeout(()=>{i++;showQ()},12000); return; }
- if(i>=QUESTIONS.length){ showAd('f'); setTimeout(endQuiz,12000); return; }
+function showQuestion(){
 
-document.getElementById('question').textContent=QUESTIONS[i].q;
-document.getElementById('answers').innerHTML='';
-document.getElementById('progress').textContent=`Pytanie ${i+1}/14`;
+  if(i===7 && !ad7){
+    ad7=true;
+    document.getElementById("question").textContent="Krótka przerwa reklamowa";
+    document.getElementById("answers").innerHTML="";
+    showAd();
+    setTimeout(()=>{i++;showQuestion();},12000);
+    return;
+  }
 
-QUESTIONS[i].a.forEach((t,idx)=>{
- let b=document.createElement('div');
- b.className='btn';
- b.textContent=t;
- b.onclick=()=>{
-   if(idx===QUESTIONS[i].c){score++;b.classList.add('good')}
-   else b.classList.add('bad');
-   i++; setTimeout(showQ,400);
- };
- document.getElementById('answers').appendChild(b);
-});
+  if(i>=QUESTIONS.length){
+    if(!adFinal){
+      adFinal=true;
+      document.getElementById("question").textContent="Ostatnia reklama przed wynikiem";
+      document.getElementById("answers").innerHTML="";
+      showAd();
+      setTimeout(endQuiz,12000);
+    }
+    return;
+  }
+
+  const q=QUESTIONS[i];
+  document.getElementById("question").textContent=q.q;
+  document.getElementById("answers").innerHTML="";
+  document.getElementById("progress").textContent=`Pytanie ${i+1}/14`;
+
+  q.a.forEach((txt,idx)=>{
+    const b=document.createElement("div");
+    b.className="btn";
+    b.textContent=txt;
+    b.onclick=()=>{
+      if(idx===q.c){score++;b.classList.add("good")}
+      else b.classList.add("bad");
+      i++;
+      setTimeout(showQuestion,300);
+    };
+    document.getElementById("answers").appendChild(b);
+  });
 }
 
 function endQuiz(){
- document.getElementById('finalScore').textContent=score+" / 14";
- document.getElementById('final').style.display='flex';
+  document.getElementById("score").textContent=score+" / 14";
+  document.getElementById("final").style.display="flex";
 }
 
-showQ();
+showQuestion();
 </script>
 </body>
 </html>
