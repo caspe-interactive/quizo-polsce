@@ -6,6 +6,7 @@
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <meta name="theme-color" content="#051028">
 <style>
+/* STYL QUIZU – BEZ ZMIAN */
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
   --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
@@ -77,8 +78,9 @@ window.monetag = window.monetag || [];
 <body>
 <canvas id="fx"></canvas>
 
-<!-- kontener dla Monetag -->
-<div id="monetag-193728" style="display:none;"></div>
+<!-- kontenery reklam Monetag -->
+<div id="monetag-q7" style="display:none;"></div>
+<div id="monetag-final" style="display:none;"></div>
 
 <div class="page">
   <div class="card" id="quizCard">
@@ -120,6 +122,7 @@ window.monetag = window.monetag || [];
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
+// SKRYPT QUIZU – BEZ ZMIAN W LOGICE PYTAŃ
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text');
@@ -152,40 +155,26 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// Minimalna obsługa reklam Monetag
-let monetagLock = false;
-let monetagQ7 = false;
-let monetagFinal = false;
-function showMonetag(which){
-  if(monetagLock) return;
-  if(which === 'q7' && monetagQ7) return;
-  if(which === 'final' && monetagFinal) return;
-  monetagLock = true;
-  if(which === 'q7') monetagQ7 = true;
-  if(which === 'final') monetagFinal = true;
-  try { monetag.push({ zone:193728 }); } catch(e){ console.log(e); }
-  setTimeout(()=>{ monetagLock=false; },13000);
+// Minimalna obsługa reklam – wywołanie Monetag w kontenerach
+function showAd(containerId){
+  try{ document.getElementById(containerId).style.display='block'; monetag.push({ zone:193728 }); }
+  catch(e){ console.log('Monetag error',e); }
 }
 
-// Quiz logic
+// LOGIKA QUIZU Z WSTAWIANIEM REKLAM
 function showQuestion(){
-  if(current === 7){
-    questionEl.textContent = "Krótka przerwa reklamowa";
-    answersEl.innerHTML = "";
-    showMonetag('q7');
-    setTimeout(()=>{
-      current++;
-      showQuestion();
-    },12000);
+  if(current===7){ // po 7 pytaniu
+    questionEl.textContent="Krótka przerwa reklamowa";
+    answersEl.innerHTML="";
+    showAd('monetag-q7');
+    setTimeout(()=>{ current++; showQuestion(); },12000);
     return;
   }
-  if(current >= sessionQuestions.length){
-    questionEl.textContent = "Ostatnia reklama przed wynikiem";
-    answersEl.innerHTML = "";
-    showMonetag('final');
-    setTimeout(()=>{
-      finishQuiz();
-    },12000);
+  if(current>=sessionQuestions.length){ // przed wynikiem
+    questionEl.textContent="Ostatnia reklama przed wynikiem";
+    answersEl.innerHTML="";
+    showAd('monetag-final');
+    setTimeout(finishQuiz,12000);
     return;
   }
   const idx=sessionQuestions[current];
