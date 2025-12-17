@@ -73,25 +73,13 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 window.monetag = window.monetag || [];
 </script>
 <script async src="https://quge5.com/88/tag.min.js" data-cfasync="false"></script>
-<script>
-let monetagLock = false;
-let monetagQ7 = false;
-let monetagFinal = false;
-function showMonetag(which){
-  if(monetagLock) return;
-  if(which === 'q7' && monetagQ7) return;
-  if(which === 'final' && monetagFinal) return;
-  monetagLock = true;
-  if(which === 'q7') monetagQ7 = true;
-  if(which === 'final') monetagFinal = true;
-  try { monetag.push({ zone:193728, type:"fullscreen" }); } catch(e){}
-  setTimeout(()=>{ monetagLock=false; },13000);
-}
-</script>
 </head>
-
 <body>
 <canvas id="fx"></canvas>
+
+<!-- kontener dla Monetag -->
+<div id="monetag-193728" style="display:none;"></div>
+
 <div class="page">
   <div class="card" id="quizCard">
     <div class="top">
@@ -164,9 +152,23 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
+// Minimalna obsługa reklam Monetag
+let monetagLock = false;
+let monetagQ7 = false;
+let monetagFinal = false;
+function showMonetag(which){
+  if(monetagLock) return;
+  if(which === 'q7' && monetagQ7) return;
+  if(which === 'final' && monetagFinal) return;
+  monetagLock = true;
+  if(which === 'q7') monetagQ7 = true;
+  if(which === 'final') monetagFinal = true;
+  try { monetag.push({ zone:193728 }); } catch(e){ console.log(e); }
+  setTimeout(()=>{ monetagLock=false; },13000);
+}
+
 // Quiz logic
 function showQuestion(){
-  // reklama po 7 pytaniu
   if(current === 7){
     questionEl.textContent = "Krótka przerwa reklamowa";
     answersEl.innerHTML = "";
@@ -177,8 +179,6 @@ function showQuestion(){
     },12000);
     return;
   }
-
-  // reklama przed wynikiem
   if(current >= sessionQuestions.length){
     questionEl.textContent = "Ostatnia reklama przed wynikiem";
     answersEl.innerHTML = "";
@@ -188,7 +188,6 @@ function showQuestion(){
     },12000);
     return;
   }
-
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
