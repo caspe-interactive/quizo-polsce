@@ -122,7 +122,6 @@ window.monetag = window.monetag || [];
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// SKRYPT QUIZU – BEZ ZMIAN W LOGICE PYTAŃ
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text');
@@ -155,26 +154,25 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// Minimalna obsługa reklam – wywołanie Monetag w kontenerach
-function showAd(containerId){
-  try{ document.getElementById(containerId).style.display='block'; monetag.push({ zone:193728 }); }
-  catch(e){ console.log('Monetag error',e); }
+function showAd(containerId, zoneId){
+  const c = document.getElementById(containerId);
+  c.style.display = 'block';
+  monetag.push({ zone: zoneId });
 }
 
-// LOGIKA QUIZU Z WSTAWIANIEM REKLAM
 function showQuestion(){
-  if(current===7){ // po 7 pytaniu
+  if(current===7){
     questionEl.textContent="Krótka przerwa reklamowa";
     answersEl.innerHTML="";
-    showAd('monetag-q7');
-    setTimeout(()=>{ current++; showQuestion(); },12000);
+    showAd('monetag-q7', 193728);
+    setTimeout(()=>{ current++; showQuestion(); }, 12000);
     return;
   }
-  if(current>=sessionQuestions.length){ // przed wynikiem
+  if(current>=sessionQuestions.length){
     questionEl.textContent="Ostatnia reklama przed wynikiem";
     answersEl.innerHTML="";
-    showAd('monetag-final');
-    setTimeout(finishQuiz,12000);
+    showAd('monetag-final', 193729);
+    setTimeout(finishQuiz, 12000);
     return;
   }
   const idx=sessionQuestions[current];
