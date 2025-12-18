@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <meta name="theme-color" content="#051028">
-
 <style>
 /* STYL QUIZU – BEZ ZMIAN */
 :root{
@@ -29,30 +28,30 @@ body{
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
 .score{display:none;color:var(--accent)}
-.question{font-size:1.4rem;text-align:center;margin:8px 0 14px}
+.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} }
+@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
 .btn{
-  display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;
-  cursor:pointer;font-weight:800;color:white;
+  display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
+  user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
+  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
   background:linear-gradient(90deg,var(--neon1),var(--neon2));
 }
-.btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
-.btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-.meta{display:flex;justify-content:space-between;margin-top:12px;color:var(--muted)}
-#ad-q7,#ad-final{display:none;justify-content:center;margin:20px 0}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);z-index:1200}
+.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
+.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
+.meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
 #final-card{background:#081322;padding:30px;border-radius:14px;text-align:center}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:1100}
+canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 
-<!-- MONETAG – POPRAWNY LOADER -->
+<!-- MONETAG – POPRAWIONY LOADER -->
 <script>
 window.monetag = window.monetag || [];
 function showAd(containerId, zoneId){
   const c = document.getElementById(containerId);
+  c.style.display = 'block';
   c.innerHTML = '';
-  c.style.display = 'flex';
   const slot = document.createElement('div');
   c.appendChild(slot);
   monetag.push({ zone: zoneId, container: slot });
@@ -64,24 +63,20 @@ function showAd(containerId, zoneId){
 <body>
 <canvas id="fx"></canvas>
 
+<!-- TWOJE ORYGINALNE KONTENERY -->
+<div id="monetag-q7" style="display:none;"></div>
+<div id="monetag-final" style="display:none;"></div>
+
 <div class="page">
-  <div class="card">
+  <div class="card" id="quizCard">
     <div class="top">
       <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
     </div>
-
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-
-    <!-- REKLAMA PO 7 PYTANIU -->
-    <div id="ad-q7"></div>
-
     <div class="meta">
-      <div id="progress"></div>
+      <div id="progress">Pytanie 0/0</div>
     </div>
-
-    <!-- REKLAMA PRZED WYNIKIEM -->
-    <div id="ad-final"></div>
   </div>
 </div>
 
@@ -89,57 +84,64 @@ function showAd(containerId, zoneId){
   <div id="final-card">
     <h1>Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
 
 <script>
-const qEl=document.getElementById('question');
-const aEl=document.getElementById('answers');
-const pEl=document.getElementById('progress');
-const final=document.getElementById('final');
+const questionEl=document.getElementById('question');
+const answersEl=document.getElementById('answers');
+const progressEl=document.getElementById('progress');
+const finalEl=document.getElementById('final');
 const finalText=document.getElementById('final-text');
 
 const QUESTIONS=[
- {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
- {q:"Najdłuższa rzeka?",a:["Wisła","Odra","Bug","Warta"],c:0},
- {q:"Rok niepodległości?",a:["1918","1939","1945","1905"],c:0},
- {q:"Najwyższy szczyt?",a:["Rysy","Giewont","Śnieżka","Babia"],c:0},
- {q:"Hymn?",a:["Mazurek","Rota","Bogurodzica","Gaude"],c:0},
- {q:"Port morski?",a:["Gdańsk","Radom","Opole","Łódź"],c:0},
- {q:"Król Lew Lechistanu?",a:["Jagiełło","Kazimierz","Chrobry","Zygmunt"],c:0},
- {q:"Noblistka?",a:["Curie","Szymborska","Tokarczuk","Skłodowska"],c:0},
+  { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
+  { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
+  { q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
+  { q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
+  { q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:0 },
+  { q:"Największe miasto woj. mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
+  { q:"Najważniejszy polski noblista w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
+  { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
+  { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
+  { q:"W którym roku Polska odzyskała niepodległość?", a:["1918","1945","1914","1939"], correct:0 },
+  { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu miasta"], correct:0 },
+  { q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
+  { q:"Polski hymn zaczyna się od słów?", a:["Jeszcze Polska nie zginęła","Mazurka Dąbrowskiego","Bogurodzicy","Roty"], correct:0 },
+  { q:"Polski król zwany „Lwem Lechistanu”?", a:["Kazimierz Wielki","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct:0 }
 ];
 
-let i=0, pts=0;
+let points=0,current=0;
 
-function showQ(){
- if(i===7){
-  qEl.textContent="Krótka przerwa reklamowa";
-  aEl.innerHTML="";
-  showAd('ad-q7',193728);
-  setTimeout(()=>{i++;showQ()},12000);
-  return;
- }
- if(i>=QUESTIONS.length){
-  showAd('ad-final',193729);
-  setTimeout(()=>{final.style.display='flex';finalText.textContent=pts+" pkt"},12000);
-  return;
- }
- const q=QUESTIONS[i];
- qEl.textContent=q.q;
- aEl.innerHTML="";
- q.a.forEach((x,ix)=>{
-  const b=document.createElement('div');
-  b.className='btn';
-  b.textContent=x;
-  b.onclick=()=>{ if(ix===q.c) pts++; i++; showQ(); };
-  aEl.appendChild(b);
- });
- pEl.textContent=`Pytanie ${i+1}/${QUESTIONS.length}`;
+function showQuestion(){
+  if(current===7){
+    questionEl.textContent="Krótka przerwa reklamowa";
+    answersEl.innerHTML="";
+    showAd('monetag-q7',193728);
+    setTimeout(()=>{current++;showQuestion()},12000);
+    return;
+  }
+  if(current>=QUESTIONS.length){
+    questionEl.textContent="Ostatnia reklama przed wynikiem";
+    answersEl.innerHTML="";
+    showAd('monetag-final',193729);
+    setTimeout(()=>{finalText.textContent=points+" pkt";finalEl.style.display='flex'},12000);
+    return;
+  }
+  const q=QUESTIONS[current];
+  questionEl.textContent=q.q;
+  answersEl.innerHTML='';
+  q.a.forEach((ans,i)=>{
+    const b=document.createElement('div');
+    b.className='btn';
+    b.textContent=ans;
+    b.onclick=()=>{ if(i===q.correct) points++; current++; showQuestion(); };
+    answersEl.appendChild(b);
+  });
+  progressEl.textContent=`Pytanie ${current+1}/${QUESTIONS.length}`;
 }
 
-showQ();
+showQuestion();
 </script>
 </body>
 </html>
