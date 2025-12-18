@@ -75,9 +75,9 @@ window.monetag = window.monetag || [];
 <canvas id="fx"></canvas>
 
 <!-- baner pod pytaniami -->
-<div id="monetag-bottom" class="monetag-ad" style="display:none;"></div>
+<div id="monetag-bottom" class="monetag-ad"></div>
 
-<!-- kontenery reklamowe po 7 pytaniu i przed wynikiem -->
+<!-- reklamy po 7 pytaniu i przed wynikiem -->
 <div id="monetag-q7" class="monetag-ad" style="display:none;"></div>
 <div id="monetag-final" class="monetag-ad" style="display:none;"></div>
 
@@ -159,7 +159,7 @@ function showAd(containerId, zoneId){
   monetag.push({ zone: zoneId });
 }
 
-// pokaż górny/stały baner pod pytaniami od razu
+// baner pod pytaniami przez cały quiz
 showAd('monetag-bottom', 193727);
 
 function showQuestion(){
