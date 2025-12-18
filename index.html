@@ -13,7 +13,10 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
-body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+body{
+  background:linear-gradient(180deg,var(--bg1),#051028 80%);
+  color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
+}
 .page{width:100%;max-width:920px}
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -63,24 +66,21 @@ body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text)
 #nickWrap{display:flex;gap:8px;align-items:center}
 #nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-.monetag-ad{margin:12px 0;text-align:center;}
+#monetag-q7, #monetag-final, #monetag-top{display:none;margin:12px 0;text-align:center;}
 </style>
 
+<!-- Monetag Multitag -->
 <script>
 window.monetag = window.monetag || [];
 </script>
-<script async src="https://quge5.com/88/tag.min.js" data-cfasync="false"></script>
+<script src="https://quge5.com/88/tag.min.js" data-zone="194240" async data-cfasync="false"></script>
+
 </head>
 <body>
 <canvas id="fx"></canvas>
 
-<!-- baner pod pytaniami -->
-<div id="monetag-bottom" class="monetag-ad"></div>
-
-<!-- reklamy po 7 pytaniu i przed wynikiem -->
-<div id="monetag-q7" class="monetag-ad" style="display:none;"></div>
-<div id="monetag-final" class="monetag-ad" style="display:none;"></div>
-
+<!-- kontenery reklam Monetag -->
+<div id="monetag-top"></div>
 <div class="page">
   <div class="card" id="quizCard">
     <div class="top">
@@ -90,6 +90,10 @@ window.monetag = window.monetag || [];
       </div>
       <div class="score">Punkty: <span id="points">0</span></div>
     </div>
+
+    <!-- Reklama pod pytaniami -->
+    <div id="monetag-top"></div>
+
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
     <div class="meta">
@@ -99,11 +103,17 @@ window.monetag = window.monetag || [];
   </div>
 </div>
 
+<!-- Reklama po 7 pytaniu -->
+<div id="monetag-q7"></div>
+
+<!-- Reklama przed wynikiem -->
+<div id="monetag-final"></div>
+
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="final-actions">
+    <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
       <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
@@ -124,7 +134,6 @@ window.monetag = window.monetag || [];
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text');
-
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -153,28 +162,25 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-function showAd(containerId, zoneId){
+function showAd(containerId){
   const c = $(containerId);
-  c.style.display = 'block';
-  monetag.push({ zone: zoneId });
+  c.style.display='block';
+  monetag.push({ zone: 194240 });
 }
 
 function showQuestion(){
-  // baner pod pytaniami
-  showAd('monetag-bottom', 193727);
-
   if(current===7){
     questionEl.textContent="Krótka przerwa reklamowa";
     answersEl.innerHTML="";
-    showAd('monetag-q7', 193728);
+    showAd('monetag-q7');
     setTimeout(()=>{ current++; showQuestion(); }, 12000);
     return;
   }
   if(current>=sessionQuestions.length){
     questionEl.textContent="Ostatnia reklama przed wynikiem";
     answersEl.innerHTML="";
-    showAd('monetag-final', 193729);
-    setTimeout(finishQuiz, 12000);
+    showAd('monetag-final');
+    setTimeout(finishQuiz,12000);
     return;
   }
   const idx=sessionQuestions[current];
