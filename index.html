@@ -159,10 +159,10 @@ function showAd(containerId, zoneId){
   monetag.push({ zone: zoneId });
 }
 
-// baner pod pytaniami przez cały quiz
-showAd('monetag-bottom', 193727);
-
 function showQuestion(){
+  // baner pod pytaniami
+  showAd('monetag-bottom', 193727);
+
   if(current===7){
     questionEl.textContent="Krótka przerwa reklamowa";
     answersEl.innerHTML="";
