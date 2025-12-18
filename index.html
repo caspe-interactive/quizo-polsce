@@ -66,22 +66,21 @@ body{
 #nickWrap{display:flex;gap:8px;align-items:center}
 #nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+#monetag-main{margin-top:14px;text-align:center;}
 </style>
 
-<!-- Monetag -->
 <script>
 window.monetag = window.monetag || [];
 </script>
 <script async src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
 <script async src="https://quge5.com/88/tag.min.js" data-zone="194240" async data-cfasync="false"></script>
 <script async src="https://quge5.com/88/tag.min.js" data-zone="194242" async data-cfasync="false"></script>
-
 </head>
 <body>
 <canvas id="fx"></canvas>
 
 <!-- kontenery reklam -->
-<div id="monetag-top" style="display:none;"></div>
+<div id="monetag-main" style="display:none;"></div>
 <div id="monetag-q7" style="display:none;"></div>
 <div id="monetag-final" style="display:none;"></div>
 
@@ -96,6 +95,8 @@ window.monetag = window.monetag || [];
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
+    <!-- reklama pod pytaniami -->
+    <div id="monetag-main"></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Quiz gotowy do gry</div>
@@ -160,11 +161,10 @@ document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); pla
 function showAd(containerId){
   const c = $(containerId);
   c.style.display = 'block';
-  monetag.push({ zone: containerId==='monetag-top'?194238 : containerId==='monetag-q7'?194240:194242 });
+  monetag.push({ zone: containerId==='monetag-main'?194238 : containerId==='monetag-q7'?194240:194242 });
 }
 
 function showQuestion(){
-  // reklama po 7 pytaniu
   if(current===7){
     questionEl.textContent="Krótka przerwa reklamowa";
     answersEl.innerHTML="";
@@ -173,14 +173,12 @@ function showQuestion(){
     return;
   }
   if(current>=sessionQuestions.length){
-    // reklama przed wynikiem
     questionEl.textContent="Ostatnia reklama przed wynikiem";
     answersEl.innerHTML="";
     showAd('monetag-final');
     setTimeout(finishQuiz, 12000);
     return;
   }
-
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
@@ -216,7 +214,7 @@ function firework(){ if(fireworkRunning) return; fireworkRunning = true; const c
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
-showAd('monetag-top'); // reklama na górze przy starcie
+showAd('monetag-main'); // reklama pod pytaniami przy starcie
 showQuestion();
 </script>
 </body>
