@@ -66,21 +66,25 @@ body{
 #nickWrap{display:flex;gap:8px;align-items:center}
 #nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-#monetag-q7, #monetag-final, #monetag-top{display:none;margin:12px 0;text-align:center;}
 </style>
 
-<!-- Monetag Multitag -->
+<!-- Monetag -->
 <script>
 window.monetag = window.monetag || [];
 </script>
-<script src="https://quge5.com/88/tag.min.js" data-zone="194240" async data-cfasync="false"></script>
+<script async src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
+<script async src="https://quge5.com/88/tag.min.js" data-zone="194240" async data-cfasync="false"></script>
+<script async src="https://quge5.com/88/tag.min.js" data-zone="194242" async data-cfasync="false"></script>
 
 </head>
 <body>
 <canvas id="fx"></canvas>
 
-<!-- kontenery reklam Monetag -->
-<div id="monetag-top"></div>
+<!-- kontenery reklam -->
+<div id="monetag-top" style="display:none;"></div>
+<div id="monetag-q7" style="display:none;"></div>
+<div id="monetag-final" style="display:none;"></div>
+
 <div class="page">
   <div class="card" id="quizCard">
     <div class="top">
@@ -90,10 +94,6 @@ window.monetag = window.monetag || [];
       </div>
       <div class="score">Punkty: <span id="points">0</span></div>
     </div>
-
-    <!-- Reklama pod pytaniami -->
-    <div id="monetag-top"></div>
-
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
     <div class="meta">
@@ -102,12 +102,6 @@ window.monetag = window.monetag || [];
     </div>
   </div>
 </div>
-
-<!-- Reklama po 7 pytaniu -->
-<div id="monetag-q7"></div>
-
-<!-- Reklama przed wynikiem -->
-<div id="monetag-final"></div>
 
 <div id="final" aria-hidden="true">
   <div id="final-card">
@@ -134,6 +128,7 @@ window.monetag = window.monetag || [];
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text');
+
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -164,11 +159,12 @@ document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); pla
 
 function showAd(containerId){
   const c = $(containerId);
-  c.style.display='block';
-  monetag.push({ zone: 194240 });
+  c.style.display = 'block';
+  monetag.push({ zone: containerId==='monetag-top'?194238 : containerId==='monetag-q7'?194240:194242 });
 }
 
 function showQuestion(){
+  // reklama po 7 pytaniu
   if(current===7){
     questionEl.textContent="Krótka przerwa reklamowa";
     answersEl.innerHTML="";
@@ -177,12 +173,14 @@ function showQuestion(){
     return;
   }
   if(current>=sessionQuestions.length){
+    // reklama przed wynikiem
     questionEl.textContent="Ostatnia reklama przed wynikiem";
     answersEl.innerHTML="";
     showAd('monetag-final');
-    setTimeout(finishQuiz,12000);
+    setTimeout(finishQuiz, 12000);
     return;
   }
+
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
@@ -218,6 +216,7 @@ function firework(){ if(fireworkRunning) return; fireworkRunning = true; const c
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
+showAd('monetag-top'); // reklama na górze przy starcie
 showQuestion();
 </script>
 </body>
