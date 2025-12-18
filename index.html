@@ -79,11 +79,6 @@ window.monetag = window.monetag || [];
 <body>
 <canvas id="fx"></canvas>
 
-<!-- kontenery reklam -->
-<div id="monetag-main" style="display:none;"></div>
-<div id="monetag-q7" style="display:none;"></div>
-<div id="monetag-final" style="display:none;"></div>
-
 <div class="page">
   <div class="card" id="quizCard">
     <div class="top">
@@ -96,7 +91,7 @@ window.monetag = window.monetag || [];
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
     <!-- reklama pod pytaniami -->
-    <div id="monetag-main"></div>
+    <div id="monetag-main" style="display:none;"></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Quiz gotowy do gry</div>
@@ -158,24 +153,24 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-function showAd(containerId){
+function showAd(containerId, zoneId){
   const c = $(containerId);
   c.style.display = 'block';
-  monetag.push({ zone: containerId==='monetag-main'?194238 : containerId==='monetag-q7'?194240:194242 });
+  monetag.push({ zone: zoneId });
 }
 
 function showQuestion(){
   if(current===7){
     questionEl.textContent="Krótka przerwa reklamowa";
     answersEl.innerHTML="";
-    showAd('monetag-q7');
+    showAd('monetag-q7', 194240);
     setTimeout(()=>{ current++; showQuestion(); }, 12000);
     return;
   }
   if(current>=sessionQuestions.length){
     questionEl.textContent="Ostatnia reklama przed wynikiem";
     answersEl.innerHTML="";
-    showAd('monetag-final');
+    showAd('monetag-final', 194242);
     setTimeout(finishQuiz, 12000);
     return;
   }
@@ -214,7 +209,7 @@ function firework(){ if(fireworkRunning) return; fireworkRunning = true; const c
 function fireworkAnswer(){ firework(); }
 function fireworkFinal(){ firework(); }
 
-showAd('monetag-main'); // reklama pod pytaniami przy starcie
+showAd('monetag-main', 194238); // reklama pod pytaniami przy starcie
 showQuestion();
 </script>
 </body>
