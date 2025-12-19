@@ -5,125 +5,120 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 
-<!-- ===== MONETAG – JEDYNY KOD (RAZ!) ===== -->
-<script>
-  window.monetag = window.monetag || [];
-</script>
-<script async src="https://quge5.com/88/tag.min.js"
-        data-zone="194238"
-        data-cfasync="false"></script>
-
 <style>
-/* ===== STYL QUIZU – BEZ ZMIAN ===== */
-body{margin:0;font-family:Arial;background:#051028;color:#e6f7ff}
-.page{max-width:900px;margin:auto;padding:20px}
-.card{background:#0b1220;padding:20px;border-radius:14px}
-.question{font-size:1.4rem;text-align:center;margin:20px 0}
+:root{
+  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
+  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
+  --accent:#ffd27a; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
+body{
+  background:linear-gradient(180deg,var(--bg1),#051028 80%);
+  color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.page{width:100%;max-width:920px}
+.ad{background:#000;color:#fff;border-radius:12px;padding:8px;margin-bottom:12px;display:flex;justify-content:center}
+.ad.hidden{display:none}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:14px;padding:22px;
+}
+.question{font-size:1.4rem;text-align:center;margin:10px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){.answers{grid-template-columns:1fr}}
-.btn{padding:14px;border-radius:12px;background:#00f0ff;color:#000;
-font-weight:700;cursor:pointer;text-align:center}
-.btn.good{background:#16d36a}
-.btn.bad{background:#ff5c6c}
-#ad-main,#ad-q7,#ad-final{margin:20px 0;text-align:center}
-#ad-q7,#ad-final{display:none}
+.btn{
+  padding:14px;border-radius:12px;cursor:pointer;font-weight:800;
+  background:linear-gradient(90deg,var(--neon1),var(--neon2));
+  color:#fff;text-align:center;
+}
+.btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
+.btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.9)}
+#final-card{background:#081322;padding:28px;border-radius:14px;text-align:center}
+canvas{position:fixed;inset:0;pointer-events:none}
 </style>
 </head>
 
 <body>
+<canvas id="fx"></canvas>
 
 <div class="page">
+
+  <!-- REKLAMA 1: GÓRA -->
+  <div class="ad" id="adTop">
+    <script async data-cfasync="false"
+      src="https://quge5.com/88/tag.min.js"
+      data-zone="194238"></script>
+  </div>
+
   <div class="card">
+    <div id="question" class="question">Ładowanie…</div>
+    <div id="answers" class="answers"></div>
+  </div>
 
-    <div class="question" id="question">Ładowanie...</div>
+  <!-- REKLAMA 2: PO 7 PYTANIU -->
+  <div class="ad hidden" id="adMid"></div>
 
-    <!-- 🔴 REKLAMA 1 – POD PYTANIAMI -->
-    <div id="ad-main"></div>
+</div>
 
-    <div class="answers" id="answers"></div>
-    <div id="progress"></div>
-
+<!-- REKLAMA 3: PRZED WYNIKIEM -->
+<div id="final">
+  <div id="final-card">
+    <h2>Twój wynik</h2>
+    <div id="finalScore"></div>
+    <div class="ad" id="adFinal"></div>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
 
-<!-- 🔴 REKLAMA 2 – PO 7 PYTANIU -->
-<div id="ad-q7"></div>
-
-<!-- 🔴 REKLAMA 3 – PRZED WYNIKIEM -->
-<div id="ad-final"></div>
-
-<audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="ok" src="sounds/ding.mp3"></audio>
-<audio id="bad" src="sounds/buzzer.mp3"></audio>
+<audio id="ding" src="sounds/ding.mp3"></audio>
+<audio id="buzzer" src="sounds/buzzer.mp3"></audio>
+<audio id="bg" src="sounds/background.mp3" loop></audio>
 
 <script>
-/* ===== QUIZ ===== */
-const QUESTIONS=[
- {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
- {q:"Najdłuższa rzeka?",a:["Wisła","Odra","Bug","Warta"],c:0},
- {q:"Najwyższy szczyt?",a:["Rysy","Giewont","Śnieżka","Babia Góra"],c:0},
- {q:"Rok niepodległości?",a:["1918","1939","1945","1920"],c:0},
- {q:"Port morski?",a:["Gdańsk","Zakopane","Kielce","Opole"],c:0},
- {q:"Nobel – chemia?",a:["Skłodowska","Banach","Czochralski","Lem"],c:0},
- {q:"Polski hymn?",a:["Mazurek","Rota","Bogurodzica","Gaude"],c:0},
- {q:"Król Lechistanu?",a:["Kazimierz","Jagiełło","Zygmunt","Batory"],c:0},
- {q:"Największe miasto?",a:["Warszawa","Kraków","Łódź","Poznań"],c:0},
- {q:"Morze?",a:["Bałtyk","Czarne","Adriatyk","Północne"],c:0},
- {q:"Waluta?",a:["Złoty","Euro","Korona","Frank"],c:0},
- {q:"UE od?",a:["2004","1999","2010","1995"],c:0},
- {q:"Orzeł symbol?",a:["Godła","Flagi","Hymnu","Miasta"],c:0},
- {q:"Woj. śląskie miasto?",a:["Katowice","Opole","Bielsko","Rybnik"],c:0}
+const Q=[
+["Stolica Polski?",["Warszawa","Kraków","Gdańsk","Wrocław"],0],
+["Najdłuższa rzeka?",["Wisła","Odra","Bug","Warta"],0],
+["Rok niepodległości?",["1918","1939","1945","1905"],0],
+["Najwyższy szczyt?",["Rysy","Giewont","Śnieżka","Babia"],0],
+["Port morski?",["Gdańsk","Łódź","Opole","Rzeszów"],0],
+["Hymn zaczyna się?",["Jeszcze Polska…","Bogurodzica","Rota","Oda"],0],
+["Nobel chemia?",["Skłodowska","Banach","Kopernik","Curie"],0],
+["Król Lechistanu?",["Chrobry","Jagiełło","Kazimierz","Stary"],0],
 ];
 
-let i=0,points=0;
-const qEl=document.getElementById('question');
-const aEl=document.getElementById('answers');
-const pEl=document.getElementById('progress');
-
-let ad1=false,ad2=false,ad3=false;
-
-function loadAd(){
-  monetag.push({zone:194238});
-}
+let i=0,p=0;
+bg.play().catch(()=>{});
 
 function show(){
-  if(i===0 && !ad1){ ad1=true; loadAd(); }
-  if(i===7 && !ad2){
-    ad2=true;
-    document.getElementById('ad-q7').style.display='block';
-    loadAd();
+  if(i===7){
+    document.getElementById('adMid').classList.remove('hidden');
+    document.getElementById('adMid').innerHTML=
+      '<script async data-cfasync="false" src="https://quge5.com/88/tag.min.js" data-zone="194240"><\/script>';
   }
-  if(i>=QUESTIONS.length){
-    if(!ad3){
-      ad3=true;
-      document.getElementById('ad-final').style.display='block';
-      loadAd();
-    }
-    qEl.textContent="Koniec quizu – "+points+" pkt";
-    aEl.innerHTML="";
+  if(i>=Q.length){
+    document.getElementById('final').style.display='flex';
+    document.getElementById('finalScore').innerText=p+" pkt";
+    document.getElementById('adFinal').innerHTML=
+      '<script async data-cfasync="false" src="https://quge5.com/88/tag.min.js" data-zone="194240"><\/script>';
     return;
   }
-
-  const q=QUESTIONS[i];
-  qEl.textContent=q.q;
-  aEl.innerHTML="";
-  q.a.forEach((t,idx)=>{
-    const b=document.createElement('div');
-    b.className='btn';
-    b.textContent=t;
+  question.innerText=Q[i][0];
+  answers.innerHTML="";
+  Q[i][1].forEach((t,idx)=>{
+    const b=document.createElement("div");
+    b.className="btn";
+    b.innerText=t;
     b.onclick=()=>{
-      if(idx===q.c){b.classList.add('good');points++;document.getElementById('ok').play()}
-      else{b.classList.add('bad');document.getElementById('bad').play()}
-      i++;setTimeout(show,400);
+      if(idx===Q[i][2]){p++;ding.play();}
+      else buzzer.play();
+      i++;show();
     };
-    aEl.appendChild(b);
+    answers.appendChild(b);
   });
-  pEl.textContent=`Pytanie ${i+1}/14`;
 }
-
-document.getElementById('bg').play().catch(()=>{});
 show();
 </script>
-
 </body>
 </html>
