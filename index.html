@@ -4,159 +4,90 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-
-<!-- MONETAG – JEDEN LOADER GLOBALNY -->
-<script src="https://quge5.com/88/tag.min.js" async data-cfasync="false"></script>
-
 <style>
-body{
-  margin:0;
-  font-family:Arial,system-ui;
-  background:#071025;
-  color:#e6f7ff;
-  display:flex;
-  justify-content:center;
-}
-.page{max-width:900px;width:100%;padding:16px}
-.card{
-  background:#0b1220;
-  border-radius:14px;
-  padding:20px;
-}
-.ad{
-  background:#000;
-  min-height:120px;
-  margin:12px 0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  border-radius:12px;
-}
-.ad.show{display:flex}
-.question{text-align:center;font-size:1.3rem;margin:10px 0}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){.answers{grid-template-columns:1fr}}
-.btn{
-  background:linear-gradient(90deg,#00f0ff,#ff3fc4);
-  padding:12px;
-  border-radius:12px;
-  cursor:pointer;
-  text-align:center;
-  font-weight:700;
-}
-.meta{display:flex;justify-content:space-between;margin-top:10px;color:#9fb6d6}
-#final{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.85);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-#final-card{
-  background:#081322;
-  padding:30px;
-  border-radius:14px;
-  text-align:center;
-}
+:root{--bg1:#071025;--card:#0b1220;--text:#e6f7ff;--muted:#9fb6d6;--accent:#ffd27a;--radius:14px;}
+body{margin:0;font-family:Inter,system-ui,Roboto,Arial;background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+.page{width:100%;max-width:920px;}
+.card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:0 10px 40px rgba(0,0,0,0.6);border:1px solid rgba(0,255,255,0.04);}
+.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text);}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:700px){.answers{grid-template-columns:1fr}.question{font-size:1.08rem}}
+.btn{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;background:linear-gradient(90deg,#00f0ff,#ff3fc4);border:1px solid rgba(255,255,255,0.02);transition:transform .12s ease,box-shadow .12s ease,opacity .12s;}
+.btn:hover{transform:translateY(-4px);box-shadow:0 18px 60px rgba(0,240,255,0.06);}
+.ad{background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border-radius:12px;padding:8px;text-align:center;height:120px;position:relative;}
+.ad-status{position:absolute;top:4px;right:8px;font-size:0.8rem;color:#ffd27a;}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200;}
+#final-card{background:linear-gradient(180deg,#081322,#06121f);padding:30px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,0.7);text-align:center;color:var(--text);max-width:580px;width:94%;}
+.final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px;}
+.final-actions .btn{font-size:1rem;padding:12px 14px;}
 </style>
 </head>
-
 <body>
 <div class="page">
 
   <!-- REKLAMA GÓRA -->
-  <div id="adTop" class="ad"></div>
+  <div id="adTop" class="ad"><span class="ad-status">Ładowanie reklamy...</span></div>
 
-  <div class="card">
-    <div style="display:flex;justify-content:space-between">
-      <strong>QuizoPolsce</strong>
-      <div>Punkty: <span id="points">0</span></div>
+  <div class="card" id="quizCard">
+    <div class="top">
+      <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
     </div>
-
-    <div id="question" class="question"></div>
+    <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
     <!-- REKLAMA PO 7 PYTANIU -->
-    <div id="adMid" class="ad"></div>
+    <div id="adMid" class="ad"><span class="ad-status">Ładowanie reklamy...</span></div>
 
-    <div class="meta">
-      <div id="progress"></div>
-    </div>
   </div>
 </div>
 
 <!-- FINAL -->
 <div id="final">
   <div id="final-card">
-    <h2>Twój wynik</h2>
-    <div id="final-text"></div>
-    <div id="adFinal" class="ad show"></div>
-    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+    <h1>Twój wynik</h1>
+    <div id="final-text">0 pkt</div>
+    <div id="adFinal" class="ad"><span class="ad-status">Ładowanie reklamy...</span></div>
+    <div class="final-actions">
+      <div class="btn" id="retryBtn">Zagraj ponownie</div>
+      <div class="btn" id="endBtn">Koniec</div>
+    </div>
   </div>
 </div>
 
 <script>
-const QUESTIONS=[
-  { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], c:0 },
-  { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], c:0 },
-  { q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], c:0 },
-  { q:"Polska w NATO od?", a:["1999","2004","1990","2001"], c:0 },
-  { q:"Skoczek z medalami IO?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], c:0 },
-  { q:"Największe miasto Mazowsza?", a:["Warszawa","Radom","Płock","Siedlce"], c:0 },
-  { q:"Polski noblista – chemia?", a:["Maria Skłodowska-Curie","Banach","Kalecki","Czochralski"], c:0 },
-  { q:"Najdłuższa rzeka?", a:["Wisła","Odra","Bug","Warta"], c:0 },
-  { q:"Najwyższy szczyt?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], c:0 },
-  { q:"Rok niepodległości?", a:["1918","1945","1914","1939"], c:0 },
-  { q:"Orzeł to symbol?", a:["Godła","Flagi","Hymnu","Miasta"], c:0 },
-  { q:"Największe miasto Śląska?", a:["Katowice","Gliwice","Bytom","Zabrze"], c:0 },
-  { q:"Hymn zaczyna się od?", a:["Jeszcze Polska nie zginęła","Mazurka","Bogurodzicy","Roty"], c:0 },
-  { q:"Król „Lew Lechistanu”?", a:["Kazimierz Wielki","Chrobry","Jagiełło","Zygmunt"], c:0 }
-];
-
-let i=0, pts=0;
-const q=document.getElementById("question");
-const a=document.getElementById("answers");
-
+// --- Funkcja minimalnego ładowania reklam ---
 function loadAd(el, zone){
   if(el.dataset.loaded) return;
-  el.dataset.loaded="1";
-  const s=document.createElement("script");
-  s.src="https://quge5.com/88/tag.min.js";
-  s.dataset.zone=zone;
-  s.async=true;
+  el.dataset.loaded = "1";
+  const s = document.createElement("script");
+  s.src = "https://nap5k.com/tag.min.js";
+  s.dataset.zone = zone;
+  s.async = true;
   el.appendChild(s);
-  el.classList.add("show");
+  el.style.display = "flex";
 }
 
-// ZAŁADUJ GÓRĘ RAZ
-loadAd(adTop,"194238");
+// Wstawienie reklam
+document.addEventListener('DOMContentLoaded', ()=>{
+  const adTop = document.getElementById("adTop");
+  const adMid = document.getElementById("adMid");
+  const adFinal = document.getElementById("adFinal");
 
-function show(){
-  if(i===7){
-    loadAd(adMid,"194240");
-    setTimeout(()=>{adMid.style.display="none"; i++; show()},12000);
-    return;
-  }
-  if(i>=QUESTIONS.length){
-    loadAd(adFinal,"194242");
-    document.getElementById("final-text").innerText=pts+" pkt";
-    document.getElementById("final").style.display="flex";
-    return;
-  }
-  const Q=QUESTIONS[i];
-  q.innerText=Q.q;
-  a.innerHTML="";
-  Q.a.forEach((x,n)=>{
-    const b=document.createElement("div");
-    b.className="btn";
-    b.innerText=x;
-    b.onclick=()=>{ if(n===Q.c)pts++; document.getElementById("points").innerText=pts; i++; show(); };
-    a.appendChild(b);
-  });
-  document.getElementById("progress").innerText=`Pytanie ${i+1}/${QUESTIONS.length}`;
-}
+  // adTop od razu
+  loadAd(adTop,"10310917");
 
-show();
+  // Minimalna integracja z Twoim istniejącym showQuestion
+  const originalShowQuestion = window.showQuestion;
+  window.showQuestion = function(){
+    if(typeof originalShowQuestion === "function") originalShowQuestion();
+    if(window.current === 7){ // po 7 pytaniu
+      loadAd(adMid,"10310895");
+    }
+    if(window.current >= window.QUESTIONS?.length){ // przed wynikiem
+      loadAd(adFinal,"10302772");
+    }
+  }
+});
 </script>
 </body>
 </html>
