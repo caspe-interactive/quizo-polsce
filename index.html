@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <meta name="theme-color" content="#051028">
-
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -19,45 +18,32 @@ body{
   color:var(--text);display:flex;justify-content:center;align-items:center;padding:20px;
 }
 .page{max-width:920px;width:100%}
-
 .ad{background:#000;height:120px;margin:10px 0;border-radius:12px;
 display:flex;align-items:center;justify-content:center;color:#fff}
-
 .card{background:#0b1220;padding:22px;border-radius:14px}
 .question{text-align:center;font-size:1.3rem;margin:12px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){.answers{grid-template-columns:1fr}}
-
 .btn{padding:14px;border-radius:12px;text-align:center;font-weight:800;
 background:linear-gradient(90deg,#00f0ff,#ff3fc4);cursor:pointer}
 .btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
-
 #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
 background:rgba(0,0,0,.8);z-index:1000}
 #final-card{background:#081322;padding:30px;border-radius:14px;text-align:center}
-canvas{position:fixed;inset:0;pointer-events:none}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1000}
 </style>
 </head>
-
 <body>
 <canvas id="fx"></canvas>
-
 <div class="page">
-
-<!-- TOP AD -->
-<div class="ad" id="adTop"></div>
-
-<div class="card">
-<div id="question" class="question"></div>
-<div id="answers" class="answers"></div>
-
-<!-- MID AD -->
-<div class="ad" id="adMid" style="display:none"></div>
+  <div class="ad" id="adTop"></div>
+  <div class="card">
+    <div id="question" class="question"></div>
+    <div id="answers" class="answers"></div>
+    <div class="ad" id="adMid" style="display:none"></div>
+  </div>
 </div>
-</div>
-
-<!-- FINAL -->
 <div id="final">
   <div id="final-card">
     <h2>Twój wynik</h2>
@@ -93,58 +79,105 @@ const Q=[
 let i=0,pts=0;
 const qEl=document.getElementById("question");
 const aEl=document.getElementById("answers");
-const mid=document.getElementById("adMid");
+const adTop=document.getElementById("adTop");
+const adMid=document.getElementById("adMid");
+const adFinal=document.getElementById("adFinal");
+
+const bg=document.getElementById("bg");
+const ding=document.getElementById("ding");
+const buzz=document.getElementById("buzz");
+const fan=document.getElementById("fan");
 
 bg.play().catch(()=>{});
 
+// --- Reklamy ---
 function loadTop(){
-const s=document.createElement("script");
-s.src="https://nap5k.com/tag.min.js";
-s.dataset.zone="10310917";
-adTop.appendChild(s);
+  const s=document.createElement("script");
+  s.src="https://nap5k.com/tag.min.js";
+  s.dataset.zone="10310917";
+  adTop.appendChild(s);
 }
 function loadMid(){
-const s=document.createElement("script");
-s.src="https://nap5k.com/tag.min.js";
-s.dataset.zone="10310895";
-mid.appendChild(s);
+  const s=document.createElement("script");
+  s.src="https://nap5k.com/tag.min.js";
+  s.dataset.zone="10310895";
+  adMid.appendChild(s);
 }
 function loadFinal(){
-const s=document.createElement("script");
-s.src="https://nap5k.com/tag.min.js";
-s.dataset.zone="10302772";
-adFinal.appendChild(s);
+  const s=document.createElement("script");
+  s.src="https://nap5k.com/tag.min.js";
+  s.dataset.zone="10302772";
+  adFinal.appendChild(s);
 }
 
+// --- Fajerwerki ---
+let fwRunning=false;
+function firework(){
+  if(fwRunning) return;
+  fwRunning=true;
+  const c=document.getElementById("fx");
+  const ctx=c.getContext("2d");
+  c.width=innerWidth; c.height=innerHeight;
+  const colors=["#ff3fc4","#00f0ff","#16d36a","#ffd27a","#ff5c6c","#ff8a00"];
+  const p=[];
+  for(let b=0;b<5;b++){
+    const x=Math.random()*c.width;
+    const y=Math.random()*c.height*0.5;
+    for(let i=0;i<40;i++){
+      p.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,a:1,c:colors[Math.floor(Math.random()*colors.length)],s:2+Math.random()*2});
+    }
+  }
+  function anim(){
+    ctx.fillStyle="rgba(0,0,0,0.15)";
+    ctx.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){
+      const e=p[i];
+      ctx.globalAlpha=e.a;
+      ctx.fillStyle=e.c;
+      ctx.beginPath();
+      ctx.arc(e.x,e.y,e.s,0,Math.PI*2);
+      ctx.fill();
+      e.x+=e.vx;e.y+=e.vy;e.vy+=0.15;e.a-=0.02;
+      if(e.a<=0) p.splice(i,1);
+    }
+    if(p.length>0) requestAnimationFrame(anim);
+    else { ctx.clearRect(0,0,c.width,c.height); fwRunning=false; }
+  }
+  anim();
+}
+
+// --- Logika quizu ---
 function show(){
-if(i===7){
-mid.style.display="flex";
-loadMid();
-setTimeout(()=>{mid.style.display="none";i++;show();},15000);
-return;
-}
-if(i>=Q.length){
-document.getElementById("finalText").textContent=pts+" pkt";
-document.getElementById("final").style.display="flex";
-loadFinal(); fan.play();
-return;
-}
-qEl.textContent=Q[i][0];
-aEl.innerHTML="";
-Q[i][1].forEach((t,n)=>{
-const b=document.createElement("div");
-b.className="btn";
-b.textContent=t;
-b.onclick=()=>{
-if(n===Q[i][2]){b.classList.add("good");pts++;ding.play();}
-else{b.classList.add("bad");buzz.play();}
-i++;setTimeout(show,400);
-};
-aEl.appendChild(b);
-});
+  if(i===7){
+    adMid.style.display="flex";
+    loadMid();
+    setTimeout(()=>{adMid.style.display="none";i++;show();},15000);
+    return;
+  }
+  if(i>=Q.length){
+    document.getElementById("finalText").textContent=pts+" pkt";
+    document.getElementById("final").style.display="flex";
+    loadFinal();
+    fan.play();
+    firework();
+    return;
+  }
+  qEl.textContent=Q[i][0];
+  aEl.innerHTML="";
+  Q[i][1].forEach((t,n)=>{
+    const b=document.createElement("div");
+    b.className="btn";
+    b.textContent=t;
+    b.onclick=()=>{
+      if(n===Q[i][2]){b.classList.add("good");pts++;ding.play();firework();}
+      else{b.classList.add("bad");buzz.play();}
+      i++;setTimeout(show,400);
+    };
+    aEl.appendChild(b);
+  });
 }
 
-function restart(){i=0;pts=0;final.style.display="none";show();}
+function restart(){i=0;pts=0;document.getElementById("final").style.display="none";show();}
 
 loadTop();
 show();
