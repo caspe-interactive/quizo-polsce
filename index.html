@@ -26,6 +26,9 @@ body{
 .ad-status{
   position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
 }
+.ad-video{
+  width:100%; height:100%; border:none; border-radius:12px;
+}
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -74,17 +77,11 @@ body{
 #nickWrap{display:flex;gap:8px;align-items:center}
 #nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-
-/* ukrywa automatyczne reklamy Monetag w narożnikach */
-iframe[style*="position: fixed"] {
-  display: none !important;
-}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <!-- banner startowy -->
   <div class="ad-top" id="adTop"><span class="ad-status">Ładowanie reklamy...</span></div>
 
   <div class="card" id="quizCard">
@@ -98,8 +95,10 @@ iframe[style*="position: fixed"] {
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
 
-    <!-- wideo po 7 pytaniu -->
-    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">Ładowanie wideo reklamy...</span></div>
+    <div class="ad-mid" id="adMid" style="display:none;">
+      <span class="ad-status">Ładowanie wideo reklamy...</span>
+      <iframe id="adVideoMid" class="ad-video" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    </div>
 
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
@@ -107,8 +106,10 @@ iframe[style*="position: fixed"] {
     </div>
   </div>
 
-  <!-- wideo przed wynikiem -->
-  <div class="ad-final" id="adFinal" style="display:none;"><span class="ad-status">Ładowanie wideo reklamy...</span></div>
+  <div class="ad-final" id="adFinal" style="display:none;">
+    <span class="ad-status">Ładowanie wideo reklamy...</span>
+    <iframe id="adVideoFinal" class="ad-video" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
 </div>
 
 <div id="final" aria-hidden="true">
@@ -134,10 +135,12 @@ iframe[style*="position: fixed"] {
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
+// -- przygotowanie pytań i quiz --
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal');
+      adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal'),
+      adVideoMid=$('adVideoMid'), adVideoFinal=$('adVideoFinal');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -163,38 +166,40 @@ let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 
-function playAudio(audio){ audio.play().catch(()=>{}); }
-document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
-document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
+document.addEventListener('DOMContentLoaded',()=>{ bg.play().catch(()=>{}); });
+document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
 
-// --- Monetag Banner / Video strefy ---
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310895'; s.src='https://nap5k.com/tag.min.js'; adTop.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310945'; s.src='https://nap5k.com/tag.min.js'; adMid.appendChild(s); })();
-(function(){ const s=document.createElement('script'); s.dataset.zone='10310963'; s.src='https://nap5k.com/tag.min.js'; adFinal.appendChild(s); })();
+// ustawienie linków do wideo reklam (zmień na własne wideo)
+const VIDEO_MID_SRC="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1";
+const VIDEO_FINAL_SRC="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1";
 
-// --- Quiz logic ---
+// --- logika quizu z wideo reklamami ---
 function showQuestion(){
   if(current===7){
-    adMid.style.display='flex';
     adTop.style.display='none';
+    adMid.style.display='flex';
+    adVideoMid.src=VIDEO_MID_SRC;
     questionEl.textContent="Oglądaj reklamę wideo, aby kontynuować";
     answersEl.innerHTML="";
     setTimeout(()=>{
       adMid.style.display='none';
+      adVideoMid.src="";
       current++;
       showQuestion();
-    },15000);
+    },20000);
     return;
   }
   if(current>=sessionQuestions.length){
-    adFinal.style.display='flex';
     adTop.style.display='none';
+    adFinal.style.display='flex';
+    adVideoFinal.src=VIDEO_FINAL_SRC;
     questionEl.textContent="Oglądaj reklamę wideo, aby zobaczyć wynik";
     answersEl.innerHTML="";
     setTimeout(()=>{
       adFinal.style.display='none';
+      adVideoFinal.src="";
       finishQuiz();
-    },15000);
+    },20000);
     return;
   }
   adTop.style.display='flex';
