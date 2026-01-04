@@ -80,10 +80,12 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 </head>
 <body>
 <canvas id="fx"></canvas>
+
 <div class="page">
+  <!-- Top banner Monetag -->
   <div class="ad-top" id="adTop"></div>
   <script>
-  (function(s){s.dataset.zone='10306648'; s.src='https://gizokraijaw.net/vignette.min.js';})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+    (function(s){s.dataset.zone='10306648'; s.src='https://gizokraijaw.net/vignette.min.js';})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
   </script>
 
   <div class="card" id="quizCard">
@@ -99,6 +101,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   </div>
 </div>
 
+<!-- Mid i Final overlay wideo -->
 <div class="ad-overlay" id="adMid"></div>
 <div class="ad-overlay" id="adFinal"></div>
 
@@ -109,7 +112,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
-      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
+      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff3f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
       <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
       <div class="install-hint" id="installHint">Aby zainstalować: kliknij „Zapisz na ekranie głównym”</div>
     </div>
@@ -125,10 +128,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
+// --- quiz logic ---
 const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
-progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal');
+const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points');
+const finalEl=$('final'), finalText=$('final-text');
+const adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -156,6 +160,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
 document.addEventListener('DOMContentLoaded',()=>{ bg.play().catch(()=>{}); });
 document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
 
+// --- wideo reklamy Monetag ---
 const MID_ZONE='10306655', FINAL_ZONE='10306651';
 function loadVideoAd(containerId,zone){
   const c=$(containerId); c.innerHTML='';
@@ -166,18 +171,14 @@ function loadVideoAd(containerId,zone){
   c.style.display='flex';
 }
 
-// --- logika quizu ---
+// --- quiz logic ---
 function showQuestion(){
   if(current===7){
     adTop.style.display='none';
     loadVideoAd('adMid',MID_ZONE);
     questionEl.textContent="Oglądaj reklamę wideo, aby kontynuować";
     answersEl.innerHTML="";
-    setTimeout(()=>{
-      adMid.style.display='none';
-      current++;
-      showQuestion();
-    },20000);
+    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },20000);
     return;
   }
   if(current>=sessionQuestions.length){
@@ -185,10 +186,7 @@ function showQuestion(){
     loadVideoAd('adFinal',FINAL_ZONE);
     questionEl.textContent="Oglądaj reklamę wideo, aby zobaczyć wynik";
     answersEl.innerHTML="";
-    setTimeout(()=>{
-      adFinal.style.display='none';
-      finishQuiz();
-    },20000);
+    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },20000);
     return;
   }
 
@@ -208,21 +206,20 @@ function showQuestion(){
     b.onclick=()=>answer(obj.i,b,idx);
     answersEl.appendChild(b);
   });
-  progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
 function answer(idxAnswer,btn,questionIndex){
   const correct=QUESTIONS[questionIndex].correct;
   if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
   else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
-  pointsEl.textContent=points;
+  points++;
   current++;
   setTimeout(showQuestion,400);
 }
 
 function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; setTimeout(fireworkFinal,500); }
-$('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
-$('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
+$('retryBtn').onclick = ()=>{ points=0; current=0; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
+$('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }); } };
 $('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
 
 let fireworkRunning=false;
