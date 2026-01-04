@@ -76,7 +76,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop"></div>
+  <div class="ad-top" id="adTop">
+    <!-- Banner reklama na początku -->
+    <script src="https://quge5.com/88/tag.min.js" data-zone="196105" async data-cfasync="false"></script>
+  </div>
+
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -93,6 +97,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
       <div class="small-muted">Miejsca reklamowe gotowe</div>
     </div>
   </div>
+
   <div class="ad-bottom" id="adBottom"></div>
 </div>
 
@@ -153,9 +158,7 @@ function playAudio(audio){ audio.play().catch(()=>{}); }
 document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
 document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// --- Quiz logic ---
 function showQuestion(){
-  // Po 7 pytaniu wyświetl adMid
   if(current===7){
     adMid.innerHTML='<script src="https://quge5.com/88/tag.min.js" data-zone="196106" async data-cfasync="false"><\/script>';
     adMid.style.display='flex';
@@ -164,7 +167,6 @@ function showQuestion(){
     setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },20000);
     return;
   }
-  // Przed wynikiem adFinal
   if(current>=sessionQuestions.length){
     adFinal.innerHTML='<script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"><\/script>';
     adFinal.style.display='flex';
