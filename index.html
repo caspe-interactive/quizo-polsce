@@ -82,15 +82,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
   <!-- AD TOP -->
   <div class="ad-top" id="adTop">
-    <span class="ad-status">Ładowanie reklamy...</span>
-    <div id="monetagAdTop"></div>
-    <script>
-      (function(s){
-        s.dataset.zone='10306651';
-        s.src='https://a.monetag.com/serve/10306651.js';
-        document.getElementById('monetagAdTop').appendChild(s);
-      })(document.createElement('script'));
-    </script>
+    <script type="text/javascript" src="https://a.monetag.com/serve/10306651.js" async></script>
   </div>
 
   <!-- QUIZ CARD -->
@@ -107,15 +99,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
     <!-- AD MID po 7 pytaniu -->
     <div class="ad-mid" id="adMid" style="display:none;">
-      <span class="ad-status">Ładowanie reklamy wideo...</span>
-      <div id="monetagAdMid"></div>
-      <script>
-        (function(s){
-          s.dataset.zone='10306652';
-          s.src='https://a.monetag.com/serve/10306652.js';
-          document.getElementById('monetagAdMid').appendChild(s);
-        })(document.createElement('script'));
-      </script>
+      <script type="text/javascript" src="https://a.monetag.com/serve/10306652.js" async></script>
     </div>
 
     <div class="meta">
@@ -126,15 +110,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
   <!-- AD FINAL przed wynikiem -->
   <div class="ad-final" id="adFinal" style="display:none;">
-    <span class="ad-status">Ładowanie reklamy wideo...</span>
-    <div id="monetagAdFinal"></div>
-    <script>
-      (function(s){
-        s.dataset.zone='10306653';
-        s.src='https://a.monetag.com/serve/10306653.js';
-        document.getElementById('monetagAdFinal').appendChild(s);
-      })(document.createElement('script'));
-    </script>
+    <script type="text/javascript" src="https://a.monetag.com/serve/10306653.js" async></script>
   </div>
 
 </div>
@@ -162,12 +138,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// Quiz JS z automatycznymi reklamami
+// -- quiz logic --
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
       adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal');
-
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -195,61 +170,38 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
 document.addEventListener('DOMContentLoaded',()=>{ bg.play().catch(()=>{}); });
 document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
 
-// Pokaż pytanie / obsługa reklam
 function showQuestion(){
-  if(current===7){ // po 7 pytaniu AdMid
-    adTop.style.display='none';
-    adMid.style.display='flex';
+  if(current===7){ 
+    adTop.style.display='none'; adMid.style.display='flex';
     questionEl.textContent="Oglądaj reklamę wideo, aby kontynuować";
     answersEl.innerHTML="";
-    setTimeout(()=>{
-      adMid.style.display='none';
-      current++;
-      showQuestion();
-    },20000);
+    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },20000);
     return;
   }
-  if(current>=sessionQuestions.length){ // przed wynikiem AdFinal
-    adTop.style.display='none';
-    adFinal.style.display='flex';
+  if(current>=sessionQuestions.length){
+    adTop.style.display='none'; adFinal.style.display='flex';
     questionEl.textContent="Oglądaj reklamę wideo, aby zobaczyć wynik";
     answersEl.innerHTML="";
-    setTimeout(()=>{
-      adFinal.style.display='none';
-      finishQuiz();
-    },20000);
+    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },20000);
     return;
   }
-  adTop.style.display='flex';
-  adMid.style.display='none';
-  adFinal.style.display='none';
-
-  const idx=sessionQuestions[current];
-  const q=QUESTIONS[idx];
-  questionEl.textContent=q.q;
-  answersEl.innerHTML='';
-  const shuffled=q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5);
-  shuffled.forEach(obj=>{
-    const b=document.createElement('div');
-    b.className='btn';
-    b.textContent=obj.ans;
+  adTop.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
+  const idx=sessionQuestions[current], q=QUESTIONS[idx];
+  questionEl.textContent=q.q; answersEl.innerHTML='';
+  q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
+    const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans;
     b.onclick=()=>answer(obj.i,b,idx);
     answersEl.appendChild(b);
   });
   progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
-
 function answer(idxAnswer,btn,questionIndex){
   const correct=QUESTIONS[questionIndex].correct;
   if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(fireworkAnswer,500); points++; }
   else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
-  pointsEl.textContent=points;
-  current++;
-  setTimeout(showQuestion,400);
+  pointsEl.textContent=points; current++; setTimeout(showQuestion,400);
 }
-
 function finishQuiz(){ $('final-text').textContent=`${points} pkt`; $('final').style.display='flex'; setTimeout(fireworkFinal,500); }
-
 $('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); $('final').style.display='none'; showQuestion(); };
 $('shareBtn').onclick = ()=>{ const url=location.href; if(navigator.share){ navigator.share({title:'QuizoPolsce',text:'Zagraj w QuizoPolsce — sprawdź wiedzę o Polsce!',url }).catch(()=>{}); } else{ navigator.clipboard?.writeText(url).then(()=>{ const msg=$('msgBox'); msg.textContent='Link skopiowany do schowka'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',2000); }).catch(()=>{ alert('Skopiuj link: '+url); }); } };
 $('endBtn').onclick = ()=>{ $('final').style.display='none'; };
