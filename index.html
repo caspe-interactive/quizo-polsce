@@ -1,135 +1,206 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce — Zarabiaj na wiedzy</title>
-<!-- KOD ANTI-ADBLOCK LUB GŁÓWNY MULTITAG MONETAG -->
-<script src="alwingulla.com" data-cfasync="false" async></script>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>QuizoPolsce 2026 — Quiz z nagrodami</title>
+    
+    <!-- MONETAG ANTI-ADBLOCK / GŁÓWNY TAG -->
+    <script src="alwingulla.com" data-cfasync="false" async></script>
 
-<style>
-:root{
-  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
-  --accent:#ffd27a; --radius:14px;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,sans-serif; background:var(--bg1); color:var(--text); overflow-x:hidden;}
-body{display:flex;align-items:center;justify-content:center;padding:20px;}
-.page{width:100%;max-width:600px}
-.card{
-  background:rgba(255,255,255,0.03); border-radius:var(--radius); padding:25px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.1);
-}
-.title{font-weight:800;color:var(--neon1); text-align:center; margin-bottom:15px; font-size:1.2rem}
-.question{font-size:1.3rem;text-align:center;margin-bottom:20px; min-height:60px}
-.answers{display:grid;grid-template-columns:1fr;gap:12px}
-.btn{
-  padding:15px; border-radius:12px; cursor:pointer; text-align:center;
-  font-weight:700; background:linear-gradient(90deg,var(--neon1),var(--neon2));
-  transition:0.2s; border:none; color:white;
-}
-.btn:active{transform:scale(0.96)}
-.hidden{display:none}
-.progress-container{width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; margin-bottom:20px}
-.progress-fill{height:100%; background:var(--neon1); width:0%; transition:0.3s; border-radius:3px}
-</style>
+    <style>
+        :root{
+            --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
+            --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
+            --accent:#ffd27a; --radius:14px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0;font-family:'Inter', sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
+        body{display:flex;align-items:center;justify-content:center;padding:20px;}
+        
+        #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; }
+        
+        .page{width:100%; max-width:500px; position:relative; z-index:10;}
+        .card{
+            background:rgba(255,255,255,0.03); border-radius:var(--radius); padding:25px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .title{font-weight:800; color:var(--neon1); text-align:center; margin-bottom:15px; font-size:1.2rem; text-transform:uppercase; letter-spacing:1px;}
+        .question{font-size:1.25rem; text-align:center; margin-bottom:20px; min-height:60px; font-weight:600;}
+        .answers{display:grid; grid-template-columns:1fr; gap:10px;}
+        
+        .btn{
+            padding:14px; border-radius:12px; cursor:pointer; text-align:center;
+            font-weight:700; background:linear-gradient(90deg,var(--neon1),var(--neon2));
+            transition:0.2s; border:none; color:white; font-size:1rem;
+        }
+        .btn:active{transform:scale(0.96);}
+        .hidden{display:none !important;}
+
+        .progress-container{width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; margin-bottom:15px;}
+        .progress-fill{height:100%; background:var(--neon1); width:0%; transition:0.3s; border-radius:3px; box-shadow:0 0 10px var(--neon1);}
+        
+        .ad-box { background:#000; min-height:150px; margin:15px 0; display:flex; align-items:center; justify-content:center; border-radius:10px; font-size:0.7rem; color:#444; }
+    </style>
 </head>
 <body>
 
+<canvas id="fx"></canvas>
+
+<!-- AUDIO -->
+<audio id="snd-ding" src="sounds/ding.mp3"></audio>
+<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
+<audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
+<audio id="bg-music" loop src="sounds/background.mp3"></audio>
+
 <div class="page">
+    <!-- WIDOK QUIZU -->
     <div class="card" id="quizBox">
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
-        <div id="q-num" style="font-size:0.8rem; color:var(--muted); margin-bottom:10px">Pytanie 1/14</div>
-        <div class="question" id="q-text">Ładowanie pytania...</div>
+        <div id="q-num" style="font-size:0.8rem; color:var(--muted); margin-bottom:8px">Pytanie 1/14</div>
+        <div class="question" id="q-text">Ładowanie...</div>
         <div class="answers" id="ans-box"></div>
     </div>
 
-    <!-- EKRAN PRZERWY (REKLAMA) -->
-    <div class="card hidden" id="ad-screen" style="text-align:center">
-        <h2 id="ad-title" style="color:var(--accent)">Przerwa na reklamę</h2>
-        <p>Obejrzyj krótką prezentację, aby kontynuować.</p>
-        <div id="ad-trigger-zone" style="min-height:150px; border:1px dashed var(--muted); margin:20px 0; display:flex; align-items:center; justify-content:center; font-size:0.8rem">
-            REKLAMA ŁADUJE SIĘ...
+    <!-- REKLAMA PO 7 PYTANIU -->
+    <div class="card hidden" id="ad-mid-screen" style="text-align:center">
+        <h2 style="color:var(--accent)">Przerwa na reklamę</h2>
+        <p>Obejrzyj krótką reklamę, aby odblokować resztę pytań.</p>
+        <div class="ad-box" id="ad-mid-container">
+            <!-- SKRYPT MONETAG 10306652 -->
         </div>
-        <button class="btn" style="width:100%" onclick="closeAdScreen()">KONTYNUUJ QUIZ</button>
+        <button class="btn" style="width:100%" onclick="resumeAfterAd('mid')">KONTYNUUJ QUIZ</button>
     </div>
 
-    <!-- WYNIK FINALNY -->
-    <div class="card hidden" id="final-screen" style="text-align:center">
-        <h1 style="color:var(--good)">Koniec!</h1>
-        <div id="final-score" style="font-size:3.5rem; font-weight:800; color:var(--accent); margin:20px 0">0/14</div>
+    <!-- REKLAMA PRZED WYNIKIEM -->
+    <div class="card hidden" id="ad-final-screen" style="text-align:center">
+        <h2 style="color:var(--neon1)">Wynik jest gotowy!</h2>
+        <p>Ostatnia reklama przed podsumowaniem:</p>
+        <div class="ad-box" id="ad-final-container">
+            <!-- SKRYPT MONETAG 10306653 -->
+        </div>
+        <button class="btn" style="width:100%" onclick="resumeAfterAd('final')">ZOBACZ MÓJ WYNIK</button>
+    </div>
+
+    <!-- EKRAN KOŃCOWY -->
+    <div class="card hidden" id="result-screen" style="text-align:center">
+        <h1 style="color:var(--good); margin:0;">Gratulacje!</h1>
+        <p style="color:var(--muted)">Twój wynik to:</p>
+        <div id="score-text" style="font-size:4rem; font-weight:900; color:var(--accent); margin:15px 0">0/14</div>
         <button class="btn" style="width:100%" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
     </div>
 </div>
 
 <script>
-const QUESTIONS=[
-  {q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], c:0},
-  {q:"Najdłuższa rzeka?", a:["Odra","Wisła","Warta","Bug"], c:1},
-  {q:"Rok chrztu Polski?", a:["966","1000","1410","1918"], c:0},
-  {q:"Najwyższe góry w Polsce?", a:["Sudety","Bieszczady","Tatry","Góry Świętokrzyskie"], c:2},
-  {q:"Symbol polskiego godła?", a:["Lew","Orzeł","Żubr","Bocian"], c:1},
-  {q:"Największe jezioro?", a:["Mamry","Śniardwy","Hańcza","Wigry"], c:1},
-  {q:"Kto napisał 'Pan Tadeusz'?", a:["Słowacki","Mickiewicz","Prus","Miłosz"], c:1},
-  {q:"Waluta Polski?", a:["Euro","Dolar","Złoty","Funt"], c:2},
-  {q:"Polski noblista z 2018 r.?", a:["Wałęsa","Tokarczuk","Szymborska","Sienkiewicz"], c:1},
-  {q:"Główny port nad Bałtykiem?", a:["Szczecin","Gdynia","Gdańsk","Kołobrzeg"], c:2},
-  {q:"Ile województw ma Polska?", a:["12","14","16","18"], c:2},
-  {q:"Polskie danie narodowe?", a:["Pizza","Bigos","Sushi","Kebab"], c:1},
-  {q:"Kraków leży nad rzeką?", a:["Wisłą","Odrą","Wartą","Dunajcem"], c:0},
-  {q:"Czy Polska graniczy z Czechami?", a:["Tak","Nie","Tylko przez morze","Zależy kiedy"], c:0}
-];
+    const QUESTIONS = [
+        {q:"Stolica Polski?", a:["Kraków","Warszawa","Gdańsk","Wrocław"], c:1},
+        {q:"Najdłuższa rzeka w Polsce?", a:["Odra","Warta","Wisła","Bug"], c:2},
+        {q:"W którym roku był Chrzest Polski?", a:["966","1000","1410","1918"], c:0},
+        {q:"Najwyższy szczyt Polski?", a:["Giewont","Śnieżka","Rysy","Kasprowy Wierch"], c:2},
+        {q:"Jakie miasto jest stolicą piernika?", a:["Toruń","Bydgoszcz","Lublin","Szczecin"], c:0},
+        {q:"Ile województw ma Polska?", a:["12","14","16","18"], c:2},
+        {q:"Który ptak jest w godle Polski?", a:["Bocian","Orzeł","Jastrząb","Sokół"], c:1},
+        {q:"Największe jezioro w Polsce?", a:["Mamry","Hańcza","Śniardwy","Morskie Oko"], c:2},
+        {q:"Z jakim państwem Polska ma najdłuższą granicę?", a:["Niemcy","Ukraina","Czechy","Słowacja"], c:2},
+        {q:"Kto napisał 'Pan Tadeusz'?", a:["Juliusz Słowacki","Adam Mickiewicz","Bolesław Prus","Henryk Sienkiewicz"], c:1},
+        {q:"Waluta obowiązująca w Polsce?", a:["Euro","Dolar","Złoty","Funt"], c:2},
+        {q:"Kolory polskiej flagi to?", a:["Biało-Niebieskie","Czerwono-Białe","Biało-Czerwone","Żółto-Czerwone"], c:2},
+        {q:"W którym roku Polska weszła do UE?", a:["1999","2004","2010","1989"], c:1},
+        {q:"Gdzie znajduje się Wawel?", a:["W Warszawie","W Krakowie","W Poznaniu","W Gnieźnie"], c:1}
+    ];
 
-let cur = 0; let pts = 0; let adStep = 0;
+    let cur = 0, pts = 0, musicStarted = false;
+    const ding = document.getElementById("snd-ding"), buzzer = document.getElementById("snd-buzzer"), 
+          fanfare = document.getElementById("snd-fanfare"), bgMusic = document.getElementById("bg-music");
 
-function render(){
-    if(cur === 7 && adStep === 0) { showAd("Przerwa w połowie!"); adStep = 1; return; }
-    if(cur === 14 && adStep === 1) { showAd("Przygotowujemy Twój wynik..."); adStep = 2; return; }
-    if(cur === 14 && adStep === 2) { showFinal(); return; }
+    // FAJERWERKI LOGIC
+    const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
+    let particles = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.onresize = resize; resize();
 
-    document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
-    document.getElementById("q-text").innerText = QUESTIONS[cur].q;
-    document.getElementById("bar").style.width = (cur/14*100) + "%";
-    
-    const box = document.getElementById("ans-box");
-    box.innerHTML = "";
-    QUESTIONS[cur].a.forEach((txt, i) => {
-        const b = document.createElement("div");
-        b.className = "btn";
-        b.innerText = txt;
-        b.onclick = () => { if(i===QUESTIONS[cur].c) pts++; cur++; render(); };
-        box.appendChild(b);
-    });
-}
+    class Particle {
+        constructor(x,y,color) {
+            this.x=x; this.y=y; this.color=color;
+            this.v={x:(Math.random()-0.5)*8, y:(Math.random()-0.5)*8};
+            this.a=1;
+        }
+        draw() { ctx.globalAlpha=this.a; ctx.beginPath(); ctx.arc(this.x,this.y,3,0,Math.PI*2); ctx.fillStyle=this.color; ctx.fill(); }
+        update() { this.x+=this.v.x; this.y+=this.v.y; this.v.y+=0.05; this.a-=0.015; }
+    }
 
-function showAd(title){
-    document.getElementById("quizBox").classList.add("hidden");
-    document.getElementById("ad-screen").classList.remove("hidden");
-    document.getElementById("ad-title").innerText = title;
-    
-    // WYWOŁANIE REKLAMY MONETAG (INTERSTITIAL)
-    // Zastąp poniższy ID (10306652) swoim ID dla formatu Interstitial/Vignette
-    const s = document.createElement("script");
-    s.src = "a.monetag.com"; 
-    s.async = true;
-    document.getElementById("ad-trigger-zone").appendChild(s);
-}
+    function explode() {
+        const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.6, 
+              col=`hsl(${Math.random()*360},100%,60%)`;
+        for(let i=0; i<30; i++) particles.push(new Particle(x,y,col));
+    }
 
-function closeAdScreen(){
-    document.getElementById("ad-screen").classList.add("hidden");
-    if(adStep === 2) { showFinal(); } else { document.getElementById("quizBox").classList.remove("hidden"); render(); }
-}
+    function animate() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        particles.forEach((p,i) => { if(p.a>0){p.update(); p.draw();} else particles.splice(i,1); });
+        requestAnimationFrame(animate);
+    }
+    animate();
 
-function showFinal(){
-    document.getElementById("ad-screen").classList.add("hidden");
-    document.getElementById("quizBox").classList.add("hidden");
-    document.getElementById("final-screen").classList.remove("hidden");
-    document.getElementById("final-score").innerText = `${pts} / 14`;
-}
+    // QUIZ LOGIC
+    function render() {
+        if(cur === 7) { showAdScreen('mid'); return; }
+        if(cur === 14) { showAdScreen('final'); return; }
 
-render();
+        document.getElementById("bar").style.width = (cur/14*100) + "%";
+        document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
+        document.getElementById("q-text").innerText = QUESTIONS[cur].q;
+        
+        const box = document.getElementById("ans-box");
+        box.innerHTML = "";
+        QUESTIONS[cur].a.forEach((txt, i) => {
+            const b = document.createElement("button");
+            b.className = "btn";
+            b.innerText = txt;
+            b.onclick = () => {
+                if(!musicStarted) { bgMusic.volume=0.2; bgMusic.play(); musicStarted=true; }
+                if(i === QUESTIONS[cur].c) { pts++; ding.play(); explode(); } 
+                else { buzzer.play(); }
+                cur++; render();
+            };
+            box.appendChild(b);
+        });
+    }
+
+    function showAdScreen(type) {
+        document.getElementById("quizBox").classList.add("hidden");
+        bgMusic.pause();
+        const screenId = type === 'mid' ? "ad-mid-screen" : "ad-final-screen";
+        const containerId = type === 'mid' ? "ad-mid-container" : "ad-final-container";
+        const zoneId = type === 'mid' ? "10306652" : "10306653";
+        
+        document.getElementById(screenId).classList.remove("hidden");
+        
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+        const s = document.createElement("script");
+        s.src = `a.monetag.com{zoneId}.js`;
+        s.async = true;
+        container.appendChild(s);
+    }
+
+    function resumeAfterAd(type) {
+        document.getElementById(type === 'mid' ? "ad-mid-screen" : "ad-final-screen").classList.add("hidden");
+        bgMusic.play();
+        if(type === 'mid') { cur++; render(); } 
+        else { showResults(); }
+    }
+
+    function showResults() {
+        document.getElementById("result-screen").classList.remove("hidden");
+        document.getElementById("score-text").innerText = `${pts}/14`;
+        fanfare.play();
+        for(let i=0; i<10; i++) setTimeout(explode, i*400);
+    }
+
+    render();
 </script>
 </body>
 </html>
