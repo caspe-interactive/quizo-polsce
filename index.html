@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce 2026</title>
     
-    <!-- MONETAG MULTITAG (Pełny ekran / Vignette / Push) -->
+    <!-- TWOJA MONETYZACJA (Multitag w head) -->
     <script>(function(s){s.dataset.zone='10310917',s.src='nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
@@ -16,28 +16,16 @@
         }
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
-        body{display:flex;align-items:center;justify-content:center;padding:15px;}
+        body{display:flex;align-items:center;justify-content:center;padding:15px; position:relative;}
         #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:99; }
-        .page{width:100%; max-width:480px; position:relative; z-index:100;}
+        .page{width:100%; max-width:480px; position:relative; z-index:1000;} /* Wysoki z-index, by quiz był nad reklamami tła */
         .card{
             background:rgba(255,255,255,0.05); border-radius:var(--radius); padding:20px;
             box-shadow:0 10px 40px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px); text-align:center;
+            backdrop-filter: blur(15px); text-align:center;
         }
-        
-        /* BANER NAD PYTANIAMI */
-        .banner-area { 
-            min-height: 80px; 
-            margin-bottom: 15px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            background: rgba(0,0,0,0.15);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .title{font-weight:800; color:var(--neon1); margin-bottom:10px; font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;}
+        .banner-area { min-height: 80px; margin-bottom: 15px; display: flex; justify-content: center; overflow: hidden; border-radius: 8px; background:rgba(0,0,0,0.1); }
+        .title{font-weight:800; color:var(--neon1); margin-bottom:10px; font-size:0.9rem; text-transform:uppercase;}
         .question{font-size:1.15rem; margin-bottom:15px; min-height:55px; font-weight:600; line-height:1.3;}
         .answers{display:grid; grid-template-columns:1fr; gap:10px;}
         .btn{
@@ -65,10 +53,9 @@
     <!-- EKRAN QUIZU -->
     <div class="card" id="quizView">
         <div class="banner-area">
-            <!-- TWÓJ KOD BANERA (In-Page Push) -->
-            <script src="https://quge5.com/88/tag.min.js" data-zone="193728" async data-cfasync="false"></script>
+            <!-- TWÓJ BANER IN-PAGE PUSH -->
+            <script src="quge5.com" data-zone="193728" async data-cfasync="false"></script>
         </div>
-
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
         <div id="q-num" style="font-size:0.8rem; color:var(--muted); margin-bottom:8px">Pytanie 1/14</div>
@@ -76,12 +63,12 @@
         <div id="ans-box" class="answers"></div>
     </div>
 
-    <!-- EKRAN REKLAMY PRZEJŚCIOWEJ -->
+    <!-- EKRAN PRZERWY (VIGNETTE TRIGGER) -->
     <div class="card hidden" id="adView">
-        <h2 style="color:var(--accent)">PRZERWA REKLAMOWA</h2>
-        <p style="color:var(--muted)">Chwila oddechu! Za moment kolejne pytania.</p>
-        <div style="background:#000; height:180px; margin:20px 0; border-radius:10px; display:flex; align-items:center; justify-content:center; border:1px solid var(--neon2);">
-             <span style="color:#555">Reklama wideo / pełnoekranowa</span>
+        <h2 style="color:var(--accent); margin:0;">PRZERWA</h2>
+        <p style="color:var(--muted); font-size:0.9rem;">Reklama wspiera rozwój gry.</p>
+        <div style="height:120px; display:flex; align-items:center; justify-content:center; border:1px dashed var(--neon2); border-radius:10px; margin:15px 0;">
+            <span style="color:var(--neon2); font-weight:bold;">REKLAMA PEŁNOEKRANOWA</span>
         </div>
         <button class="btn" id="ad-btn">KONTYNUUJ GRĘ</button>
     </div>
@@ -96,7 +83,7 @@
 </div>
 
 <script>
-    // --- EFEKTY FAJERWERKÓW ---
+    // --- FAJERWERKI ---
     const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -145,8 +132,11 @@
           fanfare = document.getElementById("snd-fanfare"), bgMusic = document.getElementById("bg-music");
 
     function render() {
-        if (cur === 7 && !document.body.dataset.adMid) { showAd('mid'); return; }
-        if (cur === 14) { showFinal(); return; }
+        // WYWOŁANIE REKLAMY PO 7 PYTANIU
+        if (cur === 7 && !document.body.dataset.ad7) { showVignette('ad7'); return; }
+        // WYWOŁANIE REKLAMY PRZED WYNIKIEM
+        if (cur === 14 && !document.body.dataset.adFinal) { showVignette('adFinal'); return; }
+        if (cur === 14) { showResults(); return; }
 
         document.getElementById("quizView").classList.remove("hidden");
         document.getElementById("adView").classList.add("hidden");
@@ -171,20 +161,21 @@
         });
     }
 
-    function showAd(type) {
+    function showVignette(tag) {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.remove("hidden");
         try{ bgMusic.pause(); }catch(e){}
 
-        // Przycisk kontynuuj odblokuje Multitag (Vignette)
+        // TRIGGER DLA VIGNETTE: Monetag Multitag reaguje na interakcję z przyciskiem.
+        // Kliknięcie w "KONTYNUUJ GRĘ" wyśle sygnał do skryptu, by pokazał Vignette.
         document.getElementById("ad-btn").onclick = () => {
-            document.body.dataset.adMid = "true";
+            document.body.dataset[tag] = "true";
             if(musicStarted) bgMusic.play();
             render();
         };
     }
 
-    function showFinal() {
+    function showResults() {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.add("hidden");
         document.getElementById("resultView").classList.remove("hidden");
