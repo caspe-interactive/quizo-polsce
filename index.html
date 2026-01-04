@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 <style>
 :root{
@@ -19,16 +18,11 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-top,.ad-bottom,.ad-mid,.ad-final{
+.ad-top,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+  border-radius:12px; padding:8px; text-align:center; height:180px; position:relative;
 }
-.ad-status{
-  position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
-}
-.ad-video{
-  width:100%; height:100%; border:none; border-radius:12px;
-}
+.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -82,8 +76,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop"><span class="ad-status">Ładowanie reklamy...</span></div>
-
+  <div class="ad-top" id="adTop"></div>
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -94,28 +87,20 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-
-    <div class="ad-mid" id="adMid" style="display:none;">
-      <span class="ad-status">Ładowanie wideo reklamy...</span>
-      <iframe id="adVideoMid" class="ad-video" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
-    </div>
-
+    <div class="ad-mid" id="adMid" style="display:none;"></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
       <div class="small-muted">Miejsca reklamowe gotowe</div>
     </div>
   </div>
-
-  <div class="ad-final" id="adFinal" style="display:none;">
-    <span class="ad-status">Ładowanie wideo reklamy...</span>
-    <iframe id="adVideoFinal" class="ad-video" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
-  </div>
+  <div class="ad-bottom" id="adBottom"></div>
 </div>
 
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
+    <div class="ad-final" id="adFinal"></div>
     <div class="final-actions" style="margin-top:14px;">
       <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
       <div class="btn big" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Poleć quiz</div>
@@ -135,12 +120,10 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
-// -- przygotowanie pytań i quiz --
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal'),
-      adVideoMid=$('adVideoMid'), adVideoFinal=$('adVideoFinal');
+      adTop=$('adTop'), adMid=$('adMid'), adFinal=$('adFinal');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -166,45 +149,32 @@ let sessionQuestions=getRandomSession();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 
-document.addEventListener('DOMContentLoaded',()=>{ bg.play().catch(()=>{}); });
-document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
+function playAudio(audio){ audio.play().catch(()=>{}); }
+document.addEventListener('DOMContentLoaded',()=>{ playAudio(bg); });
+document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
-// ustawienie linków do wideo reklam (zmień na własne wideo)
-const VIDEO_MID_SRC="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1";
-const VIDEO_FINAL_SRC="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1";
-
-// --- logika quizu z wideo reklamami ---
+// --- Quiz logic ---
 function showQuestion(){
+  // Po 7 pytaniu wyświetl adMid
   if(current===7){
-    adTop.style.display='none';
+    adMid.innerHTML='<script src="https://quge5.com/88/tag.min.js" data-zone="196106" async data-cfasync="false"><\/script>';
     adMid.style.display='flex';
-    adVideoMid.src=VIDEO_MID_SRC;
     questionEl.textContent="Oglądaj reklamę wideo, aby kontynuować";
     answersEl.innerHTML="";
-    setTimeout(()=>{
-      adMid.style.display='none';
-      adVideoMid.src="";
-      current++;
-      showQuestion();
-    },20000);
+    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },20000);
     return;
   }
+  // Przed wynikiem adFinal
   if(current>=sessionQuestions.length){
-    adTop.style.display='none';
+    adFinal.innerHTML='<script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"><\/script>';
     adFinal.style.display='flex';
-    adVideoFinal.src=VIDEO_FINAL_SRC;
     questionEl.textContent="Oglądaj reklamę wideo, aby zobaczyć wynik";
     answersEl.innerHTML="";
-    setTimeout(()=>{
-      adFinal.style.display='none';
-      adVideoFinal.src="";
-      finishQuiz();
-    },20000);
+    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },20000);
     return;
   }
-  adTop.style.display='flex';
-  adMid.style.display='none';
-  adFinal.style.display='none';
+
+  adTop.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
 
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
