@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>QuizoPolsce 2026 — Premium Quiz</title>
+    <title>QuizoPolsce 2026</title>
     
-    <!-- MONETAG ANTI-ADBLOCK -->
+    <!-- MONETAG TAG -->
     <script src="alwingulla.com" data-cfasync="false" async></script>
 
     <style>
@@ -15,21 +15,18 @@
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:'Inter', sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
+        html,body{height:100%;margin:0;font-family:sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
         body{display:flex;align-items:center;justify-content:center;padding:20px;}
-        
-        #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; }
-        
-        .page{width:100%; max-width:500px; position:relative; z-index:10;}
+        #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:99; }
+        .page{width:100%; max-width:480px; position:relative; z-index:100;}
         .card{
-            background:rgba(255,255,255,0.03); border-radius:var(--radius); padding:25px;
-            box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.1);
+            background:rgba(255,255,255,0.05); border-radius:var(--radius); padding:25px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1);
             backdrop-filter: blur(10px); text-align:center;
         }
-        .title{font-weight:800; color:var(--neon1); margin-bottom:15px; font-size:1.2rem; text-transform:uppercase; letter-spacing:1px;}
-        .question{font-size:1.25rem; margin-bottom:20px; min-height:60px; font-weight:600;}
+        .title{font-weight:800; color:var(--neon1); margin-bottom:15px; font-size:1.1rem; text-transform:uppercase;}
+        .question{font-size:1.2rem; margin-bottom:20px; min-height:50px; font-weight:600;}
         .answers{display:grid; grid-template-columns:1fr; gap:10px;}
-        
         .btn{
             padding:14px; border-radius:12px; cursor:pointer; text-align:center;
             font-weight:700; background:linear-gradient(90deg,var(--neon1),var(--neon2));
@@ -37,26 +34,24 @@
         }
         .btn:active{transform:scale(0.96);}
         .hidden{display:none !important;}
-
         .progress-container{width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; margin-bottom:15px;}
-        .progress-fill{height:100%; background:var(--neon1); width:0%; transition:0.3s; border-radius:3px; box-shadow:0 0 10px var(--neon1);}
-        
-        .ad-box { background:#000; min-height:180px; margin:15px 0; display:flex; align-items:center; justify-content:center; border-radius:10px; border:1px solid #222; }
+        .progress-fill{height:100%; background:var(--neon1); width:0%; transition:0.3s; border-radius:3px;}
+        .ad-box { background:#000; min-height:180px; margin:15px 0; border-radius:10px; border:1px solid #333; }
     </style>
 </head>
 <body>
 
 <canvas id="fx"></canvas>
 
-<!-- AUDIO -->
+<!-- AUDIO (Zabezpieczone ścieżki) -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 <audio id="bg-music" loop src="sounds/background.mp3"></audio>
 
 <div class="page">
-    <!-- WIDOK QUIZU -->
-    <div class="card" id="quizBox">
+    <!-- EKRAN QUIZU -->
+    <div class="card" id="quizView">
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
         <div id="q-num" style="font-size:0.8rem; color:var(--muted); margin-bottom:8px">Pytanie 1/14</div>
@@ -64,33 +59,25 @@
         <div id="ans-box" class="answers"></div>
     </div>
 
-    <!-- REKLAMA PO 7 PYTANIU -->
-    <div class="card hidden" id="ad-mid-screen">
-        <h2 style="color:var(--accent)">Przerwa na reklamę</h2>
-        <p>Za chwilę druga połowa quizu!</p>
-        <div class="ad-box" id="ad-mid-container"></div>
-        <button class="btn" onclick="resumeAfterAd('mid')">KONTYNUUJ QUIZ</button>
+    <!-- EKRANY REKLAM -->
+    <div class="card hidden" id="adView">
+        <h2 id="ad-title" style="color:var(--accent)">Przerwa</h2>
+        <p id="ad-p">Reklama wspiera naszą aplikację.</p>
+        <div class="ad-box" id="ad-container"></div>
+        <button class="btn" id="ad-btn">KONTYNUUJ</button>
     </div>
 
-    <!-- REKLAMA PRZED WYNIKIEM -->
-    <div class="card hidden" id="ad-final-screen">
-        <h2 style="color:var(--neon1)">Wynik gotowy!</h2>
-        <p>Ostatnia reklama przed podsumowaniem:</p>
-        <div class="ad-box" id="ad-final-container"></div>
-        <button class="btn" onclick="resumeAfterAd('final')">ZOBACZ WYNIK</button>
-    </div>
-
-    <!-- EKRAN KOŃCOWY -->
-    <div class="card hidden" id="result-screen">
-        <h1 style="color:var(--good); margin:0;">Gratulacje!</h1>
-        <p style="color:var(--muted)">Twój wynik to:</p>
-        <div id="score-text" style="font-size:4rem; font-weight:900; color:var(--accent); margin:15px 0">0/14</div>
+    <!-- EKRAN WYNIKU -->
+    <div class="card hidden" id="resultView">
+        <h1 style="color:var(--good); margin:0;">Koniec!</h1>
+        <p style="color:var(--muted)">Twój wynik:</p>
+        <div id="score-text" style="font-size:3.5rem; font-weight:900; color:var(--accent); margin:10px 0">0/14</div>
         <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
     </div>
 </div>
 
 <script>
-    // --- 1. SILNIK FAJERWERKÓW (Wersja Epicka 2026) ---
+    // --- 1. FAJERWERKI (Efekt Trails 2026) ---
     const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -100,37 +87,28 @@
         constructor(x, y, color) {
             this.x = x; this.y = y; this.color = color;
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 6 + 2;
+            const speed = Math.random() * 5 + 2;
             this.v = { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
-            this.a = 1;
-            this.gravity = 0.15; this.friction = 0.96;
+            this.a = 1; this.gravity = 0.12;
         }
         draw() {
             ctx.save(); ctx.globalAlpha = this.a; ctx.beginPath();
-            ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-            ctx.fillStyle = this.color; ctx.shadowBlur = 8; ctx.shadowColor = this.color;
-            ctx.fill(); ctx.restore();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = this.color; ctx.fill(); ctx.restore();
         }
-        update() {
-            this.v.x *= this.friction; this.v.y *= this.friction; this.v.y += this.gravity;
-            this.x += this.v.x; this.y += this.v.y; this.a -= 0.015;
-        }
+        update() { this.v.y += this.gravity; this.x += this.v.x; this.y += this.v.y; this.a -= 0.015; }
     }
 
     function explode() {
         const x = Math.random() * canvas.width;
-        const y = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.1);
+        const y = Math.random() * (canvas.height * 0.4) + 100;
         const col = `hsl(${Math.random() * 360}, 100%, 60%)`;
-        for(let i=0; i<60; i++) particles.push(new Particle(x, y, col));
+        for(let i=0; i<50; i++) particles.push(new Particle(x, y, col));
     }
 
     function animate() {
-        ctx.fillStyle = 'rgba(7, 16, 37, 0.2)'; // Efekt smug
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        particles.forEach((p, i) => { 
-            if(p.a > 0){ p.update(); p.draw(); } 
-            else { particles.splice(i, 1); }
-        });
+        ctx.fillStyle = 'rgba(7, 16, 37, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => { if(p.a > 0){ p.update(); p.draw(); } else { particles.splice(i, 1); }});
         requestAnimationFrame(animate);
     }
     animate();
@@ -138,28 +116,33 @@
     // --- 2. LOGIKA QUIZU ---
     const QUESTIONS = [
         {q:"Stolica Polski?", a:["Kraków","Warszawa","Gdańsk","Wrocław"], c:1},
-        {q:"Najdłuższa rzeka w Polsce?", a:["Odra","Warta","Wisła","Bug"], c:2},
-        {q:"W którym roku był Chrzest Polski?", a:["966","1000","1410","1918"], c:0},
-        {q:"Najwyższy szczyt Polski?", a:["Giewont","Śnieżka","Rysy","Kasprowy Wierch"], c:2},
-        {q:"Które miasto słynie z pierników?", a:["Toruń","Bydgoszcz","Lublin","Szczecin"], c:0},
-        {q:"Ile województw ma Polska?", a:["12","14","16","18"], c:2},
-        {q:"Ptak w godle Polski?", a:["Bocian","Orzeł","Jastrząb","Sokół"], c:1},
-        {q:"Największe jezioro w Polsce?", a:["Mamry","Hańcza","Śniardwy","Morskie Oko"], c:2},
-        {q:"Najdłuższa granica Polski jest z?", a:["Niemcami","Ukrainą","Czechami","Słowacją"], c:2},
-        {q:"Kto napisał 'Pan Tadeusz'?", a:["Słowacki","Mickiewicz","Prus","Miłosz"], c:1},
+        {q:"Najdłuższa rzeka?", a:["Odra","Warta","Wisła","Bug"], c:2},
+        {q:"Chrzest Polski?", a:["966","1000","1410","1918"], c:0},
+        {q:"Najwyższy szczyt?", a:["Giewont","Śnieżka","Rysy","Kasprowy"], c:2},
+        {q:"Miasto pierników?", a:["Toruń","Lublin","Płock","Kielce"], c:0},
+        {q:"Ile województw?", a:["12","14","16","18"], c:2},
+        {q:"Ptak w godle?", a:["Bocian","Orzeł","Jastrząb","Sokół"], c:1},
+        {q:"Największe jezioro?", a:["Mamry","Hańcza","Śniardwy","Wigry"], c:2},
+        {q:"Dłuższa granica z?", a:["Niemcami","Rosją","Czechami","Białorusią"], c:2},
+        {q:"Autor 'Pana Tadeusza'?", a:["Prus","Mickiewicz","Słowacki","Reymont"], c:1},
         {q:"Waluta Polski?", a:["Euro","Dolar","Złoty","Funt"], c:2},
-        {q:"Kolory polskiej flagi?", a:["Biało-Niebieskie","Czerwono-Białe","Biało-Czerwone","Złoto-Białe"], c:2},
-        {q:"Rok wejścia Polski do UE?", a:["1999","2004","2010","1989"], c:1},
-        {q:"Zamek Królewski na Wawelu jest w?", a:["Warszawie","Krakowie","Poznaniu","Gnieźnie"], c:1}
+        {q:"Flaga Polski?", a:["Biało-Niebieska","Biało-Czerwona","Czerwono-Biała","Złota"], c:1},
+        {q:"Polska w UE od?", a:["1999","2004","2010","1989"], c:1},
+        {q:"Zamek na Wawelu jest w?", a:["Warszawie","Krakowie","Poznaniu","Lublinie"], c:1}
     ];
 
     let cur = 0, pts = 0, musicStarted = false;
     const ding = document.getElementById("snd-ding"), buzzer = document.getElementById("snd-buzzer"), 
           fanfare = document.getElementById("snd-fanfare"), bgMusic = document.getElementById("bg-music");
 
+    function playSound(snd) { try { snd.currentTime = 0; snd.play().catch(()=>{}); } catch(e){} }
+
     function render() {
-        if(cur === 7) { showAdScreen('mid'); return; }
-        if(cur === 14) { showAdScreen('final'); return; }
+        if (cur === 7) { showAd('mid'); return; }
+        if (cur === 14) { showAd('final'); return; }
+
+        document.getElementById("quizView").classList.remove("hidden");
+        document.getElementById("adView").classList.add("hidden");
 
         document.getElementById("bar").style.width = (cur/14*100) + "%";
         document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
@@ -172,45 +155,45 @@
             b.className = "btn";
             b.innerText = txt;
             b.onclick = () => {
-                if(!musicStarted) { bgMusic.volume=0.2; bgMusic.play(); musicStarted=true; }
-                if(i === QUESTIONS[cur].c) { pts++; ding.play(); explode(); } 
-                else { buzzer.play(); }
+                if(!musicStarted) { try{ bgMusic.volume=0.2; bgMusic.play(); }catch(e){} musicStarted=true; }
+                if(i === QUESTIONS[cur].c) { pts++; playSound(ding); explode(); } 
+                else { playSound(buzzer); }
                 cur++; render();
             };
             box.appendChild(b);
         });
     }
 
-    function showAdScreen(type) {
-        document.getElementById("quizBox").classList.add("hidden");
-        bgMusic.pause();
-        const screenId = type === 'mid' ? "ad-mid-screen" : "ad-final-screen";
-        const containerId = type === 'mid' ? "ad-mid-container" : "ad-final-container";
-        const zoneId = type === 'mid' ? "10306652" : "10306653";
-        
-        document.getElementById(screenId).classList.remove("hidden");
-        const container = document.getElementById(containerId);
-        container.innerHTML = "";
-        const s = document.createElement("script");
-        s.src = `a.monetag.com{zoneId}.js`;
-        s.async = true;
-        container.appendChild(s);
-    }
+    function showAd(type) {
+        document.getElementById("quizView").classList.add("hidden");
+        document.getElementById("adView").classList.remove("hidden");
+        try{ bgMusic.pause(); }catch(e){}
 
-    function resumeAfterAd(type) {
-        document.getElementById(type === 'mid' ? "ad-mid-screen" : "ad-final-screen").classList.add("hidden");
-        document.getElementById("quizBox").classList.remove("hidden");
-        bgMusic.play();
-        if(type === 'mid') { cur++; render(); } 
-        else { showResults(); }
+        const zone = type === 'mid' ? "10306652" : "10306653";
+        const cont = document.getElementById("ad-container");
+        cont.innerHTML = "";
+        const s = document.createElement("script");
+        s.src = `a.monetag.com{zone}.js`;
+        s.async = true;
+        cont.appendChild(s);
+
+        document.getElementById("ad-btn").onclick = () => {
+            if(type === 'mid') { 
+                // Kluczowy moment: zwiększamy licznik tylko raz i wracamy do renderowania
+                render(); 
+                try{ bgMusic.play(); }catch(e){}
+            } else {
+                showResults();
+            }
+        };
     }
 
     function showResults() {
-        document.getElementById("quizBox").classList.add("hidden");
-        document.getElementById("result-screen").classList.remove("hidden");
+        document.getElementById("adView").classList.add("hidden");
+        document.getElementById("resultView").classList.remove("hidden");
         document.getElementById("score-text").innerText = `${pts}/14`;
-        fanfare.play();
-        for(let i=0; i<15; i++) setTimeout(explode, i*350);
+        playSound(fanfare);
+        for(let i=0; i<10; i++) setTimeout(explode, i*400);
     }
 
     render();
