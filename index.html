@@ -15,7 +15,7 @@
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
+        html,body{height:100%;margin:0;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
         body{display:flex;align-items:center;justify-content:center;padding:20px;}
         #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:99; }
         .page{width:100%; max-width:480px; position:relative; z-index:100;}
@@ -24,26 +24,28 @@
             box-shadow:0 10px 40px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1);
             backdrop-filter: blur(10px); text-align:center;
         }
-        .title{font-weight:800; color:var(--neon1); margin-bottom:15px; font-size:1.1rem; text-transform:uppercase;}
-        .question{font-size:1.2rem; margin-bottom:20px; min-height:50px; font-weight:600;}
+        .title{font-weight:800; color:var(--neon1); margin-bottom:15px; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;}
+        .question{font-size:1.2rem; margin-bottom:20px; min-height:50px; font-weight:600; line-height:1.4;}
         .answers{display:grid; grid-template-columns:1fr; gap:10px;}
         .btn{
             padding:14px; border-radius:12px; cursor:pointer; text-align:center;
             font-weight:700; background:linear-gradient(90deg,var(--neon1),var(--neon2));
             transition:0.2s; border:none; color:white; font-size:1rem; width:100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .btn:active{transform:scale(0.96);}
+        .btn:hover{filter: brightness(1.1);}
         .hidden{display:none !important;}
         .progress-container{width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; margin-bottom:15px;}
-        .progress-fill{height:100%; background:var(--neon1); width:0%; transition:0.3s; border-radius:3px;}
-        .ad-box { background:#000; min-height:180px; margin:15px 0; border-radius:10px; border:1px solid #333; }
+        .progress-fill{height:100%; background:var(--neon1); width:0%; transition:0.3s; border-radius:3px; box-shadow: 0 0 10px var(--neon1);}
+        .ad-box { background:#000; min-height:180px; margin:15px 0; border-radius:10px; border:1px solid #333; display:flex; align-items:center; justify-content:center; }
     </style>
 </head>
 <body>
 
 <canvas id="fx"></canvas>
 
-<!-- AUDIO (Zabezpieczone ścieżki) -->
+<!-- AUDIO (Ścieżki powinny znajdować się w folderze sounds/) -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
@@ -63,7 +65,9 @@
     <div class="card hidden" id="adView">
         <h2 id="ad-title" style="color:var(--accent)">Przerwa</h2>
         <p id="ad-p">Reklama wspiera naszą aplikację.</p>
-        <div class="ad-box" id="ad-container"></div>
+        <div class="ad-box" id="ad-container">
+            <span style="color:#666; font-size:0.9rem;">[MIEJSCE NA REKLAMĘ MONETAG]</span>
+        </div>
         <button class="btn" id="ad-btn">KONTYNUUJ</button>
     </div>
 
@@ -123,12 +127,12 @@
         {q:"Ile województw?", a:["12","14","16","18"], c:2},
         {q:"Ptak w godle?", a:["Bocian","Orzeł","Jastrząb","Sokół"], c:1},
         {q:"Największe jezioro?", a:["Mamry","Hańcza","Śniardwy","Wigry"], c:2},
-        {q:"Dłuższa granica z?", a:["Niemcami","Rosją","Czechami","Białorusią"], c:2},
+        {q:"Z kim Polska ma najdłuższą granicę?", a:["Niemcami","Rosją","Czechami","Słowacją"], c:2},
         {q:"Autor 'Pana Tadeusza'?", a:["Prus","Mickiewicz","Słowacki","Reymont"], c:1},
         {q:"Waluta Polski?", a:["Euro","Dolar","Złoty","Funt"], c:2},
-        {q:"Flaga Polski?", a:["Biało-Niebieska","Biało-Czerwona","Czerwono-Biała","Złota"], c:1},
-        {q:"Polska w UE od?", a:["1999","2004","2010","1989"], c:1},
-        {q:"Zamek na Wawelu jest w?", a:["Warszawie","Krakowie","Poznaniu","Lublinie"], c:1}
+        {q:"Barwy flagi Polski?", a:["Biało-Niebieska","Biało-Czerwona","Czerwono-Biała","Złota"], c:1},
+        {q:"Polska w UE od roku?", a:["1999","2004","2010","1989"], c:1},
+        {q:"Gdzie znajduje się Wawel?", a:["Warszawie","Krakowie","Poznaniu","Lublinie"], c:1}
     ];
 
     let cur = 0, pts = 0, musicStarted = false;
@@ -138,8 +142,9 @@
     function playSound(snd) { try { snd.currentTime = 0; snd.play().catch(()=>{}); } catch(e){} }
 
     function render() {
-        if (cur === 7) { showAd('mid'); return; }
-        if (cur === 14) { showAd('final'); return; }
+        // Reklama w połowie (po pytaniu 7) i na koniec (po pytaniu 14)
+        if (cur === 7 && !document.body.dataset.midAd) { showAd('mid'); return; }
+        if (cur === 14) { showFinal(); return; }
 
         document.getElementById("quizView").classList.remove("hidden");
         document.getElementById("adView").classList.add("hidden");
@@ -155,10 +160,17 @@
             b.className = "btn";
             b.innerText = txt;
             b.onclick = () => {
-                if(!musicStarted) { try{ bgMusic.volume=0.2; bgMusic.play(); }catch(e){} musicStarted=true; }
-                if(i === QUESTIONS[cur].c) { pts++; playSound(ding); explode(); } 
-                else { playSound(buzzer); }
-                cur++; render();
+                if(!musicStarted) { 
+                    try{ bgMusic.volume=0.2; bgMusic.play(); }catch(e){} 
+                    musicStarted=true; 
+                }
+                if(i === QUESTIONS[cur].c) { 
+                    pts++; playSound(ding); explode(); 
+                } else { 
+                    playSound(buzzer); 
+                }
+                cur++; 
+                setTimeout(render, 400); // Małe opóźnienie dla płynności
             };
             box.appendChild(b);
         });
@@ -169,34 +181,33 @@
         document.getElementById("adView").classList.remove("hidden");
         try{ bgMusic.pause(); }catch(e){}
 
-        const zone = type === 'mid' ? "10306652" : "10306653";
-        const cont = document.getElementById("ad-container");
-        cont.innerHTML = "";
-        const s = document.createElement("script");
-        s.src = `a.monetag.com{zone}.js`;
-        s.async = true;
-        cont.appendChild(s);
-
+        // Tutaj można wywołać prawdziwy tag Monetag
+        console.log("Ładowanie reklamy dla strefy: " + (type === 'mid' ? '10306652' : '10306653'));
+        
         document.getElementById("ad-btn").onclick = () => {
-            if(type === 'mid') { 
-                // Kluczowy moment: zwiększamy licznik tylko raz i wracamy do renderowania
-                render(); 
-                try{ bgMusic.play(); }catch(e){}
+            if(type === 'mid') {
+                document.body.dataset.midAd = "true";
+                if(musicStarted) bgMusic.play();
+                render();
             } else {
-                showResults();
+                showFinal();
             }
         };
     }
 
-    function showResults() {
+    function showFinal() {
+        document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.add("hidden");
         document.getElementById("resultView").classList.remove("hidden");
-        document.getElementById("score-text").innerText = `${pts}/14`;
+        document.getElementById("score-text").innerText = pts + "/14";
         playSound(fanfare);
-        for(let i=0; i<10; i++) setTimeout(explode, i*400);
+        // Deszcz fajerwerków
+        for(let i=0; i<15; i++) setTimeout(explode, i * 300);
     }
 
+    // Start aplikacji
     render();
 </script>
+
 </body>
 </html>
