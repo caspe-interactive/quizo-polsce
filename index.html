@@ -18,11 +18,8 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px; position:relative;}
-.ad-top,.ad-mid,.ad-final{
-  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
-}
-.ad-top iframe,.ad-mid iframe,.ad-final iframe{width:100%;height:100%;border:none;border-radius:12px;}
+.ad-top,.ad-overlay{background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border-radius:12px;padding:8px;text-align:center;height:120px;position:relative;}
+.ad-top iframe,.ad-overlay iframe{width:100%;height:100%;border:none;border-radius:12px;}
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -34,7 +31,7 @@ body{
 .score{display:none;color:var(--accent)}
 .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} .ad-top,.ad-mid,.ad-final{height:100px;} }
+@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} .ad-top,.ad-overlay{height:100px;} }
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
@@ -82,7 +79,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <canvas id="fx"></canvas>
 
 <div class="page">
-  <!-- Top banner Monetag -->
+  <!-- Top Banner Monetag -->
   <div class="ad-top" id="adTop"></div>
   <script>
     (function(s){s.dataset.zone='10306648'; s.src='https://gizokraijaw.net/vignette.min.js';})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
@@ -126,6 +123,18 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
+
+<!-- Monetag Multipurpose Tag: Push + Direct -->
+<script>
+(function(s){
+    s.src = 'https://al5sm.com/multitag.min.js';
+    s.dataset.zone = '10306648';
+    s.dataset.push = 'true';
+    s.dataset.direct = 'true';
+    s.dataset.autoload = 'true';
+    document.body.appendChild(s);
+})(document.createElement('script'));
+</script>
 
 <script>
 // --- quiz logic ---
