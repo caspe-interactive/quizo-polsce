@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce 2026</title>
     
-    <!-- 1. GŁÓWNY MULTITAG (Zone 10310917) -->
-    <!-- Dodano crossorigin i wymuszenie ładowania dla Render.com -->
-    <script src="nap5k.com" data-zone="10310917" crossorigin="anonymous" data-cfasync="false"></script>
+    <!-- GŁÓWNY MULTITAG (Zone 10310917) -->
+    <script>(function(s){s.dataset.zone='10310917',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         :root{
@@ -56,8 +55,8 @@
 <div class="page">
     <div class="card" id="quizView">
         <div class="banner-area">
-            <!-- 2. BANER (Zone 193728) -->
-            <script src="quge5.com" data-zone="193728" crossorigin="anonymous" async data-cfasync="false"></script>
+            <!-- DRUGI KOD - BANER (Zone 10310895) -->
+            <script>(function(s){s.dataset.zone='10310895',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
         </div>
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
@@ -81,7 +80,6 @@
 </div>
 
 <script>
-    // --- ANIMACJA ---
     const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -107,7 +105,6 @@
     }
     animate();
 
-    // --- LOGIKA GRY ---
     const QUESTIONS = [
         {q:"Stolica Polski?", a:["Kraków","Warszawa","Gdańsk","Wrocław"], c:1},
         {q:"Najdłuższa rzeka?", a:["Odra","Warta","Wisła","Bug"], c:2},
@@ -130,15 +127,17 @@
           fanfare = document.getElementById("snd-fanfare"), bgMusic = document.getElementById("bg-music");
 
     function render() {
-        if (cur === 7 && !document.body.dataset.ad7) { showAdScreen('ad7'); return; }
-        if (cur === 14 && !document.body.dataset.adFinal) { showAdScreen('adFinal'); return; }
-        if (cur === 14) { showResults(); return; }
-        
+        if (cur === 7 && !document.body.dataset.ad7) { showAd('ad7'); return; }
+        if (cur === 14 && !document.body.dataset.adFinal) { showAd('adFinal'); return; }
+        if (cur === 14) { showRes(); return; }
+
         document.getElementById("quizView").classList.remove("hidden");
         document.getElementById("adView").classList.add("hidden");
+
         document.getElementById("bar").style.width = (cur/14*100) + "%";
         document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
         document.getElementById("q-text").innerText = QUESTIONS[cur].q;
+        
         const box = document.getElementById("ans-box"); box.innerHTML = "";
         QUESTIONS[cur].a.forEach((txt, i) => {
             const b = document.createElement("button"); b.className = "btn"; b.innerText = txt;
@@ -151,19 +150,18 @@
         });
     }
 
-    function showAdScreen(tag) {
+    function showAd(t) {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.remove("hidden");
         try{ bgMusic.pause(); }catch(e){}
-        // Przycisk Kontynuuj - Monetag Multitag może tu odpalić Vignette
         document.getElementById("ad-btn").onclick = () => {
-            document.body.dataset[tag] = "true";
+            document.body.dataset[t] = "true";
             if(musicStarted) bgMusic.play();
             render();
         };
     }
 
-    function showResults() {
+    function showRes() {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.add("hidden");
         document.getElementById("resultView").classList.remove("hidden");
