@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce 2026</title>
     
-    <!-- 1. MULTITAG (Poprawiony pod Render.com) -->
-    <script src="nap5k.com" data-zone="10310917" crossorigin="anonymous" data-cfasync="false" async></script>
+    <!-- 1. GŁÓWNY MULTITAG (Zone 10310917) -->
+    <!-- Dodano crossorigin i wymuszenie ładowania dla Render.com -->
+    <script src="nap5k.com" data-zone="10310917" crossorigin="anonymous" data-cfasync="false"></script>
 
     <style>
         :root{
@@ -15,7 +16,7 @@
             --neon1:#00f0ff; --neon2:#ff3fc4; --text:#ffffff; --radius:15px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:'Segoe UI', Tahoma, sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
+        html,body{height:100%;margin:0;font-family:'Segoe UI', Roboto, sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
         body{display:flex;align-items:center;justify-content:center;padding:15px;}
         #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
         .page{width:100%; max-width:480px; position:relative; z-index:1000;}
@@ -46,7 +47,7 @@
 
 <canvas id="fx"></canvas>
 
-<!-- AUDIO (Wymagane pliki w folderze sounds/) -->
+<!-- AUDIO -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
@@ -54,8 +55,8 @@
 
 <div class="page">
     <div class="card" id="quizView">
-        <div class="banner-area" id="ad-banner-container">
-            <!-- 2. BANER (Poprawiony pod Render.com) -->
+        <div class="banner-area">
+            <!-- 2. BANER (Zone 193728) -->
             <script src="quge5.com" data-zone="193728" crossorigin="anonymous" async data-cfasync="false"></script>
         </div>
         <div class="title">QuizoPolsce 2026</div>
@@ -66,21 +67,21 @@
     </div>
 
     <div class="card hidden" id="adView">
-        <h2 style="color:var(--neon2); margin-top:0;">REKLAMA</h2>
+        <h2 style="color:var(--neon2); margin-top:0; text-shadow: 0 0 15px var(--neon2);">REKLAMA</h2>
         <p style="color:#aaa; font-size:0.9rem; margin-bottom: 25px;">Zaraz wracamy do gry!</p>
         <button class="btn" id="ad-btn">KONTYNUUJ</button>
     </div>
 
     <div class="card hidden" id="resultView">
-        <h1 style="color:var(--neon1); margin:0;">KONIEC!</h1>
-        <p style="color:#aaa;">Twój wynik:</p>
+        <h1 style="color:var(--neon1); margin:0; text-shadow: 0 0 20px var(--neon1);">KONIEC!</h1>
+        <p style="color:#aaa; margin-top: 10px;">Twój wynik:</p>
         <div id="score-text" style="font-size:4.5rem; font-weight:900; color:#fff; margin:15px 0;">0/14</div>
         <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
     </div>
 </div>
 
 <script>
-    // --- SKRYPT CZĄSTECZEK ---
+    // --- ANIMACJA ---
     const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -149,16 +150,19 @@
             box.appendChild(b);
         });
     }
+
     function showAdScreen(tag) {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.remove("hidden");
         try{ bgMusic.pause(); }catch(e){}
+        // Przycisk Kontynuuj - Monetag Multitag może tu odpalić Vignette
         document.getElementById("ad-btn").onclick = () => {
             document.body.dataset[tag] = "true";
             if(musicStarted) bgMusic.play();
             render();
         };
     }
+
     function showResults() {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.add("hidden");
