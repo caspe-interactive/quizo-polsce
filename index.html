@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce 2026</title>
     
-    <!-- 1. GŁÓWNY MULTITAG (Zarządza Vignette i Push) -->
-    <script>(function(s){s.dataset.zone='10310917',s.src='nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- 1. GŁÓWNY MULTITAG (Zarządza Vignette/Interstitial/Push) -->
+    <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
 
     <style>
         :root{
@@ -15,7 +15,7 @@
             --neon1:#00f0ff; --neon2:#ff3fc4; --text:#ffffff; --radius:15px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:'Segoe UI', Roboto, sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
+        html,body{height:100%;margin:0;font-family:sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
         body{display:flex;align-items:center;justify-content:center;padding:15px;}
         #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
         .page{width:100%; max-width:480px; position:relative; z-index:1000;}
@@ -27,17 +27,16 @@
             min-height: 80px; margin-bottom: 20px; background: #000; border-radius: 10px; 
             overflow: hidden; border: 1px solid #1a2a4a; display: flex; justify-content: center; align-items: center;
         }
-        .title{font-weight:900; color:var(--neon1); margin-bottom:10px; font-size:1.1rem; text-transform:uppercase; letter-spacing:2px; text-shadow: 0 0 10px var(--neon1);}
-        .question{font-size:1.3rem; margin-bottom:25px; min-height:60px; font-weight:700; line-height:1.3; color:#fff;}
+        .title{font-weight:900; color:var(--neon1); margin-bottom:10px; font-size:1.1rem; text-transform:uppercase; text-shadow: 0 0 10px var(--neon1);}
+        .question{font-size:1.3rem; margin-bottom:25px; min-height:60px; font-weight:700; color:#fff;}
         .answers{display:grid; grid-template-columns:1fr; gap:15px;}
         .btn{
             padding:16px; border-radius:12px; cursor:pointer; text-align:center;
             font-weight:900; font-size:1.1rem; width:100%; text-transform: uppercase;
-            letter-spacing: 1px; transition: 0.3s all ease; background: var(--neon-grad);
+            transition: 0.3s all ease; background: var(--neon-grad);
             background-size: 200% auto; color: #000; border: none; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
         }
         .btn:hover { background-position: right center; box-shadow: 0 0 30px var(--neon1), 0 0 30px var(--neon2); transform: scale(1.03); }
-        .btn:active{ transform: scale(0.95); filter: brightness(1.2); }
         .hidden{display:none !important;}
         .progress-container{width:100%; height:12px; background:#000; border-radius:6px; margin-bottom:20px; border: 1px solid #1a2a4a; overflow:hidden;}
         .progress-fill{height:100%; background: var(--neon-grad); width:0%; transition:0.4s;}
@@ -47,6 +46,7 @@
 
 <canvas id="fx"></canvas>
 
+<!-- AUDIO -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
@@ -54,8 +54,8 @@
 
 <div class="page">
     <div class="card" id="quizView">
-        <div class="banner-area" id="monetag-banner">
-            <!-- 2. KOD BANERA IN-PAGE PUSH -->
+        <div class="banner-area">
+            <!-- 2. KOD BANERA (In-Page Push) -->
             <script src="quge5.com" data-zone="193728" async data-cfasync="false"></script>
         </div>
         <div class="title">QuizoPolsce 2026</div>
@@ -66,15 +66,15 @@
     </div>
 
     <div class="card hidden" id="adView">
-        <h2 style="color:var(--neon2); margin-top:0; text-shadow: 0 0 15px var(--neon2);">REKLAMA</h2>
-        <p style="color:#aaa; font-size:0.9rem; margin-bottom: 25px;">Zaraz wracamy do quizu!</p>
-        <button class="btn" id="ad-btn">KONTYNUUJ GRĘ</button>
+        <h2 style="color:var(--neon2); margin-top:0;">REKLAMA</h2>
+        <p style="color:#aaa; font-size:0.9rem; margin-bottom: 25px;">Zaraz wracamy do gry!</p>
+        <button class="btn" id="ad-btn">KONTYNUUJ</button>
     </div>
 
     <div class="card hidden" id="resultView">
-        <h1 style="color:var(--neon1); margin:0; text-shadow: 0 0 20px var(--neon1); font-size: 2.8rem;">KONIEC!</h1>
-        <p style="color:#aaa; margin-top: 10px;">Twój wynik:</p>
-        <div id="score-text" style="font-size:4.5rem; font-weight:900; color:#fff; margin:15px 0; text-shadow: 0 0 30px var(--neon2);">0/14</div>
+        <h1 style="color:var(--neon1); margin:0;">KONIEC!</h1>
+        <p style="color:#aaa;">Twój wynik:</p>
+        <div id="score-text" style="font-size:4.5rem; font-weight:900; color:#fff; margin:15px 0;">0/14</div>
         <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
     </div>
 </div>
@@ -114,7 +114,7 @@
         {q:"Ile województw?", a:["12","14","16","18"], c:2},
         {q:"Ptak w godle?", a:["Bocian","Orzeł","Jastrząb","Sokół"], c:1},
         {q:"Największe jezioro?", a:["Mamry","Hańcza","Śniardwy","Wigry"], c:2},
-        {q:"Dłuższa granica z?", a:["Niemcami","Rosją","Czechami","Białorusią"], c:2},
+        {q:"Dłuższa granica z?", a:["Niemcami","Rosją","Czechami","Słowacją"], c:2},
         {q:"Autor 'Pana Tadeusza'?", a:["Prus","Mickiewicz","Słowacki","Reymont"], c:1},
         {q:"Waluta Polski?", a:["Euro","Dolar","Złoty","Funt"], c:2},
         {q:"Flaga Polski?", a:["Biało-Niebieska","Biało-Czerwona","Czerwono-Biała","Złota"], c:1},
@@ -135,11 +135,9 @@
         document.getElementById("bar").style.width = (cur/14*100) + "%";
         document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
         document.getElementById("q-text").innerText = QUESTIONS[cur].q;
-        const box = document.getElementById("ans-box");
-        box.innerHTML = "";
+        const box = document.getElementById("ans-box"); box.innerHTML = "";
         QUESTIONS[cur].a.forEach((txt, i) => {
-            const b = document.createElement("button");
-            b.className = "btn"; b.innerText = txt;
+            const b = document.createElement("button"); b.className = "btn"; b.innerText = txt;
             b.onclick = () => {
                 if(!musicStarted) { try{ bgMusic.volume=0.2; bgMusic.play(); }catch(e){} musicStarted=true; }
                 if(i === QUESTIONS[cur].c) { pts++; ding.play(); explode(); } else { buzzer.play(); }
