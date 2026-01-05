@@ -10,19 +10,17 @@
 
     <style>
         :root{
-            --bg1:#071025; 
+            --bg1:#050a14; 
             --card:#0b1220; 
-            --btn-bg:#16213e; /* Solidny, ciemny kolor przycisku */
-            --text:#e6f7ff; 
             --neon1:#00f0ff; 
             --neon2:#ff3fc4; 
-            --accent:#ffd27a; 
-            --radius:14px;
+            --text:#ffffff; 
+            --radius:15px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
+        html,body{height:100%;margin:0;font-family:'Segoe UI', Roboto, sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
         body{display:flex;align-items:center;justify-content:center;padding:15px;}
-        #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:99; }
+        #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
         
         .page{width:100%; max-width:480px; position:relative; z-index:1000;}
         
@@ -30,95 +28,114 @@
             background: var(--card); 
             border-radius: var(--radius); 
             padding: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9); 
-            border: 1px solid #1a2a4a;
+            box-shadow: 0 0 30px rgba(0,0,0,1); 
+            border: 2px solid #1a2a4a;
             text-align: center;
         }
 
         .banner-area { 
-            min-height: 80px; margin-bottom: 15px; 
-            background: #000; border-radius: 8px; overflow: hidden;
+            min-height: 80px; margin-bottom: 20px; 
+            background: #000; border-radius: 10px; overflow: hidden;
+            border: 1px solid #1a2a4a;
         }
 
-        .title{font-weight:800; color:var(--neon1); margin-bottom:10px; font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;}
-        .question{font-size:1.2rem; margin-bottom:20px; min-height:60px; font-weight:600; line-height:1.3;}
+        .title{font-weight:900; color:var(--neon1); margin-bottom:10px; font-size:1rem; text-transform:uppercase; letter-spacing:2px; text-shadow: 0 0 10px var(--neon1);}
+        .question{font-size:1.3rem; margin-bottom:25px; min-height:60px; font-weight:700; line-height:1.3; color:#fff;}
         
-        .answers{display:grid; grid-template-columns:1fr; gap:12px;}
+        .answers{display:grid; grid-template-columns:1fr; gap:15px;}
         
-        /* SOLIDNE PRZYCISKI - BEZ PRZEZROCZYSTOŚCI */
+        /* SOLIDNE PRZYCISKI NEONOWE */
         .btn{
             padding:16px; 
             border-radius:12px; 
             cursor:pointer; 
             text-align:center;
-            font-weight:700; 
-            background: var(--btn-bg); 
-            color: white; 
-            font-size:1rem; 
+            font-weight:800; 
+            font-size:1.05rem;
             width:100%;
-            border: 2px solid #1a2a4a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: 0.2s all ease;
-            box-shadow: 0 4px 0 #050a14; /* Efekt głębi */
+            
+            /* Solidne tło i neonowa ramka */
+            background: #0b1220; 
+            color: var(--neon1);
+            border: 2px solid var(--neon1);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
         .btn:hover {
-            border-color: var(--neon1);
-            background: #1f2d52;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 240, 255, 0.3);
-        }
-
-        .btn:active{
-            transform: translateY(2px);
-            box-shadow: none;
             background: var(--neon1);
             color: #000;
+            box-shadow: 0 0 25px var(--neon1);
+            transform: scale(1.02);
         }
 
+        /* Przycisk akcji (np. Kontynuuj/Graj ponownie) w innym kolorze */
+        .btn-alt {
+            border-color: var(--neon2);
+            color: var(--neon2);
+            box-shadow: 0 0 10px rgba(255, 63, 196, 0.2);
+        }
+        
+        .btn-alt:hover {
+            background: var(--neon2);
+            color: #000;
+            box-shadow: 0 0 25px var(--neon2);
+        }
+
+        .btn:active{ transform: scale(0.95); }
+
         .hidden{display:none !important;}
-        .progress-container{width:100%; height:8px; background:#050a14; border-radius:4px; margin-bottom:15px; overflow:hidden;}
-        .progress-fill{height:100%; background:linear-gradient(90deg, var(--neon1), var(--neon2)); width:0%; transition:0.3s;}
+        .progress-container{width:100%; height:10px; background:#000; border-radius:5px; margin-bottom:20px; border: 1px solid #1a2a4a;}
+        .progress-fill{height:100%; background: linear-gradient(90deg, var(--neon1), var(--neon2)); width:0%; transition:0.4s; box-shadow: 0 0 15px var(--neon1);}
     </style>
 </head>
 <body>
 
 <canvas id="fx"></canvas>
 
+<!-- AUDIO -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 <audio id="bg-music" loop src="sounds/background.mp3"></audio>
 
 <div class="page">
+    <!-- EKRAN QUIZU -->
     <div class="card" id="quizView">
         <div class="banner-area">
+            <!-- BANER IN-PAGE PUSH -->
             <script src="quge5.com" data-zone="193728" async data-cfasync="false"></script>
         </div>
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
-        <div id="q-num" style="font-size:0.8rem; color:var(--muted); margin-bottom:8px">Pytanie 1/14</div>
-        <div class="question" id="q-text">Ładowanie...</div>
+        <div id="q-num" style="font-size:0.85rem; color:var(--neon1); margin-bottom:8px; font-weight: bold;">Pytanie 1/14</div>
+        <div class="question" id="q-text">Ładowanie quizu...</div>
         <div id="ans-box" class="answers"></div>
     </div>
 
+    <!-- EKRAN PRZERWY -->
     <div class="card hidden" id="adView">
-        <h2 style="color:var(--accent); margin-top:0;">PRZERWA</h2>
-        <p style="color:var(--muted); font-size:0.9rem;">Reklama wspiera rozwój aplikacji.</p>
-        <div style="height:120px; display:flex; align-items:center; justify-content:center; border:2px solid #1a2a4a; border-radius:10px; margin:20px 0; background:#000;">
-            <span style="color:var(--neon1); font-weight:bold;">REKLAMA VIGNETTE</span>
+        <h2 style="color:var(--neon2); margin-top:0; text-shadow: 0 0 10px var(--neon2);">PRZERWA</h2>
+        <p style="color:#aaa; font-size:0.9rem; margin-bottom: 25px;">Reklama wspiera darmowy dostęp do gry.</p>
+        <div style="height:100px; display:flex; align-items:center; justify-content:center; border:1px dashed var(--neon2); border-radius:10px; margin-bottom:25px; background:rgba(255, 63, 196, 0.05);">
+            <span style="color:var(--neon2); font-weight:bold; letter-spacing: 1px;">VIGNETTE AD TRIGGER</span>
         </div>
-        <button class="btn" id="ad-btn" style="border-color: var(--neon2); color: var(--neon2);">KONTYNUUJ GRĘ</button>
+        <button class="btn btn-alt" id="ad-btn">KONTYNUUJ GRĘ</button>
     </div>
 
+    <!-- EKRAN WYNIKU -->
     <div class="card hidden" id="resultView">
-        <h1 style="color:var(--neon1); margin:0;">Koniec!</h1>
-        <p style="color:var(--muted)">Twój wynik:</p>
-        <div id="score-text" style="font-size:3.5rem; font-weight:900; color:var(--accent); margin:10px 0">0/14</div>
-        <button class="btn" onclick="location.reload()" style="background:linear-gradient(90deg, var(--neon1), var(--neon2)); border:none; color:black;">ZAGRAJ PONOWNIE</button>
+        <h1 style="color:var(--neon1); margin:0; text-shadow: 0 0 15px var(--neon1); font-size: 2.5rem;">KONIEC!</h1>
+        <p style="color:#aaa; margin-top: 10px;">Twój ostateczny wynik:</p>
+        <div id="score-text" style="font-size:4rem; font-weight:900; color:#fff; margin:15px 0; text-shadow: 0 0 20px var(--neon1);">0/14</div>
+        <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
     </div>
 </div>
 
 <script>
+    // --- CZĄSTECZKI TŁA ---
     const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -126,24 +143,25 @@
     class Particle {
         constructor(x, y, color) {
             this.x = x; this.y = y; this.color = color;
-            const angle = Math.random() * Math.PI * 2, speed = Math.random() * 5 + 2;
+            const angle = Math.random() * Math.PI * 2, speed = Math.random() * 6 + 2;
             this.v = { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
-            this.a = 1; this.gravity = 0.12;
+            this.a = 1; this.gravity = 0.15;
         }
-        draw() { ctx.save(); ctx.globalAlpha = this.a; ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); ctx.restore(); }
-        update() { this.v.y += this.gravity; this.x += this.v.x; this.y += this.v.y; this.a -= 0.015; }
+        draw() { ctx.save(); ctx.globalAlpha = this.a; ctx.beginPath(); ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); ctx.restore(); }
+        update() { this.v.y += this.gravity; this.x += this.v.x; this.y += this.v.y; this.a -= 0.012; }
     }
     function explode() {
         const x = Math.random() * canvas.width, y = Math.random() * (canvas.height * 0.4) + 100, col = `hsl(${Math.random() * 360}, 100%, 60%)`;
-        for(let i=0; i<50; i++) particles.push(new Particle(x, y, col));
+        for(let i=0; i<60; i++) particles.push(new Particle(x, y, col));
     }
     function animate() {
-        ctx.fillStyle = 'rgba(7, 16, 37, 0.3)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(5, 10, 20, 0.4)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
         particles.forEach((p, i) => { if(p.a > 0){ p.update(); p.draw(); } else { particles.splice(i, 1); }});
         requestAnimationFrame(animate);
     }
     animate();
 
+    // --- LOGIKA GRY ---
     const QUESTIONS = [
         {q:"Stolica Polski?", a:["Kraków","Warszawa","Gdańsk","Wrocław"], c:1},
         {q:"Najdłuższa rzeka?", a:["Odra","Warta","Wisła","Bug"], c:2},
@@ -166,8 +184,8 @@
           fanfare = document.getElementById("snd-fanfare"), bgMusic = document.getElementById("bg-music");
 
     function render() {
-        if (cur === 7 && !document.body.dataset.ad7) { showBreak('ad7'); return; }
-        if (cur === 14 && !document.body.dataset.adFinal) { showBreak('adFinal'); return; }
+        if (cur === 7 && !document.body.dataset.ad7) { showAdScreen('ad7'); return; }
+        if (cur === 14 && !document.body.dataset.adFinal) { showAdScreen('adFinal'); return; }
         if (cur === 14) { showResults(); return; }
 
         document.getElementById("quizView").classList.remove("hidden");
@@ -193,7 +211,7 @@
         });
     }
 
-    function showBreak(tag) {
+    function showAdScreen(tag) {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.remove("hidden");
         try{ bgMusic.pause(); }catch(e){}
@@ -210,7 +228,7 @@
         document.getElementById("resultView").classList.remove("hidden");
         document.getElementById("score-text").innerText = pts + "/14";
         fanfare.play();
-        for(let i=0; i<15; i++) setTimeout(explode, i*300);
+        for(let i=0; i<20; i++) setTimeout(explode, i*250);
     }
 
     render();
