@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce 2026</title>
     
-    <!-- GŁÓWNY MULTITAG (Zone 10310917) -->
-    <script>(function(s){s.dataset.zone='10310917',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- 1. MULTITAG DLA PRZERW (Wymuszony Vignette/Interstitial) -->
+    <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
 
     <style>
         :root{
@@ -23,8 +23,9 @@
             background: var(--card); border-radius: var(--radius); padding: 25px;
             box-shadow: 0 0 30px rgba(0,0,0,1); border: 2px solid #1a2a4a; text-align: center;
         }
+        /* BANER OBSZAR */
         .banner-area { 
-            min-height: 85px; margin-bottom: 20px; background: #000; border-radius: 10px; 
+            min-height: 90px; margin-bottom: 20px; background: #000; border-radius: 10px; 
             overflow: hidden; border: 1px solid #1a2a4a; display: flex; justify-content: center; align-items: center;
         }
         .title{font-weight:900; color:var(--neon1); margin-bottom:10px; font-size:1.1rem; text-transform:uppercase; text-shadow: 0 0 10px var(--neon1);}
@@ -46,7 +47,6 @@
 
 <canvas id="fx"></canvas>
 
-<!-- AUDIO -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
@@ -55,20 +55,21 @@
 <div class="page">
     <div class="card" id="quizView">
         <div class="banner-area">
-            <!-- DRUGI KOD - BANER (Zone 10310895) -->
-            <script>(function(s){s.dataset.zone='10310895',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+            <!-- 2. TYLKO BANER (Zone 10310895) -->
+            <script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
         </div>
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
         <div id="q-num" style="font-size:0.9rem; color:var(--neon1); margin-bottom:8px; font-weight: 800;">Pytanie 1/14</div>
-        <div class="question" id="q-text">Ładowanie quizu...</div>
+        <div class="question" id="q-text">Ładowanie...</div>
         <div id="ans-box" class="answers"></div>
     </div>
 
+    <!-- EKRAN PRZERWY REKLAMOWEJ -->
     <div class="card hidden" id="adView">
         <h2 style="color:var(--neon2); margin-top:0; text-shadow: 0 0 15px var(--neon2);">REKLAMA</h2>
         <p style="color:#aaa; font-size:0.9rem; margin-bottom: 25px;">Zaraz wracamy do gry!</p>
-        <button class="btn" id="ad-btn">KONTYNUUJ</button>
+        <button class="btn" id="ad-btn" style="border: 2px solid white;">KONTYNUUJ GRĘ</button>
     </div>
 
     <div class="card hidden" id="resultView">
@@ -114,7 +115,7 @@
         {q:"Ile województw?", a:["12","14","16","18"], c:2},
         {q:"Ptak w godle?", a:["Bocian","Orzeł","Jastrząb","Sokół"], c:1},
         {q:"Największe jezioro?", a:["Mamry","Hańcza","Śniardwy","Wigry"], c:2},
-        {q:"Dłuższa granica z?", a:["Niemcami","Rosją","Czechami","Słowacją"], c:2},
+        {q:"Dłuższa granica z?", a:["Niemcami","Rosją","Czechami","Białorusią"], c:2},
         {q:"Autor 'Pana Tadeusza'?", a:["Prus","Mickiewicz","Słowacki","Reymont"], c:1},
         {q:"Waluta Polski?", a:["Euro","Dolar","Złoty","Funt"], c:2},
         {q:"Flaga Polski?", a:["Biało-Niebieska","Biało-Czerwona","Czerwono-Biała","Złota"], c:1},
@@ -127,17 +128,14 @@
           fanfare = document.getElementById("snd-fanfare"), bgMusic = document.getElementById("bg-music");
 
     function render() {
-        if (cur === 7 && !document.body.dataset.ad7) { showAd('ad7'); return; }
-        if (cur === 14 && !document.body.dataset.adFinal) { showAd('adFinal'); return; }
-        if (cur === 14) { showRes(); return; }
-
+        if (cur === 7 && !document.body.dataset.ad7) { showAdScreen('ad7'); return; }
+        if (cur === 14 && !document.body.dataset.adFinal) { showAdScreen('adFinal'); return; }
+        if (cur === 14) { showResults(); return; }
         document.getElementById("quizView").classList.remove("hidden");
         document.getElementById("adView").classList.add("hidden");
-
         document.getElementById("bar").style.width = (cur/14*100) + "%";
         document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
         document.getElementById("q-text").innerText = QUESTIONS[cur].q;
-        
         const box = document.getElementById("ans-box"); box.innerHTML = "";
         QUESTIONS[cur].a.forEach((txt, i) => {
             const b = document.createElement("button"); b.className = "btn"; b.innerText = txt;
@@ -150,18 +148,26 @@
         });
     }
 
-    function showAd(t) {
+    function showAdScreen(tag) {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.remove("hidden");
         try{ bgMusic.pause(); }catch(e){}
+
+        // KLUCZOWE: Przycisk kontynuacji jako wyzwalacz Vignette
         document.getElementById("ad-btn").onclick = () => {
-            document.body.dataset[t] = "true";
+            document.body.dataset[tag] = "true";
+            
+            // W 2026 wymuszamy próbę otwarcia reklamy Vignette przez skrypt Monetag przy kliknięciu
+            if(window.parent && window.parent.show_10310917) {
+                window.parent.show_10310917();
+            }
+
             if(musicStarted) bgMusic.play();
             render();
         };
     }
 
-    function showRes() {
+    function showResults() {
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.add("hidden");
         document.getElementById("resultView").classList.remove("hidden");
