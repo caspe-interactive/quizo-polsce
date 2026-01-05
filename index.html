@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce 2026</title>
     
-    <!-- 1. GŁÓWNY MULTITAG (Zarządza Vignette/Interstitial/Push) -->
-    <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
+    <!-- 1. MULTITAG (Poprawiony pod Render.com) -->
+    <script src="nap5k.com" data-zone="10310917" crossorigin="anonymous" data-cfasync="false" async></script>
 
     <style>
         :root{
@@ -15,7 +15,7 @@
             --neon1:#00f0ff; --neon2:#ff3fc4; --text:#ffffff; --radius:15px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
+        html,body{height:100%;margin:0;font-family:'Segoe UI', Tahoma, sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
         body{display:flex;align-items:center;justify-content:center;padding:15px;}
         #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
         .page{width:100%; max-width:480px; position:relative; z-index:1000;}
@@ -24,7 +24,7 @@
             box-shadow: 0 0 30px rgba(0,0,0,1); border: 2px solid #1a2a4a; text-align: center;
         }
         .banner-area { 
-            min-height: 80px; margin-bottom: 20px; background: #000; border-radius: 10px; 
+            min-height: 85px; margin-bottom: 20px; background: #000; border-radius: 10px; 
             overflow: hidden; border: 1px solid #1a2a4a; display: flex; justify-content: center; align-items: center;
         }
         .title{font-weight:900; color:var(--neon1); margin-bottom:10px; font-size:1.1rem; text-transform:uppercase; text-shadow: 0 0 10px var(--neon1);}
@@ -46,7 +46,7 @@
 
 <canvas id="fx"></canvas>
 
-<!-- AUDIO -->
+<!-- AUDIO (Wymagane pliki w folderze sounds/) -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
@@ -54,14 +54,14 @@
 
 <div class="page">
     <div class="card" id="quizView">
-        <div class="banner-area">
-            <!-- 2. KOD BANERA (In-Page Push) -->
-            <script src="quge5.com" data-zone="193728" async data-cfasync="false"></script>
+        <div class="banner-area" id="ad-banner-container">
+            <!-- 2. BANER (Poprawiony pod Render.com) -->
+            <script src="quge5.com" data-zone="193728" crossorigin="anonymous" async data-cfasync="false"></script>
         </div>
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
         <div id="q-num" style="font-size:0.9rem; color:var(--neon1); margin-bottom:8px; font-weight: 800;">Pytanie 1/14</div>
-        <div class="question" id="q-text">Ładowanie...</div>
+        <div class="question" id="q-text">Ładowanie quizu...</div>
         <div id="ans-box" class="answers"></div>
     </div>
 
@@ -80,6 +80,7 @@
 </div>
 
 <script>
+    // --- SKRYPT CZĄSTECZEK ---
     const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -105,6 +106,7 @@
     }
     animate();
 
+    // --- LOGIKA GRY ---
     const QUESTIONS = [
         {q:"Stolica Polski?", a:["Kraków","Warszawa","Gdańsk","Wrocław"], c:1},
         {q:"Najdłuższa rzeka?", a:["Odra","Warta","Wisła","Bug"], c:2},
@@ -130,6 +132,7 @@
         if (cur === 7 && !document.body.dataset.ad7) { showAdScreen('ad7'); return; }
         if (cur === 14 && !document.body.dataset.adFinal) { showAdScreen('adFinal'); return; }
         if (cur === 14) { showResults(); return; }
+        
         document.getElementById("quizView").classList.remove("hidden");
         document.getElementById("adView").classList.add("hidden");
         document.getElementById("bar").style.width = (cur/14*100) + "%";
