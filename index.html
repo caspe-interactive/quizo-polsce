@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce 2026</title>
     
-    <!-- 1. MULTITAG DLA PRZERW (Wymuszony Vignette/Interstitial) -->
-    <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
-
     <style>
         :root{
             --bg1:#050a14; --card:#0b1220; 
@@ -23,7 +20,6 @@
             background: var(--card); border-radius: var(--radius); padding: 25px;
             box-shadow: 0 0 30px rgba(0,0,0,1); border: 2px solid #1a2a4a; text-align: center;
         }
-        /* BANER OBSZAR */
         .banner-area { 
             min-height: 90px; margin-bottom: 20px; background: #000; border-radius: 10px; 
             overflow: hidden; border: 1px solid #1a2a4a; display: flex; justify-content: center; align-items: center;
@@ -38,6 +34,7 @@
             background-size: 200% auto; color: #000; border: none; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
         }
         .btn:hover { background-position: right center; box-shadow: 0 0 30px var(--neon1), 0 0 30px var(--neon2); transform: scale(1.03); }
+        .btn:active { transform: scale(0.95); filter: brightness(1.2); }
         .hidden{display:none !important;}
         .progress-container{width:100%; height:12px; background:#000; border-radius:6px; margin-bottom:20px; border: 1px solid #1a2a4a; overflow:hidden;}
         .progress-fill{height:100%; background: var(--neon-grad); width:0%; transition:0.4s;}
@@ -45,18 +42,39 @@
 </head>
 <body>
 
+<!-- INICJALIZACJA REKLAM MONETAG (Metoda dynamiczna 2026) -->
+<script>
+    // Ładowanie Multitaga (Zone 10310917)
+    (function(s,z){
+        s.src='nap5k.com';
+        s.dataset.zone=z;
+        s.dataset.cfasync='false';
+        document.head.appendChild(s);
+    })(document.createElement('script'),'10310917');
+
+    // Ładowanie Banera (Zone 10310895)
+    window.addEventListener('load', function(){
+        var b = document.createElement('script');
+        b.src='quge5.com';
+        b.dataset.zone='10310895';
+        b.dataset.cfasync='false';
+        document.getElementById('ad-banner').appendChild(b);
+    });
+</script>
+
 <canvas id="fx"></canvas>
 
+<!-- AUDIO -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 <audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 <audio id="bg-music" loop src="sounds/background.mp3"></audio>
 
 <div class="page">
+    <!-- WIDOK QUIZU -->
     <div class="card" id="quizView">
-        <div class="banner-area">
-            <!-- 2. TYLKO BANER (Zone 10310895) -->
-            <script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
+        <div class="banner-area" id="ad-banner">
+            <!-- Baner In-Page Push zostanie wstrzyknięty tutaj -->
         </div>
         <div class="title">QuizoPolsce 2026</div>
         <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
@@ -65,22 +83,24 @@
         <div id="ans-box" class="answers"></div>
     </div>
 
-    <!-- EKRAN PRZERWY REKLAMOWEJ -->
+    <!-- EKRAN PRZERWY -->
     <div class="card hidden" id="adView">
         <h2 style="color:var(--neon2); margin-top:0; text-shadow: 0 0 15px var(--neon2);">REKLAMA</h2>
         <p style="color:#aaa; font-size:0.9rem; margin-bottom: 25px;">Zaraz wracamy do gry!</p>
-        <button class="btn" id="ad-btn" style="border: 2px solid white;">KONTYNUUJ GRĘ</button>
+        <button class="btn" id="ad-btn">KONTYNUUJ GRĘ</button>
     </div>
 
+    <!-- WYNIK KOŃCOWY -->
     <div class="card hidden" id="resultView">
-        <h1 style="color:var(--neon1); margin:0; text-shadow: 0 0 20px var(--neon1);">KONIEC!</h1>
+        <h1 style="color:var(--neon1); margin:0; text-shadow: 0 0 20px var(--neon1); font-size: 2.8rem;">KONIEC!</h1>
         <p style="color:#aaa; margin-top: 10px;">Twój wynik:</p>
-        <div id="score-text" style="font-size:4.5rem; font-weight:900; color:#fff; margin:15px 0;">0/14</div>
+        <div id="score-text" style="font-size:4.5rem; font-weight:900; color:#fff; margin:15px 0; text-shadow: 0 0 30px var(--neon2);">0/14</div>
         <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
     </div>
 </div>
 
 <script>
+    // --- ANIMACJA TŁA ---
     const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -106,6 +126,7 @@
     }
     animate();
 
+    // --- LOGIKA QUIZU ---
     const QUESTIONS = [
         {q:"Stolica Polski?", a:["Kraków","Warszawa","Gdańsk","Wrocław"], c:1},
         {q:"Najdłuższa rzeka?", a:["Odra","Warta","Wisła","Bug"], c:2},
@@ -131,17 +152,20 @@
         if (cur === 7 && !document.body.dataset.ad7) { showAdScreen('ad7'); return; }
         if (cur === 14 && !document.body.dataset.adFinal) { showAdScreen('adFinal'); return; }
         if (cur === 14) { showResults(); return; }
+
         document.getElementById("quizView").classList.remove("hidden");
         document.getElementById("adView").classList.add("hidden");
         document.getElementById("bar").style.width = (cur/14*100) + "%";
         document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
         document.getElementById("q-text").innerText = QUESTIONS[cur].q;
+        
         const box = document.getElementById("ans-box"); box.innerHTML = "";
         QUESTIONS[cur].a.forEach((txt, i) => {
             const b = document.createElement("button"); b.className = "btn"; b.innerText = txt;
             b.onclick = () => {
                 if(!musicStarted) { try{ bgMusic.volume=0.2; bgMusic.play(); }catch(e){} musicStarted=true; }
-                if(i === QUESTIONS[cur].c) { pts++; ding.play(); explode(); } else { buzzer.play(); }
+                if(i === QUESTIONS[cur].c) { pts++; try{ding.play();}catch(e){} explode(); } 
+                else { try{buzzer.play();}catch(e){} }
                 cur++; setTimeout(render, 400);
             };
             box.appendChild(b);
@@ -152,16 +176,8 @@
         document.getElementById("quizView").classList.add("hidden");
         document.getElementById("adView").classList.remove("hidden");
         try{ bgMusic.pause(); }catch(e){}
-
-        // KLUCZOWE: Przycisk kontynuacji jako wyzwalacz Vignette
         document.getElementById("ad-btn").onclick = () => {
             document.body.dataset[tag] = "true";
-            
-            // W 2026 wymuszamy próbę otwarcia reklamy Vignette przez skrypt Monetag przy kliknięciu
-            if(window.parent && window.parent.show_10310917) {
-                window.parent.show_10310917();
-            }
-
             if(musicStarted) bgMusic.play();
             render();
         };
@@ -172,7 +188,7 @@
         document.getElementById("adView").classList.add("hidden");
         document.getElementById("resultView").classList.remove("hidden");
         document.getElementById("score-text").innerText = pts + "/14";
-        fanfare.play();
+        try{fanfare.play();}catch(e){}
         for(let i=0; i<20; i++) setTimeout(explode, i*250);
     }
     render();
