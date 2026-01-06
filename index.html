@@ -1,197 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>QuizoPolsce 2026</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz o Polsce 2026</title>
     
+    <!-- Kod reklamowy Monetag MultiTag -->
+    <script src="quge5.com" data-zone="196106" async data-cfasync="false"></script>
+
     <style>
-        :root{
-            --bg1:#050a14; --card:#0b1220; 
-            --neon-grad: linear-gradient(90deg, #00f0ff, #ff3fc4, #ffd27a);
-            --neon1:#00f0ff; --neon2:#ff3fc4; --text:#ffffff; --radius:15px;
+        :root {
+            --primary-color: #dc143c; /* Polska czerwień */
+            --bg-color: #f4f4f4;
         }
-        *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:'Segoe UI', Roboto, sans-serif; background:var(--bg1); color:var(--text); overflow:hidden;}
-        body{display:flex;align-items:center;justify-content:center;padding:15px;}
-        #fx { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
-        .page{width:100%; max-width:480px; position:relative; z-index:1000;}
-        .card{
-            background: var(--card); border-radius: var(--radius); padding: 25px;
-            box-shadow: 0 0 30px rgba(0,0,0,1); border: 2px solid #1a2a4a; text-align: center;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
         }
-        .banner-area { 
-            min-height: 90px; margin-bottom: 20px; background: #000; border-radius: 10px; 
-            overflow: hidden; border: 1px solid #1a2a4a; display: flex; justify-content: center; align-items: center;
+        #quiz-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
         }
-        .title{font-weight:900; color:var(--neon1); margin-bottom:10px; font-size:1.1rem; text-transform:uppercase; text-shadow: 0 0 10px var(--neon1);}
-        .question{font-size:1.3rem; margin-bottom:25px; min-height:60px; font-weight:700; color:#fff;}
-        .answers{display:grid; grid-template-columns:1fr; gap:15px;}
-        .btn{
-            padding:16px; border-radius:12px; cursor:pointer; text-align:center;
-            font-weight:900; font-size:1.1rem; width:100%; text-transform: uppercase;
-            transition: 0.3s all ease; background: var(--neon-grad);
-            background-size: 200% auto; color: #000; border: none; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        h1 { color: var(--primary-color); }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+            width: 100%;
         }
-        .btn:hover { background-position: right center; box-shadow: 0 0 30px var(--neon1), 0 0 30px var(--neon2); transform: scale(1.03); }
-        .btn:active { transform: scale(0.95); filter: brightness(1.2); }
-        .hidden{display:none !important;}
-        .progress-container{width:100%; height:12px; background:#000; border-radius:6px; margin-bottom:20px; border: 1px solid #1a2a4a; overflow:hidden;}
-        .progress-fill{height:100%; background: var(--neon-grad); width:0%; transition:0.4s;}
+        .btn:hover { transform: scale(1.02); background-color: #b01030; }
+        #question { font-size: 20px; margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<!-- INICJALIZACJA REKLAM MONETAG (Metoda dynamiczna 2026) -->
-<script>
-    // Ładowanie Multitaga (Zone 10310917)
-    (function(s,z){
-        s.src='nap5k.com';
-        s.dataset.zone=z;
-        s.dataset.cfasync='false';
-        document.head.appendChild(s);
-    })(document.createElement('script'),'10310917');
-
-    // Ładowanie Banera (Zone 10310895)
-    window.addEventListener('load', function(){
-        var b = document.createElement('script');
-        b.src='quge5.com';
-        b.dataset.zone='10310895';
-        b.dataset.cfasync='false';
-        document.getElementById('ad-banner').appendChild(b);
-    });
-</script>
-
-<canvas id="fx"></canvas>
-
-<!-- AUDIO -->
-<audio id="snd-ding" src="sounds/ding.mp3"></audio>
-<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
-<audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
-<audio id="bg-music" loop src="sounds/background.mp3"></audio>
-
-<div class="page">
-    <!-- WIDOK QUIZU -->
-    <div class="card" id="quizView">
-        <div class="banner-area" id="ad-banner">
-            <!-- Baner In-Page Push zostanie wstrzyknięty tutaj -->
+<div id="quiz-container">
+    <h1>Polski Quiz 🇵🇱</h1>
+    <div id="quiz-content">
+        <p id="question">Ładowanie pytania...</p>
+        <div id="answer-buttons">
+            <!-- Tutaj wskoczą przyciski z JS -->
         </div>
-        <div class="title">QuizoPolsce 2026</div>
-        <div class="progress-container"><div class="progress-fill" id="bar"></div></div>
-        <div id="q-num" style="font-size:0.9rem; color:var(--neon1); margin-bottom:8px; font-weight: 800;">Pytanie 1/14</div>
-        <div class="question" id="q-text">Ładowanie...</div>
-        <div id="ans-box" class="answers"></div>
-    </div>
-
-    <!-- EKRAN PRZERWY -->
-    <div class="card hidden" id="adView">
-        <h2 style="color:var(--neon2); margin-top:0; text-shadow: 0 0 15px var(--neon2);">REKLAMA</h2>
-        <p style="color:#aaa; font-size:0.9rem; margin-bottom: 25px;">Zaraz wracamy do gry!</p>
-        <button class="btn" id="ad-btn">KONTYNUUJ GRĘ</button>
-    </div>
-
-    <!-- WYNIK KOŃCOWY -->
-    <div class="card hidden" id="resultView">
-        <h1 style="color:var(--neon1); margin:0; text-shadow: 0 0 20px var(--neon1); font-size: 2.8rem;">KONIEC!</h1>
-        <p style="color:#aaa; margin-top: 10px;">Twój wynik:</p>
-        <div id="score-text" style="font-size:4.5rem; font-weight:900; color:#fff; margin:15px 0; text-shadow: 0 0 30px var(--neon2);">0/14</div>
-        <button class="btn" onclick="location.reload()">ZAGRAJ PONOWNIE</button>
     </div>
 </div>
 
 <script>
-    // --- ANIMACJA TŁA ---
-    const canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
-    let particles = [];
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.onresize = resize; resize();
-    class Particle {
-        constructor(x, y, color) {
-            this.x = x; this.y = y; this.color = color;
-            const angle = Math.random() * Math.PI * 2, speed = Math.random() * 6 + 2;
-            this.v = { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
-            this.a = 1; this.gravity = 0.15;
+    // Prosta logika quizu na start
+    const questions = [
+        {
+            q: "Co jest stolicą Polski?",
+            a: ["Kraków", "Warszawa", "Gdańsk", "Poznań"],
+            correct: 1
+        },
+        {
+            q: "W którym roku Polska weszła do UE?",
+            a: ["2000", "2004", "2010", "1999"],
+            correct: 1
         }
-        draw() { ctx.save(); ctx.globalAlpha = this.a; ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); ctx.restore(); }
-        update() { this.v.y += this.gravity; this.x += this.v.x; this.y += this.v.y; this.a -= 0.012; }
-    }
-    function explode() {
-        const x = Math.random() * canvas.width, y = Math.random() * (canvas.height * 0.4) + 100, col = `hsl(${Math.random() * 360}, 100%, 60%)`;
-        for(let i=0; i<60; i++) particles.push(new Particle(x, y, col));
-    }
-    function animate() {
-        ctx.fillStyle = 'rgba(5, 10, 20, 0.4)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        particles.forEach((p, i) => { if(p.a > 0){ p.update(); p.draw(); } else { particles.splice(i, 1); }});
-        requestAnimationFrame(animate);
-    }
-    animate();
-
-    // --- LOGIKA QUIZU ---
-    const QUESTIONS = [
-        {q:"Stolica Polski?", a:["Kraków","Warszawa","Gdańsk","Wrocław"], c:1},
-        {q:"Najdłuższa rzeka?", a:["Odra","Warta","Wisła","Bug"], c:2},
-        {q:"Chrzest Polski?", a:["966","1000","1410","1918"], c:0},
-        {q:"Najwyższy szczyt?", a:["Giewont","Śnieżka","Rysy","Kasprowy"], c:2},
-        {q:"Miasto pierników?", a:["Toruń","Lublin","Płock","Kielce"], c:0},
-        {q:"Ile województw?", a:["12","14","16","18"], c:2},
-        {q:"Ptak w godle?", a:["Bocian","Orzeł","Jastrząb","Sokół"], c:1},
-        {q:"Największe jezioro?", a:["Mamry","Hańcza","Śniardwy","Wigry"], c:2},
-        {q:"Dłuższa granica z?", a:["Niemcami","Rosją","Czechami","Białorusią"], c:2},
-        {q:"Autor 'Pana Tadeusza'?", a:["Prus","Mickiewicz","Słowacki","Reymont"], c:1},
-        {q:"Waluta Polski?", a:["Euro","Dolar","Złoty","Funt"], c:2},
-        {q:"Flaga Polski?", a:["Biało-Niebieska","Biało-Czerwona","Czerwono-Biała","Złota"], c:1},
-        {q:"Polska w UE od?", a:["1999","2004","2010","1989"], c:1},
-        {q:"Zamek na Wawelu jest w?", a:["Warszawie","Krakowie","Poznaniu","Lublinie"], c:1}
     ];
 
-    let cur = 0, pts = 0, musicStarted = false;
-    const ding = document.getElementById("snd-ding"), buzzer = document.getElementById("snd-buzzer"), 
-          fanfare = document.getElementById("snd-fanfare"), bgMusic = document.getElementById("bg-music");
+    let currentQ = 0;
 
-    function render() {
-        if (cur === 7 && !document.body.dataset.ad7) { showAdScreen('ad7'); return; }
-        if (cur === 14 && !document.body.dataset.adFinal) { showAdScreen('adFinal'); return; }
-        if (cur === 14) { showResults(); return; }
+    function showQuestion() {
+        const qData = questions[currentQ];
+        document.getElementById('question').innerText = qData.q;
+        const btnContainer = document.getElementById('answer-buttons');
+        btnContainer.innerHTML = '';
 
-        document.getElementById("quizView").classList.remove("hidden");
-        document.getElementById("adView").classList.add("hidden");
-        document.getElementById("bar").style.width = (cur/14*100) + "%";
-        document.getElementById("q-num").innerText = `Pytanie ${cur+1}/14`;
-        document.getElementById("q-text").innerText = QUESTIONS[cur].q;
-        
-        const box = document.getElementById("ans-box"); box.innerHTML = "";
-        QUESTIONS[cur].a.forEach((txt, i) => {
-            const b = document.createElement("button"); b.className = "btn"; b.innerText = txt;
-            b.onclick = () => {
-                if(!musicStarted) { try{ bgMusic.volume=0.2; bgMusic.play(); }catch(e){} musicStarted=true; }
-                if(i === QUESTIONS[cur].c) { pts++; try{ding.play();}catch(e){} explode(); } 
-                else { try{buzzer.play();}catch(e){} }
-                cur++; setTimeout(render, 400);
-            };
-            box.appendChild(b);
+        qData.a.forEach((ans, index) => {
+            const button = document.createElement('button');
+            button.innerText = ans;
+            button.classList.add('btn');
+            button.onclick = () => checkAnswer(index);
+            btnContainer.appendChild(button);
         });
     }
 
-    function showAdScreen(tag) {
-        document.getElementById("quizView").classList.add("hidden");
-        document.getElementById("adView").classList.remove("hidden");
-        try{ bgMusic.pause(); }catch(e){}
-        document.getElementById("ad-btn").onclick = () => {
-            document.body.dataset[tag] = "true";
-            if(musicStarted) bgMusic.play();
-            render();
-        };
+    function checkAnswer(index) {
+        if(index === questions[currentQ].correct) {
+            alert("Brawo! Poprawna odpowiedź.");
+        } else {
+            alert("Niestety to błąd.");
+        }
+        
+        currentQ++;
+        if(currentQ < questions.length) {
+            showQuestion();
+        } else {
+            document.getElementById('quiz-content').innerHTML = "<h2>Koniec quizu! Dzięki za grę!</h2>";
+        }
     }
 
-    function showResults() {
-        document.getElementById("quizView").classList.add("hidden");
-        document.getElementById("adView").classList.add("hidden");
-        document.getElementById("resultView").classList.remove("hidden");
-        document.getElementById("score-text").innerText = pts + "/14";
-        try{fanfare.play();}catch(e){}
-        for(let i=0; i<20; i++) setTimeout(explode, i*250);
-    }
-    render();
+    showQuestion();
 </script>
+
 </body>
 </html>
