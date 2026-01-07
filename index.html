@@ -58,11 +58,6 @@ body{
 #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
 .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
 .final-actions .btn{font-size:1rem;padding:12px 14px}
-.msg{
-  position:fixed; right:16px; bottom:16px; z-index:1300;
-  background:rgba(0,0,0,0.7); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.95rem;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6); display:none;
-}
 #nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
@@ -97,14 +92,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div class="ad-final" id="adFinal"><span class="ad-status">Reklama końcowa</span></div>
     <div class="final-actions">
       <div class="btn" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
-      <div class="btn" id="shareBtn" style="background:linear-gradient(90deg,#00f0ff,#ff3fc4)">Udostępnij</div>
-      <div class="btn" id="saveBtn" style="display:none; background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zainstaluj aplikację</div>
+      <div class="btn" id="saveBtn" style="display:none; background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zainstaluj na ekranie</div>
       <div class="btn" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Zamknij</div>
     </div>
   </div>
 </div>
-
-<div class="msg" id="msgBox"></div>
 
 <audio id="bg" loop src="sounds/background.mp3"></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
@@ -139,22 +131,38 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// --- Reklamy Monetag Start ---
+// --- POPRAWIONE REKLAMY MONETAG ---
 const injectAd = (zone, el) => {
+  if(!el) return;
   const s = document.createElement('script');
-  s.src = 'nap5k.com';
+  s.src = 'nap5k.com'; // Pełny adres zapobiega błędom MIME
   s.dataset.zone = zone;
+  s.setAttribute('data-cfasync', 'false');
+  s.async = true;
   el.appendChild(s);
 };
+
 injectAd('10310895', adTop);
 injectAd('10310917', adBottom);
 injectAd('10310945', adMid);
 injectAd('10310963', adFinal);
 
-// --- PWA Logic ---
+// --- PWA: Obsługa instalacji ---
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('saveBtn').style.display = 'flex'; });
-$('saveBtn').onclick = async () => { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt = null; $('saveBtn').style.display='none'; }};
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $('saveBtn').style.display = 'flex';
+});
+
+$('saveBtn').onclick = async () => {
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    $('saveBtn').style.display = 'none';
+  }
+};
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 
@@ -172,7 +180,7 @@ function showQuestion(){
   }
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adFinal.style.display='flex';
-    questionEl.textContent="Przygotowywanie wyniku...";
+    questionEl.textContent="Podsumowanie...";
     answersEl.innerHTML="";
     setTimeout(() => finishQuiz(), 15000);
     return;
@@ -203,7 +211,6 @@ function answer(idxA,btn,qIdx){
 function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; fanfare.play().catch(()=>{}); firework(); }
 
 $('retryBtn').onclick = () => { points=0; current=0; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
-$('shareBtn').onclick = () => { if(navigator.share){ navigator.share({title:'QuizoPolsce', url:location.href}); }};
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
 let fireworkRunning = false;
