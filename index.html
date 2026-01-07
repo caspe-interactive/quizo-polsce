@@ -6,6 +6,11 @@
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
+
+<!-- PRIORYTETOWE ŁADOWANIE REKLAM (HEAD) -->
+<script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
+<script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
+
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -19,11 +24,21 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-top,.ad-bottom,.ad-mid,.ad-final{
-  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px; overflow:hidden;
+
+/* POPRAWIONE CSS DLA REKLAM - WYMUSZENIE WIDOCZNOŚCI */
+.ad-top, .ad-bottom, .ad-mid, .ad-final {
+  background: rgba(255,255,255,0.03) !important;
+  color:white; display:flex !important; align-items:center; justify-content:center; 
+  margin-bottom:12px; border-radius:12px; padding:8px; text-align:center; 
+  min-height: 130px !important; /* Rezerwacja miejsca */
+  width: 100% !important;
+  visibility: visible !important;
+  border: 1px dashed rgba(255,255,255,0.1);
+  position:relative; overflow:hidden;
 }
+
 .ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; z-index:10; }
+
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -65,6 +80,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
+  <!-- Reklama Top ładowana statycznie -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">REKLAMA</span>
     <script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
@@ -83,10 +99,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">PRZERWA REKLAMOWA</span></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.2</div>
+      <div style="font-size:0.8rem;opacity:0.6">v2026.3</div>
     </div>
   </div>
 
+  <!-- Reklama Bottom ładowana statycznie -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">REKLAMA</span>
     <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
@@ -139,8 +156,9 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// --- Reklamy: Dynamiczne wywołania dla przerw ---
+// --- Reklamy: Funkcja pomocnicza dla reklam wewnątrz gry ---
 const loadAdScript = (zone, targetEl) => {
+  if (targetEl.querySelector('script')) return; // Zapobiega dublowaniu
   const s = document.createElement('script');
   s.src = 'nap5k.com';
   s.dataset.zone = zone;
@@ -148,7 +166,7 @@ const loadAdScript = (zone, targetEl) => {
   targetEl.appendChild(s);
 };
 
-// PWA Logic
+// PWA: Instalacja
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('saveBtn').style.display = 'flex'; });
 $('saveBtn').onclick = async () => { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt = null; $('saveBtn').style.display='none'; }};
