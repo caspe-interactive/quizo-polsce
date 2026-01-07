@@ -21,9 +21,9 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px; overflow:hidden;
 }
-.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; }
+.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; z-index:10; }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -65,7 +65,11 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop"><span class="ad-status">Reklama sponsorowana</span></div>
+  <div class="ad-top" id="adTop">
+    <span class="ad-status">REKLAMA</span>
+    <script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
+  </div>
+  
   <div class="card" id="quizCard">
     <div class="top">
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -76,23 +80,27 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">Przerwa reklamowa</span></div>
+    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">PRZERWA REKLAMOWA</span></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.1</div>
+      <div style="font-size:0.8rem;opacity:0.6">v2026.2</div>
     </div>
   </div>
-  <div class="ad-bottom" id="adBottom"><span class="ad-status">Reklama sponsorowana</span></div>
+
+  <div class="ad-bottom" id="adBottom">
+    <span class="ad-status">REKLAMA</span>
+    <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
+  </div>
 </div>
 
 <div id="final" aria-hidden="true">
   <div id="final-card">
     <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal"><span class="ad-status">Reklama końcowa</span></div>
+    <div class="ad-final" id="adFinal"><span class="ad-status">REKLAMA WYNIKU</span></div>
     <div class="final-actions">
       <div class="btn" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
-      <div class="btn" id="saveBtn" style="display:none; background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zainstaluj na ekranie</div>
+      <div class="btn" id="saveBtn" style="display:none; background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zainstaluj aplikację</div>
       <div class="btn" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Zamknij</div>
     </div>
   </div>
@@ -131,38 +139,19 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// --- POPRAWIONE REKLAMY MONETAG ---
-const injectAd = (zone, el) => {
-  if(!el) return;
+// --- Reklamy: Dynamiczne wywołania dla przerw ---
+const loadAdScript = (zone, targetEl) => {
   const s = document.createElement('script');
-  s.src = 'nap5k.com'; // Pełny adres zapobiega błędom MIME
+  s.src = 'nap5k.com';
   s.dataset.zone = zone;
   s.setAttribute('data-cfasync', 'false');
-  s.async = true;
-  el.appendChild(s);
+  targetEl.appendChild(s);
 };
 
-injectAd('10310895', adTop);
-injectAd('10310917', adBottom);
-injectAd('10310945', adMid);
-injectAd('10310963', adFinal);
-
-// --- PWA: Obsługa instalacji ---
+// PWA Logic
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  $('saveBtn').style.display = 'flex';
-});
-
-$('saveBtn').onclick = async () => {
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    $('saveBtn').style.display = 'none';
-  }
-};
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('saveBtn').style.display = 'flex'; });
+$('saveBtn').onclick = async () => { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt = null; $('saveBtn').style.display='none'; }};
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 
@@ -173,6 +162,7 @@ function showQuestion(){
   if(current===7 && !midAdShown){
     midAdShown = true;
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    loadAdScript('10310945', adMid);
     questionEl.textContent="Przerwa na reklamę...";
     answersEl.innerHTML="";
     setTimeout(() => showQuestion(), 15000);
@@ -180,7 +170,8 @@ function showQuestion(){
   }
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adFinal.style.display='flex';
-    questionEl.textContent="Podsumowanie...";
+    loadAdScript('10310963', adFinal);
+    questionEl.textContent="Zaraz zobaczysz swój wynik...";
     answersEl.innerHTML="";
     setTimeout(() => finishQuiz(), 15000);
     return;
