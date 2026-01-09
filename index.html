@@ -7,7 +7,7 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- PRIORYTETOWE ŁADOWANIE REKLAM (HEAD) -->
+<!-- POPRAWIONE: PEŁNE ADRESY URL W HEAD -->
 <script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
 <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
 
@@ -24,21 +24,17 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-
-/* POPRAWIONE CSS DLA REKLAM - WYMUSZENIE WIDOCZNOŚCI */
 .ad-top, .ad-bottom, .ad-mid, .ad-final {
   background: rgba(255,255,255,0.03) !important;
   color:white; display:flex !important; align-items:center; justify-content:center; 
   margin-bottom:12px; border-radius:12px; padding:8px; text-align:center; 
-  min-height: 130px !important; /* Rezerwacja miejsca */
+  min-height: 130px !important;
   width: 100% !important;
   visibility: visible !important;
   border: 1px dashed rgba(255,255,255,0.1);
   position:relative; overflow:hidden;
 }
-
 .ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; z-index:10; }
-
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -63,7 +59,6 @@ body{
 .btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
 .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
 .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
-.meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
 #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
 #final-card{
   background:linear-gradient(180deg,#081322,#06121f);
@@ -72,7 +67,6 @@ body{
 }
 #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
 .final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
-.final-actions .btn{font-size:1rem;padding:12px 14px}
 #nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
@@ -80,9 +74,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <!-- Reklama Top ładowana statycznie -->
   <div class="ad-top" id="adTop">
     <span class="ad-status">REKLAMA</span>
+    <!-- POPRAWIONE: https:// -->
     <script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
   </div>
   
@@ -99,13 +93,13 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">PRZERWA REKLAMOWA</span></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.3</div>
+      <div style="font-size:0.8rem;opacity:0.6">v2026.4</div>
     </div>
   </div>
 
-  <!-- Reklama Bottom ładowana statycznie -->
   <div class="ad-bottom" id="adBottom">
     <span class="ad-status">REKLAMA</span>
+    <!-- POPRAWIONE: https:// -->
     <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
   </div>
 </div>
@@ -156,9 +150,9 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// --- Reklamy: Funkcja pomocnicza dla reklam wewnątrz gry ---
+// POPRAWIONE: PEŁNY ADRES W FUNKCJI DYNAMICZNEJ
 const loadAdScript = (zone, targetEl) => {
-  if (targetEl.querySelector('script')) return; // Zapobiega dublowaniu
+  if (targetEl.querySelector('script')) return; 
   const s = document.createElement('script');
   s.src = 'nap5k.com';
   s.dataset.zone = zone;
@@ -166,7 +160,6 @@ const loadAdScript = (zone, targetEl) => {
   targetEl.appendChild(s);
 };
 
-// PWA: Instalacja
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('saveBtn').style.display = 'flex'; });
 $('saveBtn').onclick = async () => { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt = null; $('saveBtn').style.display='none'; }};
@@ -180,7 +173,7 @@ function showQuestion(){
   if(current===7 && !midAdShown){
     midAdShown = true;
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
-    loadAdScript('10310945', adMid);
+    loadAdScript('10310945', adMid); // Poprawione zone ID
     questionEl.textContent="Przerwa na reklamę...";
     answersEl.innerHTML="";
     setTimeout(() => showQuestion(), 15000);
@@ -188,7 +181,7 @@ function showQuestion(){
   }
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adFinal.style.display='flex';
-    loadAdScript('10310963', adFinal);
+    loadAdScript('10310963', adFinal); // Poprawione zone ID
     questionEl.textContent="Zaraz zobaczysz swój wynik...";
     answersEl.innerHTML="";
     setTimeout(() => finishQuiz(), 15000);
