@@ -6,6 +6,11 @@
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
+
+<!-- 1. REKLAMY ŁADOWANE OD RAZU (NAJWYŻSZY PRIORYTET) -->
+<script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
+<script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
+
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -21,11 +26,9 @@ body{
 .page{width:100%;max-width:920px}
 .ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px;
 }
-.ad-status{
-  position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a;
-}
+.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -34,7 +37,6 @@ body{
 }
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-.score{display:none;color:var(--accent)}
 .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
@@ -43,59 +45,55 @@ body{
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
   transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
   background:linear-gradient(90deg,var(--neon1),var(--neon2));
-  box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);
-  border:1px solid rgba(255,255,255,0.02);
+  box-shadow:0 10px 40px rgba(0,240,255,0.04);
 }
-.btn:active{transform:translateY(2px)}
-.btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
-.meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
+.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
+.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
 #final-card{
-  background:linear-gradient(180deg,#081322,#06121f);
-  padding:30px; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.7);
-  text-align:center;color:var(--text); max-width:580px;width:94%;
+  background:#081322; padding:30px; border-radius:14px; text-align:center; color:var(--text); max-width:580px; width:94%;
 }
-#final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
-.final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
-#nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop"><span class="ad-status">Ładowanie reklamy...</span></div>
-  <div class="card" id="quizCard">
+  <!-- REKLAMA TOP -->
+  <div class="ad-top" id="adTop">
+    <span class="ad-status">REKLAMA</span>
+    <script src="nap5k.com" data-zone="10310895" data-cfasync="false" async></script>
+  </div>
+
+  <div class="card">
     <div class="top">
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div class="title">QuizoPolsce — Sprawdź wiedzę o Polsce</div>
-        <div id="nickWrap"><input id="nick" placeholder="Twój nick" /></div>
-      </div>
-      <div class="score">Punkty: <span id="points">0</span></div>
+      <div class="title">QuizoPolsce</div>
+      <div style="color:var(--accent)">Pkt: <span id="points">0</span></div>
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">Ładowanie reklamy...</span></div>
-    <div class="meta">
-      <div id="progress">Pytanie 0/0</div>
-      <div class="small-muted">Miejsca reklamowe gotowe</div>
+    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">REKLAMA</span></div>
+    <div class="meta" style="margin-top:15px; font-size:0.9rem; color:var(--muted)">
+      <span id="progress">Pytanie 0/0</span>
     </div>
   </div>
-  <div class="ad-bottom" id="adBottom"><span class="ad-status">Ładowanie reklamy...</span></div>
+
+  <!-- REKLAMA BOTTOM -->
+  <div class="ad-bottom" id="adBottom">
+    <span class="ad-status">REKLAMA</span>
+    <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
+  </div>
 </div>
 
-<div id="final" aria-hidden="true">
+<div id="final">
   <div id="final-card">
-    <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
-    <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal"><span class="ad-status">Ładowanie reklamy...</span></div>
-    <div class="final-actions" style="margin-top:14px;">
-      <div class="btn big" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
-      <div class="btn big" id="saveBtn" style="background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zapisz na ekranie głównym</div>
-      <div class="btn big" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Koniec</div>
+    <h1 style="color:var(--neon2)">Twój wynik</h1>
+    <div style="font-size:2.5rem; margin:20px 0;"><span id="final-text">0</span> pkt</div>
+    <div class="ad-final" id="adFinal">
+        <span class="ad-status">REKLAMA</span>
+        <script src="nap5k.com" data-zone="10310963" data-cfasync="false" async></script>
     </div>
+    <div class="btn" onclick="location.reload()" style="margin-top:20px;">Zagraj ponownie</div>
   </div>
 </div>
 
@@ -107,8 +105,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 <script>
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
-      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
+      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'), adMid=$('adMid');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -128,73 +125,63 @@ const QUESTIONS=[
   { q:"Polski król zwany „Lwem Lechistanu”?", a:["Jan III Sobieski","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct:0 }
 ];
 
-let points=0, current=0;
-function getRandomSession(){ return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
-let sessionQuestions=getRandomSession();
+let points=0, current=0, midAdShown = false;
+let sessionQuestions = QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
-
-function playAudio(audio){ audio.play().catch(()=>{}); }
-document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
-
-// --- REKLAMY MONETAG (NAPRAWIONE https://) ---
-const injectAd = (zone, el) => {
-  const s = document.createElement('script');
-  s.src = 'nap5k.com';
-  s.dataset.zone = zone;
-  el.appendChild(s);
-};
-injectAd('10310895', adTop);
-injectAd('10310917', adBottom);
-injectAd('10310945', adMid);
-injectAd('10310963', adFinal);
+document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
 
 function showQuestion(){
-  if(current===7){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
-    questionEl.textContent="Oglądaj reklamę, aby kontynuować";
+  if(current===7 && !midAdShown){
+    midAdShown = true;
+    adMid.style.display='flex';
+    questionEl.textContent="Przerwa na reklamę...";
     answersEl.innerHTML="";
-    setTimeout(()=>{ adMid.style.display='none'; current++; showQuestion(); },15000);
+    setTimeout(() => { adMid.style.display='none'; showQuestion(); }, 15000);
     return;
   }
   if(current>=sessionQuestions.length){
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='none'; adFinal.style.display='flex';
-    questionEl.textContent="Oglądaj reklamę, aby zobaczyć wynik";
-    answersEl.innerHTML="";
-    setTimeout(()=>{ adFinal.style.display='none'; finishQuiz(); },15000);
+    finalEl.style.display='flex';
+    finalText.textContent = points;
+    fanfare.play().catch(()=>{});
     return;
   }
-  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none'; adFinal.style.display='none';
-
+  
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
   answersEl.innerHTML='';
-  q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
+  q.a.forEach((ans,i)=>{
     const b=document.createElement('div');
-    b.className='btn'; b.textContent=obj.ans;
-    b.onclick=()=>answer(obj.i,b,idx);
+    b.className='btn'; b.textContent=ans;
+    b.onclick=()=>{
+      if(i===q.correct){ b.classList.add('good'); points++; ding.play().catch(()=>{}); firework(); }
+      else { b.classList.add('bad'); buzzer.play().catch(()=>{}); }
+      pointsEl.textContent=points; current++;
+      setTimeout(showQuestion, 600);
+    };
     answersEl.appendChild(b);
   });
   progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
-function answer(idxAnswer,btn,questionIndex){
-  const correct=QUESTIONS[questionIndex].correct;
-  if(idxAnswer===correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(firework,500); points++; }
-  else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
-  pointsEl.textContent=points;
-  current++;
-  setTimeout(showQuestion,400);
+function firework(){
+  const canvas=$('fx'), ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const particles=[];
+  for(let i=0;i<40;i++){
+    particles.push({x:canvas.width/2,y:canvas.height/2,vx:(Math.random()-0.5)*12,vy:(Math.random()-0.5)*12,alpha:1,color:'#'+(Math.random()*0xFFFFFF<<0).toString(16)});
+  }
+  function anim(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,i)=>{
+      ctx.globalAlpha=p.alpha; ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,6.28); ctx.fill();
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02;
+      if(p.alpha<=0) particles.splice(i,1);
+    });
+    if(particles.length>0) requestAnimationFrame(anim);
+  }
+  anim();
 }
-
-function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; setTimeout(firework,500); }
-
-$('retryBtn').onclick = ()=>{ points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
-$('endBtn').onclick = ()=>{ finalEl.style.display='none'; };
-
-let fireworkRunning = false;
-function firework(){ if(fireworkRunning) return; fireworkRunning = true; const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; const particles=[]; const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; const bursts=3+Math.floor(Math.random()*3); for(let b=0;b<bursts;b++){ const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); } } function animate(){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1); } if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } } animate(); }
 
 showQuestion();
 </script>
