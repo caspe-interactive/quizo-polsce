@@ -1,11 +1,17 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8""")/>>
+<meta name="viewport" content="width=device-width,initial-scale=1""")/>>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
+
+<!-- TUTAJ WKLEJ TAGI MONETAG, KTÓRE POBRAŁEŚ Z ICH PANELU -->
+<!-- Jeśli używasz SmartTag, wklej tutaj cały blok script. To jest najlepsze miejsce. -->
+<!-- Na przykład: -->
+<!-- <script type="text/javascript">...</script> -->
+
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -131,14 +137,17 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// --- REKLAMY MONETAG (NAPRAWIONE LINKI) ---
+// --- ZMIENIONY KOD REKLAM MONETAG ---
 const injectAd = (zone, el) => {
   const s = document.createElement('script');
-  s.src = 'nap5k.com';
+  // PAMIĘTAJ, MUSISZ POBRAĆ PRAWIDŁOWY LINK ZE SWOJEGO PANELU MONETAG!
+  // Poniższy link jest przykładowy/generyczny.
+  s.src = 'prostag.com'; 
   s.dataset.zone = zone;
   s.setAttribute('data-cfasync', 'false');
   el.appendChild(s);
 };
+// Upewnij się, że te ID stref (10310...) są nadal poprawne w Twoim panelu Monetag
 injectAd('10310895', adTop);
 injectAd('10310917', adBottom);
 injectAd('10310945', adMid);
