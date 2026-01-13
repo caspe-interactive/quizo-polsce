@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8""")/>>
-<meta name="viewport" content="width=device-width,initial-scale=1""")/>>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- TUTAJ WKLEJ TAGI MONETAG, KTÓRE POBRAŁEŚ Z ICH PANELU -->
-<!-- Jeśli używasz SmartTag, wklej tutaj cały blok script. To jest najlepsze miejsce. -->
-<!-- Na przykład: -->
-<!-- <script type="text/javascript">...</script> -->
+<!-- GŁÓWNY SKRYPT MONETAG DLA TWOJEGO KONTA (ZONE 3126911) -->
+<script>
+    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'alwingulla.com||document.documentElement);
+</script>
 
 <style>
 :root{
@@ -137,21 +137,18 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// --- ZMIENIONY KOD REKLAM MONETAG ---
+// --- POPRAWIONY KOD REKLAM MONETAG ---
 const injectAd = (zone, el) => {
   const s = document.createElement('script');
-  // PAMIĘTAJ, MUSISZ POBRAĆ PRAWIDŁOWY LINK ZE SWOJEGO PANELU MONETAG!
-  // Poniższy link jest przykładowy/generyczny.
-  s.src = 'prostag.com'; 
+  s.src = 'alwingulla.com' + zone; 
   s.dataset.zone = zone;
   s.setAttribute('data-cfasync', 'false');
   el.appendChild(s);
 };
-// Upewnij się, że te ID stref (10310...) są nadal poprawne w Twoim panelu Monetag
-injectAd('10310895', adTop);
-injectAd('10310917', adBottom);
-injectAd('10310945', adMid);
-injectAd('10310963', adFinal);
+
+// Te ID stref muszą istnieć w Twoim panelu Monetag pod domeną quizo-polsce.onrender.com
+injectAd('3126911', adTop); 
+injectAd('3126911', adBottom);
 
 // --- PWA LOGIC ---
 let deferredPrompt;
@@ -169,14 +166,14 @@ function showQuestion(){
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
     questionEl.textContent="Przerwa na reklamę...";
     answersEl.innerHTML="";
-    setTimeout(() => showQuestion(), 15000);
+    setTimeout(() => showQuestion(), 10000); // Skróciłem do 10s, żeby gracze nie uciekali
     return;
   }
   if(current>=sessionQuestions.length){
     adTop.style.display='none'; adBottom.style.display='none'; adFinal.style.display='flex';
     questionEl.textContent="Wynik końcowy...";
     answersEl.innerHTML="";
-    setTimeout(() => finishQuiz(), 15000);
+    setTimeout(() => finishQuiz(), 2000); 
     return;
   }
   
@@ -207,19 +204,19 @@ function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.disp
 $('retryBtn').onclick = () => { points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
-// --- TWOJE ORYGINALNE FAJERWERKI ---
+// --- FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
   const canvas=$('fx'), ctx=canvas.getContext('2d'); 
   canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
   const particles=[]; 
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
-  const bursts=3+Math.floor(Math.random()*3); 
+  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c']; 
+  const bursts=3; 
   for(let b=0;b<bursts;b++){ 
     const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
     for(let i=0;i<40;i++){ 
-      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); 
+      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2}); 
     } 
   } 
   function animate(){ 
