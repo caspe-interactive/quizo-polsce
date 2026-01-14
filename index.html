@@ -7,11 +7,9 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- GŁÓWNY SKRYPT MONETAG (ZONE 3126911) -->
+<!-- GŁÓWNY SKRYPT MONETAG -->
 <script>
-    (function(s,u,z,p){
-        s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);
-    })(document.createElement('script'),'alwingulla.com);
+    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'alwingulla.com);
 </script>
 
 <style>
@@ -27,12 +25,11 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-top, .ad-bottom, .ad-mid, .ad-final {
-  background:rgba(0,0,0,0.3); color:white; display:flex; align-items:center; justify-content:center;
-  margin-bottom:12px; border-radius:12px; padding:8px; text-align:center; 
-  min-height:100px; position:relative; border: 1px dashed rgba(255,210,122,0.2);
+.ad-top,.ad-bottom,.ad-mid,.ad-final{
+  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px;
 }
-.ad-status{ position:absolute; top:4px; right:8px; font-size:0.6rem; color:#ffd27a; opacity:0.6; }
+.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -48,21 +45,26 @@ body{
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:transform .12s ease, box-shadow .12s ease;
+  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
   background:linear-gradient(90deg,var(--neon1),var(--neon2));
+  box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);
   border:1px solid rgba(255,255,255,0.02);
 }
 .btn:active{transform:translateY(2px)}
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
+.btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
+.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
+.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
 .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:1200}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
 #final-card{
-  background:#081322; padding:30px; border-radius:14px; text-align:center; color:var(--text); max-width:580px; width:94%;
+  background:linear-gradient(180deg,#081322,#06121f);
+  padding:30px; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.7);
+  text-align:center; color:var(--text); max-width:580px; width:94%;
 }
 #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
-.final-actions{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-#nick{padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);width:100%;font-weight:700;}
+.final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
+.final-actions .btn{font-size:1rem;padding:12px 14px}
+#nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 </head>
@@ -72,7 +74,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <div class="ad-top" id="adTop"><span class="ad-status">REKLAMA</span></div>
   <div class="card" id="quizCard">
     <div class="top">
-      <div style="display:flex;flex-direction:column;gap:8px; width:100%;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
         <div class="title">QuizoPolsce</div>
         <div id="nickWrap"><input id="nick" placeholder="Twój nick" /></div>
       </div>
@@ -80,26 +82,25 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    
     <!-- REKLAMA POD PYTANIAMI -->
     <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">REKLAMA</span></div>
-
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.EARN</div>
+      <div style="font-size:0.8rem;opacity:0.6">v2026.FINAL</div>
     </div>
   </div>
   <div class="ad-bottom" id="adBottom"><span class="ad-status">REKLAMA</span></div>
 </div>
 
-<div id="final">
+<div id="final" aria-hidden="true">
   <div id="final-card">
-    <h1 style="color:var(--neon2)">Twój wynik</h1>
+    <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
     <div class="ad-final" id="adFinal"><span class="ad-status">REKLAMA</span></div>
     <div class="final-actions">
-      <div class="btn" id="retryBtn" style="background:var(--good)">Zagraj ponownie</div>
-      <div class="btn" id="endBtn" style="background:var(--bad)">Zamknij</div>
+      <div class="btn" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
+      <div class="btn" id="saveBtn" style="display:none; background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zainstaluj aplikację</div>
+      <div class="btn" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Zamknij</div>
     </div>
   </div>
 </div>
@@ -128,44 +129,48 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0, midAdShown = false;
-function getRandomSession(){ midAdShown = false; return QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,14); }
+function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-const injectAd = (zoneId, element) => {
-  if (!element) return;
+const injectAd = (zone, el) => {
   const s = document.createElement('script');
-  s.src = `alwingulla.com{zoneId}`;
-  s.dataset.zone = zoneId;
+  s.src = 'alwingulla.com' + zone; 
+  s.dataset.zone = zone;
   s.setAttribute('data-cfasync', 'false');
-  s.async = true;
-  element.appendChild(s);
+  el.innerHTML = '<span class="ad-status">REKLAMA</span>'; 
+  el.appendChild(s);
 };
 
-// Startowe ładowanie reklam
+// Start reklam
 injectAd('3126911', adTop); 
 injectAd('3126911', adBottom);
 
 function showQuestion(){
-  // PO 7 PYTANIU - PRZERWA REKLAMOWA
-  if(current === 7 && !midAdShown){
+  // PO 7 PYTANIU - PRZERWA WIDEO
+  if(current===7 && !midAdShown){
     midAdShown = true;
-    questionEl.textContent = "Przerwa na reklamę...";
-    answersEl.innerHTML = "";
-    adMid.style.display = "flex";
-    injectAd('3126911', adMid); 
-    setTimeout(() => { adMid.style.display = "none"; showQuestion(); }, 7000); 
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    questionEl.textContent="Przerwa na reklamę...";
+    answersEl.innerHTML="";
+    injectAd('3126911', adMid);
+    setTimeout(() => showQuestion(), 10000); 
     return;
   }
-
+  
   // PRZED WYNIKIEM
-  if(current >= sessionQuestions.length){
-    questionEl.textContent = "Za chwilę Twój wynik...";
-    answersEl.innerHTML = "";
-    injectAd('3126911', adFinal); 
+  if(current>=sessionQuestions.length){
+    adTop.style.display='none'; adBottom.style.display='none'; adFinal.style.display='flex';
+    questionEl.textContent="Wynik końcowy...";
+    answersEl.innerHTML="";
+    injectAd('3126911', adFinal);
     setTimeout(() => finishQuiz(), 3000); 
     return;
   }
   
+  // REKLAMA POD PYTANIAMI
+  adMid.style.display='flex';
+  if(current === 0 || current === 8) injectAd('3126911', adMid);
+
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
@@ -184,36 +189,40 @@ function answer(idxA,btn,qIdx){
   else{ btn.classList.add('bad'); }
   pointsEl.textContent=points;
   current++;
-  setTimeout(showQuestion, 600);
+  setTimeout(showQuestion, 400);
 }
 
 function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; firework(); }
 
-$('retryBtn').onclick = () => { 
-  points=0; current=0; midAdShown=false;
-  pointsEl.textContent='0'; sessionQuestions=getRandomSession(); 
-  finalEl.style.display='none'; showQuestion(); 
-};
+$('retryBtn').onclick = () => { points=0; current=0; midAdShown=false; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
+// --- TWOJE ORYGINALNE FAJERWERKI ---
+let fireworkRunning = false;
 function firework(){ 
+  if(fireworkRunning) return; fireworkRunning = true; 
   const canvas=$('fx'), ctx=canvas.getContext('2d'); 
   canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
   const particles=[]; 
-  for(let i=0;i<40;i++){ 
-    particles.push({x:canvas.width/2,y:canvas.height/2,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1}); 
+  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c']; 
+  const bursts=3; 
+  for(let b=0;b<bursts;b++){ 
+    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
+    for(let i=0;i<40;i++){ 
+      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2}); 
+    } 
   } 
   function animate(){ 
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach((p,i)=>{
-      ctx.fillStyle=`rgba(0,240,255,${p.alpha})`;
-      ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill();
-      p.x+=p.vx; p.y+=p.vy; p.alpha-=0.02;
-      if(p.alpha<=0) particles.splice(i,1);
-    });
-    if(particles.length>0) requestAnimationFrame(animate);
-  }
-  animate();
+    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
+    for(let i=particles.length-1;i>=0;i--){ 
+      const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
+      if(p.alpha<=0) particles.splice(i,1); 
+    } 
+    if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); 
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
+  } 
+  animate(); 
 }
 
 showQuestion();
