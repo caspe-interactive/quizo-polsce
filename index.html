@@ -82,7 +82,6 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <!-- REKLAMA POD PYTANIAMI -->
     <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">REKLAMA</span></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
@@ -105,11 +104,18 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   </div>
 </div>
 
+<!-- ELEMENTY AUDIO -->
+<audio id="bg" loop src="sounds/background.mp3"></audio>
+<audio id="snd-ding" src="sounds/ding.mp3"></audio>
+<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
+<audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
+
 <script>
 const $=id=>document.getElementById(id);
 const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
       progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
       adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
+const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
@@ -132,6 +138,7 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
+// --- MONETAG LOGIC ---
 const injectAd = (zone, el) => {
   const s = document.createElement('script');
   s.src = 'alwingulla.com' + zone; 
@@ -141,12 +148,15 @@ const injectAd = (zone, el) => {
   el.appendChild(s);
 };
 
-// Start reklam
 injectAd('3126911', adTop); 
 injectAd('3126911', adBottom);
 
+// --- AUDIO PLAYBACK HELPER ---
+function playAudio(audio){ audio.play().catch(()=>{}); }
+document.body.addEventListener('click',()=>{ playAudio(bg); },{once:true});
+
 function showQuestion(){
-  // PO 7 PYTANIU - PRZERWA WIDEO
+  // PO 7 PYTANIU
   if(current===7 && !midAdShown){
     midAdShown = true;
     adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
@@ -167,7 +177,6 @@ function showQuestion(){
     return;
   }
   
-  // REKLAMA POD PYTANIAMI
   adMid.style.display='flex';
   if(current === 0 || current === 8) injectAd('3126911', adMid);
 
@@ -185,19 +194,35 @@ function showQuestion(){
 }
 
 function answer(idxA,btn,qIdx){
-  if(idxA===QUESTIONS[qIdx].correct){ btn.classList.add('good'); points++; firework(); }
-  else{ btn.classList.add('bad'); }
+  if(idxA===QUESTIONS[qIdx].correct){ 
+    btn.classList.add('good'); 
+    playAudio(ding);
+    points++; 
+    firework(); 
+  } else { 
+    btn.classList.add('bad'); 
+    playAudio(buzzer);
+  }
   pointsEl.textContent=points;
   current++;
   setTimeout(showQuestion, 400);
 }
 
-function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; firework(); }
+function finishQuiz(){ 
+  finalText.textContent=`${points} pkt`; 
+  finalEl.style.display='flex'; 
+  playAudio(fanfare);
+  firework(); 
+}
 
-$('retryBtn').onclick = () => { points=0; current=0; midAdShown=false; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
+$('retryBtn').onclick = () => { 
+  points=0; current=0; midAdShown=false; 
+  pointsEl.textContent='0'; sessionQuestions=getRandomSession(); 
+  finalEl.style.display='none'; showQuestion(); 
+};
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
-// --- TWOJE ORYGINALNE FAJERWERKI ---
+// --- FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
