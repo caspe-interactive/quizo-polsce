@@ -7,11 +7,6 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- SKRYPT MONETAG -->
-<script>
-    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'alwingulla.com);
-</script>
-
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -27,9 +22,9 @@ body{
 .page{width:100%;max-width:920px}
 .ad-box{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px; overflow:hidden;
 }
-.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; }
+.ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:#ffd27a; z-index:10; }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -38,20 +33,19 @@ body{
 }
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-.score{display:none;color:var(--accent)}
 .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:transform .12s ease, box-shadow .12s ease;
+  transition:transform .12s ease;
   background:linear-gradient(90deg,var(--neon1),var(--neon2));
 }
 .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
 .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
 .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.9);z-index:1200}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
 #final-card{
   background:#081322; padding:30px; border-radius:14px; text-align:center; color:var(--text); max-width:580px; width:94%;
 }
@@ -72,13 +66,13 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
         <div class="title">QuizoPolsce</div>
         <div id="nickWrap"><input id="nick" placeholder="Twój nick" /></div>
       </div>
-      <div class="score">Punkty: <span id="points">0</span></div>
+      <div id="points" style="display:none;">0</div>
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.PRO</div>
+      <div style="font-size:0.8rem;opacity:0.6">v2026.EARN</div>
     </div>
   </div>
 </div>
@@ -87,8 +81,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <div id="final-card">
     <h1 style="color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
+    <!-- REKLAMA PRZED WYNIKIEM -->
     <div class="ad-box" id="adFinal"><span class="ad-status">REKLAMA</span></div>
-    <div class="final-actions" style="display:flex;flex-direction:column;gap:10px;">
+    <div class="final-actions" style="display:flex;flex-direction:column;gap:10px;margin-top:15px;">
       <div class="btn" id="retryBtn" style="background:var(--good)">Zagraj ponownie</div>
       <div class="btn" id="endBtn" style="background:var(--bad)">Zamknij</div>
     </div>
@@ -102,9 +97,8 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
 <script>
 const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
-      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adSlot=$('adSlot'), adFinal=$('adFinal');
+const questionEl=$('question'), answersEl=$('answers'), progressEl=$('progress'), 
+      finalEl=$('final'), finalText=$('final-text'), adSlot=$('adSlot'), adFinal=$('adFinal');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -128,34 +122,32 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,14); }
 let sessionQuestions=getRandomSession();
 
-const injectAd = (zone, el) => {
-  el.innerHTML = '<span class="ad-status">REKLAMA</span>';
+// --- TWOJA OFICJALNA FUNKCJA REKLAMOWA (ZONE 10310917) ---
+const injectMonetag = (container) => {
+  if(!container) return;
+  container.innerHTML = '<span class="ad-status">REKLAMA</span>';
   const s = document.createElement('script');
-  s.src = 'alwingulla.com' + zone;
-  s.dataset.zone = zone;
-  s.setAttribute('data-cfasync', 'false');
-  el.appendChild(s);
+  s.dataset.zone = '10310917';
+  s.src = 'nap5k.com';
+  container.appendChild(s);
 };
 
-// Pierwsze załadowanie reklamy NAD pytaniami
-injectAd('3126911', adSlot);
-
 function showQuestion(){
-  // PO 7 PYTANIU - PRZERWA REKLAMOWA
+  // 1. REKLAMA PO 7. PYTANIU (PRZERWA)
   if(current === 7 && !midAdShown){
     midAdShown = true;
     questionEl.textContent = "Przerwa na reklamę...";
     answersEl.innerHTML = "";
-    injectAd('3126911', adSlot); // Odświeżenie reklamy nad pytaniami
+    injectMonetag(adSlot); // Odświeżenie reklamy nad pytaniami
     setTimeout(() => showQuestion(), 8000); 
     return;
   }
 
-  // PRZED WYNIKIEM
+  // 2. REKLAMA PRZED WYNIKIEM
   if(current >= sessionQuestions.length){
     questionEl.textContent = "Za chwilę Twój wynik...";
     answersEl.innerHTML = "";
-    injectAd('3126911', adFinal); 
+    injectMonetag(adFinal); 
     setTimeout(() => finishQuiz(), 3000); 
     return;
   }
@@ -183,7 +175,6 @@ function answer(idxA,btn,qIdx){
     btn.classList.add('bad'); 
     buzzer.play().catch(()=>{}); 
   }
-  pointsEl.textContent=points;
   current++;
   setTimeout(showQuestion, 500);
 }
@@ -199,12 +190,12 @@ $('retryBtn').onclick = () => {
   points=0; current=0; midAdShown=false; 
   sessionQuestions=getRandomSession(); 
   finalEl.style.display='none'; 
-  injectAd('3126911', adSlot);
+  injectMonetag(adSlot);
   showQuestion(); 
 };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
-// FAJERWERKI
+// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -231,7 +222,9 @@ function firework(){
   animate(); 
 }
 
+// START
 document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
+injectMonetag(adSlot); // Uruchomienie reklamy nad pytaniami na start
 showQuestion();
 </script>
 </body>
