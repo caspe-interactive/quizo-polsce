@@ -1,16 +1,11 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
-
-<!-- NAPRAWIONY GŁÓWNY SKRYPT MONETAG (ZONE 10310917) -->
-<!-- Ten skrypt ładuje silnik reklam. Błąd składni został usunięty. -->
-<script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
-
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -24,11 +19,11 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-box{
+.ad-top,.ad-bottom,.ad-mid,.ad-final{
   background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px; overflow:hidden;
+  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px;
 }
-.ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:#ffd27a; z-index:10; }
+.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius); padding:22px;
@@ -37,55 +32,68 @@ body{
 }
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
+.score{display:none;color:var(--accent)}
 .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:transform .12s ease;
+  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
   background:linear-gradient(90deg,var(--neon1),var(--neon2));
+  box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);
+  border:1px solid rgba(255,255,255,0.02);
 }
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
+.btn:active{transform:translateY(2px)}
+.btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
+.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
+.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
 .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
 #final-card{
-  background:#081322; padding:30px; border-radius:14px; text-align:center; color:var(--text); max-width:580px; width:94%;
+  background:linear-gradient(180deg,#081322,#06121f);
+  padding:30px; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.7);
+  text-align:center; color:var(--text); max-width:580px; width:94%;
 }
 #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
+.final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
+.final-actions .btn{font-size:1rem;padding:12px 14px}
+#nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <!-- REKLAMA NAD PYTANIAMI -->
-  <div class="ad-box" id="adSlot"><span class="ad-status">REKLAMA</span></div>
-
+  <div class="ad-top" id="adTop"><span class="ad-status">REKLAMA</span></div>
   <div class="card" id="quizCard">
     <div class="top">
+      <div style="display:flex;flex-direction:column;gap:8px;">
         <div class="title">QuizoPolsce</div>
-        <div id="points" style="display:none;">0</div>
+        <div id="nickWrap"><input id="nick" placeholder="Twój nick" /></div>
+      </div>
+      <div class="score">Punkty: <span id="points">0</span></div>
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
+    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">PRZERWA REKLAMOWA</span></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.FIXED</div>
+      <div style="font-size:0.8rem;opacity:0.6">v2026.FINAL</div>
     </div>
   </div>
+  <div class="ad-bottom" id="adBottom"><span class="ad-status">REKLAMA</span></div>
 </div>
 
-<div id="final">
+<div id="final" aria-hidden="true">
   <div id="final-card">
-    <h1 style="color:var(--neon2)">Twój wynik</h1>
+    <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
     <div id="final-text">0 pkt</div>
-    <!-- REKLAMA PRZED WYNIKIEM -->
-    <div class="ad-box" id="adFinal"><span class="ad-status">REKLAMA</span></div>
-    <div class="final-actions" style="display:flex;flex-direction:column;gap:10px;margin-top:15px;">
-      <div class="btn" id="retryBtn" style="background:var(--good)">Zagraj ponownie</div>
-      <div class="btn" id="endBtn" style="background:var(--bad)">Zamknij</div>
+    <div class="ad-final" id="adFinal"><span class="ad-status">REKLAMA</span></div>
+    <div class="final-actions">
+      <div class="btn" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
+      <div class="btn" id="saveBtn" style="display:none; background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zainstaluj aplikację</div>
+      <div class="btn" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Zamknij</div>
     </div>
   </div>
 </div>
@@ -97,8 +105,9 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
 <script>
 const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), progressEl=$('progress'), 
-      finalEl=$('final'), finalText=$('final-text'), adSlot=$('adSlot'), adFinal=$('adFinal');
+const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
+      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
+      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
 const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
 
 const QUESTIONS=[
@@ -119,32 +128,50 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0, midAdShown = false;
-function getRandomSession(){ midAdShown = false; return QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,14); }
+function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
 let sessionQuestions=getRandomSession();
 
-// --- FUNKCJA WSPOMAGAJĄCA ODSWIEZANIE REKLAM ---
-const refreshAds = () => {
-    adSlot.style.display = 'flex';
+// --- REKLAMY MONETAG (NAPRAWIONE LINKI) ---
+const injectAd = (zone, el) => {
+  const s = document.createElement('script');
+  s.src = 'nap5k.com';
+  s.dataset.zone = zone;
+  s.setAttribute('data-cfasync', 'false');
+  el.appendChild(s);
 };
+injectAd('10310895', adTop);
+injectAd('10310917', adBottom);
+injectAd('10310945', adMid);
+injectAd('10310963', adFinal);
+
+// --- PWA LOGIC ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('saveBtn').style.display = 'flex'; });
+$('saveBtn').onclick = async () => { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt = null; $('saveBtn').style.display='none'; }};
+
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+
+function playAudio(audio){ audio.play().catch(()=>{}); }
+document.body.addEventListener('click',()=>{ playAudio(bg); playAudio(ding); playAudio(buzzer); playAudio(fanfare); },{once:true});
 
 function showQuestion(){
-  if(current === 7 && !midAdShown){
+  if(current===7 && !midAdShown){
     midAdShown = true;
-    questionEl.textContent = "Przerwa na reklamę...";
-    answersEl.innerHTML = "";
-    refreshAds();
-    setTimeout(() => showQuestion(), 8000); 
+    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
+    questionEl.textContent="Przerwa na reklamę...";
+    answersEl.innerHTML="";
+    setTimeout(() => showQuestion(), 15000);
     return;
   }
-
-  if(current >= sessionQuestions.length){
-    questionEl.textContent = "Za chwilę Twój wynik...";
-    answersEl.innerHTML = "";
-    refreshAds();
-    setTimeout(() => finishQuiz(), 3000); 
+  if(current>=sessionQuestions.length){
+    adTop.style.display='none'; adBottom.style.display='none'; adFinal.style.display='flex';
+    questionEl.textContent="Wynik końcowy...";
+    answersEl.innerHTML="";
+    setTimeout(() => finishQuiz(), 15000);
     return;
   }
   
+  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none';
   const idx=sessionQuestions[current];
   const q=QUESTIONS[idx];
   questionEl.textContent=q.q;
@@ -159,33 +186,16 @@ function showQuestion(){
 }
 
 function answer(idxA,btn,qIdx){
-  if(idxA===QUESTIONS[qIdx].correct){ 
-    btn.classList.add('good'); 
-    ding.play().catch(()=>{}); 
-    points++; 
-    firework(); 
-  } else { 
-    btn.classList.add('bad'); 
-    buzzer.play().catch(()=>{}); 
-  }
+  if(idxA===QUESTIONS[qIdx].correct){ btn.classList.add('good'); ding.play().catch(()=>{}); setTimeout(firework,500); points++; }
+  else{ btn.classList.add('bad'); buzzer.play().catch(()=>{}); }
+  pointsEl.textContent=points;
   current++;
-  setTimeout(showQuestion, 500);
+  setTimeout(showQuestion, 400);
 }
 
-function finishQuiz(){ 
-  finalText.textContent=`${points} pkt`; 
-  finalEl.style.display='flex'; 
-  fanfare.play().catch(()=>{}); 
-  firework(); 
-}
+function finishQuiz(){ finalText.textContent=`${points} pkt`; finalEl.style.display='flex'; fanfare.play().catch(()=>{}); setTimeout(firework,500); }
 
-$('retryBtn').onclick = () => { 
-  points=0; current=0; midAdShown=false; 
-  sessionQuestions=getRandomSession(); 
-  finalEl.style.display='none'; 
-  refreshAds();
-  showQuestion(); 
-};
+$('retryBtn').onclick = () => { points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
 // --- TWOJE ORYGINALNE FAJERWERKI ---
@@ -195,11 +205,12 @@ function firework(){
   const canvas=$('fx'), ctx=canvas.getContext('2d'); 
   canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
   const particles=[]; 
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c']; 
-  for(let b=0;b<3;b++){ 
+  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
+  const bursts=3+Math.floor(Math.random()*3); 
+  for(let b=0;b<bursts;b++){ 
     const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
     for(let i=0;i<40;i++){ 
-      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size=2}); 
+      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); 
     } 
   } 
   function animate(){ 
@@ -215,8 +226,6 @@ function firework(){
   animate(); 
 }
 
-// START
-document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
 showQuestion();
 </script>
 </body>
