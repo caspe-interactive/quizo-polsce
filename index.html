@@ -54,7 +54,7 @@ body{
   background:#081322; padding:30px; border-radius:14px; text-align:center; color:var(--text); max-width:580px; width:94%;
 }
 #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
-canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+canvas{position:fixed;left:0;top:0;width=100%;height=100%;pointer-events=none;z-index=1100}
 </style>
 </head>
 <body>
@@ -124,8 +124,6 @@ let sessionQuestions=getRandomSession();
 
 // --- FUNKCJA WSPOMAGAJĄCA ODSWIEZANIE REKLAM ---
 const refreshAds = () => {
-    // Ta funkcja jest pusta, bo skrypt w HEAD sam zarządza reklamami MultiTag.
-    // Musi być tylko wywołana w odpowiednich miejscach, żeby logika działała.
     adSlot.style.display = 'flex';
 };
 
@@ -134,7 +132,7 @@ function showQuestion(){
     midAdShown = true;
     questionEl.textContent = "Przerwa na reklamę...";
     answersEl.innerHTML = "";
-    refreshAds(); // Odświeżenie reklamy nad pytaniami
+    refreshAds();
     setTimeout(() => showQuestion(), 8000); 
     return;
   }
@@ -142,7 +140,7 @@ function showQuestion(){
   if(current >= sessionQuestions.length){
     questionEl.textContent = "Za chwilę Twój wynik...";
     answersEl.innerHTML = "";
-    refreshAds(); // Odświeżenie reklamy przed wynikiem (adFinal)
+    refreshAds();
     setTimeout(() => finishQuiz(), 3000); 
     return;
   }
@@ -185,7 +183,7 @@ $('retryBtn').onclick = () => {
   points=0; current=0; midAdShown=false; 
   sessionQuestions=getRandomSession(); 
   finalEl.style.display='none'; 
-  refreshAds(); // Dodane wywołanie odświeżania reklamy po restarcie gry
+  refreshAds();
   showQuestion(); 
 };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
