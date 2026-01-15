@@ -1,78 +1,81 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce — 2026 Edition</title>
-<style>
-:root{
-  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
-  --accent:#ffd27a; --radius:14px;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
-body{
-  background:linear-gradient(180deg,var(--bg1),#051028 80%);
-  color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
-}
-.page{width:100%;max-width:920px}
-.ad-main {
-  background:rgba(0,0,0,0.5); color:white; display:flex; align-items:center; justify-content:center; 
-  margin-bottom:15px; border-radius:12px; padding:8px; min-height:120px; position:relative;
-  border:1px solid rgba(0,255,255,0.1);
-}
-.ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:var(--accent); }
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
-  border:1px solid rgba(0,255,255,0.04);
-}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-.score{color:var(--accent);font-weight:700}
-.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text);min-height:3rem}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} }
-.btn{
-  display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
-  user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
-  box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
-}
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
-#final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px;}
-canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-</style>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
+    
+    <!-- GŁÓWNY SKRYPT MONETAG (ZAINICJOWANY W HEAD DLA 2026) -->
+    <script src="native.propellerads.com" data-cfasync="false" async></script>
+
+    <style>
+        :root{
+            --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
+            --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
+            --accent:#ffd27a; --radius:14px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
+        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+        .page{width:100%;max-width:920px;position:relative;z-index:10;}
+        .ad-main {
+            background:rgba(0,0,0,0.4); color:white; display:flex; align-items:center; justify-content:center; 
+            margin-bottom:15px; border-radius:12px; padding:10px; min-height:120px; position:relative;
+            border:1px solid rgba(0,255,255,0.1);
+        }
+        .ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:var(--accent); }
+        .card{
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
+            border:1px solid rgba(0,255,255,0.04);
+        }
+        .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+        .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
+        .score{color:var(--accent);font-weight:bold}
+        .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text);min-height:3rem}
+        .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        @media(max-width:700px){ .answers{grid-template-columns:1fr} }
+        .btn{
+            display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
+            user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
+            transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
+            box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
+        }
+        .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
+        .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
+        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.9);z-index:1200}
+        #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px;}
+        canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+    </style>
 </head>
 <body>
+
 <canvas id="fx"></canvas>
+
 <div class="page">
-  <div class="card">
-    <div class="top">
-      <div class="title">QuizoPolsce</div>
-      <div class="score">PKT: <span id="points">0</span></div>
-    </div>
+    <div class="card">
+        <div class="top">
+            <div class="title">QuizoPolsce</div>
+            <div class="score">PKT: <span id="points">0</span></div>
+        </div>
 
-    <div class="ad-main" id="adSlot">
-        <span class="ad-status">REKLAMA</span>
-        <div id="ad-content"></div>
-    </div>
+        <!-- REKLAMA NAD PYTANIAMI -->
+        <div class="ad-main" id="adMain">
+            <span class="ad-status">REKLAMA</span>
+            <div id="container-10310895"></div>
+        </div>
 
-    <div id="question" class="question">Zaczynamy...</div>
-    <div id="answers" class="answers"></div>
-    <div id="progress" style="margin-top:15px; font-size:0.8rem; color:var(--muted)"></div>
-  </div>
+        <div id="question" class="question">Ładowanie...</div>
+        <div id="answers" class="answers"></div>
+    </div>
 </div>
 
 <div id="final">
-  <div id="final-card">
-    <h1 style="color:var(--neon2)">Koniec!</h1>
-    <div id="final-text" style="font-size:2rem; margin:20px 0;"></div>
-    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
-  </div>
+    <div id="final-card">
+        <h1 style="color:var(--neon2)">Wynik Końcowy</h1>
+        <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent);"></div>
+        <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+    </div>
 </div>
 
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
@@ -97,55 +100,55 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, session=QUESTIONS.map((q,i)=>i).sort(()=>Math.random()-0.5);
-
-function injectAdScript() {
-    const s = document.createElement('script');
-    s.src = `native.propellerads.com`;
-    s.dataset.zone = "10310895"; s.async = true;
-    $('ad-content').innerHTML = '';
-    $('ad-content').appendChild(s);
-}
+let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-  if(current === 7 || current === session.length) {
-    const isFinal = current === session.length;
-    $('answers').innerHTML = '';
-    $('question').textContent = isFinal ? "Generowanie wyniku..." : "Przerwa reklamowa...";
-    injectAdScript();
-    setTimeout(() => {
-        if(isFinal) finishQuiz();
-        else { current++; showQuestion(); }
-    }, 5000);
-    return;
-  }
+    // REKLAMA PO 7. PYTANIU
+    if (current === 7) {
+        current++; 
+        handleAdBreak("Przerwa reklamowa...");
+        return;
+    }
 
-  const q = QUESTIONS[session[current]];
-  $('question').textContent = q.q;
-  $('answers').innerHTML = '';
-  $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
-  
-  q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
-    const b = document.createElement('div');
-    b.className = 'btn'; b.textContent = obj.ans;
-    b.onclick = () => {
-      if(obj.i === q.correct) { b.classList.add('good'); points++; firework(); $('snd-ding').play().catch(()=>{}); }
-      else { b.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
-      pointsEl.textContent = points;
-      current++;
-      setTimeout(showQuestion, 800);
-    };
-    $('answers').appendChild(b);
-  });
+    // REKLAMA PRZED WYNIKIEM
+    if (current === session.length) {
+        handleAdBreak("Przygotowanie wyniku...");
+        setTimeout(finishQuiz, 5000);
+        return;
+    }
+
+    const q = QUESTIONS[session[current]];
+    $('question').textContent = q.q;
+    $('answers').innerHTML = '';
+
+    q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
+        const b = document.createElement('div');
+        b.className = 'btn'; b.textContent = obj.ans;
+        b.onclick = () => {
+            if(obj.i === q.correct) { b.classList.add('good'); points++; firework(); $('snd-ding').play().catch(()=>{}); }
+            else { b.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
+            $('points').textContent = points;
+            current++;
+            setTimeout(showQuestion, 800);
+        };
+        $('answers').appendChild(b);
+    });
+}
+
+function handleAdBreak(msg) {
+    $('answers').innerHTML = '';
+    $('question').textContent = msg;
+    // Kod wymuszający odświeżenie reklamy (opcjonalnie)
+    setTimeout(showQuestion, 5000);
 }
 
 function finishQuiz() {
-  $('final-text').textContent = `Twój wynik: ${points} pkt`;
-  $('final').style.display = 'flex';
-  firework();
+    $('final-text').textContent = `${points} pkt`;
+    $('final').style.display = 'flex';
+    firework();
 }
 
-// --- TWOJE ORYGINALNE FAJERWERKI ---
+// --- TWOJE ORYGINALNE FAJERWERKI (NIERUSZANE) ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -173,8 +176,6 @@ function firework(){
   animate(); 
 }
 
-const pointsEl = $('points');
-injectAdScript();
 showQuestion();
 </script>
 </body>
