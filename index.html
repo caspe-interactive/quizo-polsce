@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#051028">
 
 <!-- NAPRAWIONY GŁÓWNY SKRYPT MONETAG (ZONE 10310917) -->
+<!-- Ten skrypt ładuje silnik reklam, reszta JS zarządza kontenerami adSlot/adFinal -->
 <script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
 
 <style>
@@ -189,7 +190,7 @@ $('retryBtn').onclick = () => {
 };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
-// --- TWOJE ORYGINALNE FAJERWERKI (NAPRAWIONE ZAMKNIECIE FUNKCJI) ---
+// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
