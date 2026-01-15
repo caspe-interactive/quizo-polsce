@@ -7,8 +7,10 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- SILNIK REKLAM MONETAG -->
-<script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
+<!-- GŁÓWNY SKRYPT MONETAG (ZONE 10310917) -->
+<script>
+    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'nap5k.com);
+</script>
 
 <style>
 :root{
@@ -53,7 +55,6 @@ body{
   background:#081322; padding:30px; border-radius:14px; text-align:center; color:var(--text); max-width:580px; width:94%;
 }
 #final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
-#nick{padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);width:100%;font-weight:700;}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 </head>
@@ -65,17 +66,14 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
   <div class="card" id="quizCard">
     <div class="top">
-      <div style="display:flex;flex-direction:column;gap:8px; width:100%;">
         <div class="title">QuizoPolsce</div>
-        <div id="nickWrap"><input id="nick" placeholder="Twój nick" /></div>
-      </div>
-      <div id="points" style="display:none;">0</div>
+        <div id="points" style="display:none;">0</div>
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
     <div class="meta">
       <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.EARN</div>
+      <div style="font-size:0.8rem;opacity:0.6">v2026.FIXED</div>
     </div>
   </div>
 </div>
@@ -125,32 +123,25 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,14); }
 let sessionQuestions=getRandomSession();
 
-// --- NAPRAWIONA FUNKCJA REKLAMOWA ---
-const injectMonetag = (container) => {
-  if(!container) return;
-  container.innerHTML = '<span class="ad-status">REKLAMA</span>';
-  const s = document.createElement('script');
-  s.dataset.zone = '10310917';
-  s.src = 'nap5k.com'; // Pełny adres URL
-  container.appendChild(s);
+// --- WYMUSZENIE ŁADOWANIA REKLAM ---
+const refreshAds = () => {
+    // W 2026 MultiTag sam odświeża reklamy jeśli skrypt w head jest aktywny.
+    // Poniższy kod wymusza widoczność kontenera.
+    adSlot.style.display = 'flex';
 };
 
 function showQuestion(){
-  // 1. REKLAMA PO 7. PYTANIU
   if(current === 7 && !midAdShown){
     midAdShown = true;
     questionEl.textContent = "Przerwa na reklamę...";
     answersEl.innerHTML = "";
-    injectMonetag(adSlot);
     setTimeout(() => showQuestion(), 8000); 
     return;
   }
 
-  // 2. REKLAMA PRZED WYNIKIEM
   if(current >= sessionQuestions.length){
     questionEl.textContent = "Za chwilę Twój wynik...";
     answersEl.innerHTML = "";
-    injectMonetag(adFinal); 
     setTimeout(() => finishQuiz(), 3000); 
     return;
   }
@@ -193,12 +184,11 @@ $('retryBtn').onclick = () => {
   points=0; current=0; midAdShown=false; 
   sessionQuestions=getRandomSession(); 
   finalEl.style.display='none'; 
-  injectMonetag(adSlot);
   showQuestion(); 
 };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
-// --- TWOJE ORYGINALNE FAJERWERKI ---
+// --- FIREWORKS ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -227,7 +217,6 @@ function firework(){
 
 // START
 document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
-injectMonetag(adSlot); 
 showQuestion();
 </script>
 </body>
