@@ -7,6 +7,9 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
+<!-- SILNIK REKLAM MONETAG -->
+<script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
+
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -122,23 +125,23 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,14); }
 let sessionQuestions=getRandomSession();
 
-// --- TWOJA OFICJALNA FUNKCJA REKLAMOWA (ZONE 10310917) ---
+// --- NAPRAWIONA FUNKCJA REKLAMOWA ---
 const injectMonetag = (container) => {
   if(!container) return;
   container.innerHTML = '<span class="ad-status">REKLAMA</span>';
   const s = document.createElement('script');
   s.dataset.zone = '10310917';
-  s.src = 'nap5k.com';
+  s.src = 'nap5k.com'; // Pełny adres URL
   container.appendChild(s);
 };
 
 function showQuestion(){
-  // 1. REKLAMA PO 7. PYTANIU (PRZERWA)
+  // 1. REKLAMA PO 7. PYTANIU
   if(current === 7 && !midAdShown){
     midAdShown = true;
     questionEl.textContent = "Przerwa na reklamę...";
     answersEl.innerHTML = "";
-    injectMonetag(adSlot); // Odświeżenie reklamy nad pytaniami
+    injectMonetag(adSlot);
     setTimeout(() => showQuestion(), 8000); 
     return;
   }
@@ -224,7 +227,7 @@ function firework(){
 
 // START
 document.body.addEventListener('click',()=>{ bg.play().catch(()=>{}); },{once:true});
-injectMonetag(adSlot); // Uruchomienie reklamy nad pytaniami na start
+injectMonetag(adSlot); 
 showQuestion();
 </script>
 </body>
