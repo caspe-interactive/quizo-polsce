@@ -3,9 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#051028">
+<title>QuizoPolsce — 2026 Edition</title>
 <style>
 :root{
   --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -19,196 +17,135 @@ body{
   color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .page{width:100%;max-width:920px}
-.ad-top,.ad-bottom,.ad-mid,.ad-final{
-  background:#000;color:white;display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-  border-radius:12px; padding:8px; text-align:center; height:120px; position:relative; min-height:120px;
+.ad-main {
+  background:rgba(0,0,0,0.5); color:white; display:flex; align-items:center; justify-content:center; 
+  margin-bottom:15px; border-radius:12px; padding:8px; min-height:120px; position:relative;
+  border:1px solid rgba(0,255,255,0.1);
 }
-.ad-status{ position:absolute; top:4px; right:8px; font-size:0.8rem; color:#ffd27a; }
+.ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:var(--accent); }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius); padding:22px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.6);
+  border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
   border:1px solid rgba(0,255,255,0.04);
 }
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-.score{display:block;color:var(--accent)}
-.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text)}
+.score{color:var(--accent);font-weight:700}
+.question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text);min-height:3rem}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
+@media(max-width:700px){ .answers{grid-template-columns:1fr} }
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
-  background:linear-gradient(90deg,var(--neon1),var(--neon2));
-  box-shadow:0 10px 40px rgba(0,240,255,0.04), 0 0 20px rgba(255,63,196,0.02);
-  border:1px solid rgba(255,255,255,0.02);
+  transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
+  box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
 }
-.btn:active{transform:translateY(2px)}
-.btn:hover{transform:translateY(-4px); box-shadow:0 18px 60px rgba(0,240,255,0.06);}
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); box-shadow:0 10px 40px rgba(22,211,106,0.06);}
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); box-shadow:0 10px 40px rgba(255,92,108,0.06);}
-.meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:0.95rem}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(3,6,10,0.85),rgba(2,3,8,0.9));z-index:1200}
-#final-card{
-  background:linear-gradient(180deg,#081322,#06121f);
-  padding:30px; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.7);
-  text-align:center; color:var(--text); max-width:580px; width:94%;
-}
-#final-text { font-size:2.2rem; font-weight:800; color: var(--accent); margin:16px 0; }
-.final-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;margin-top:10px}
-.final-actions .btn{font-size:1rem;padding:12px 14px}
-#nick{padding:16px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);min-width:260px;font-weight:700;font-size:1.1rem}
+.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
+.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
+#final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px;}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
 <div class="page">
-  <div class="ad-top" id="adTop"><span class="ad-status">REKLAMA</span></div>
-  <div class="card" id="quizCard">
+  <div class="card">
     <div class="top">
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div class="title">QuizoPolsce</div>
-        <div id="nickWrap"><input id="nick" placeholder="Twój nick" /></div>
-      </div>
-      <div class="score">Punkty: <span id="points">0</span></div>
+      <div class="title">QuizoPolsce</div>
+      <div class="score">PKT: <span id="points">0</span></div>
     </div>
-    <div id="question" class="question">Ładowanie...</div>
+
+    <div class="ad-main" id="adSlot">
+        <span class="ad-status">REKLAMA</span>
+        <div id="ad-content"></div>
+    </div>
+
+    <div id="question" class="question">Zaczynamy...</div>
     <div id="answers" class="answers"></div>
-    <div class="ad-mid" id="adMid" style="display:none;"><span class="ad-status">PRZERWA REKLAMOWA</span></div>
-    <div class="meta">
-      <div id="progress">Pytanie 0/0</div>
-      <div style="font-size:0.8rem;opacity:0.6">v2026.FINAL</div>
-    </div>
+    <div id="progress" style="margin-top:15px; font-size:0.8rem; color:var(--muted)"></div>
   </div>
-  <div class="ad-bottom" id="adBottom"><span class="ad-status">REKLAMA</span></div>
 </div>
 
 <div id="final">
   <div id="final-card">
-    <h1 style="margin:6px 0 8px; color:var(--neon2)">Twój wynik</h1>
-    <div id="final-text">0 pkt</div>
-    <div class="ad-final" id="adFinal"><span class="ad-status">REKLAMA</span></div>
-    <div class="final-actions">
-      <div class="btn" id="retryBtn" style="background:linear-gradient(90deg,#16d36a,#8df3b0)">Zagraj ponownie</div>
-      <div class="btn" id="saveBtn" style="display:none; background:linear-gradient(90deg,#ffd27a,#ff9f43); color:#081322;">📲 Zainstaluj aplikację</div>
-      <div class="btn" id="endBtn" style="background:linear-gradient(90deg,#ff5c6c,#ff8a94)">Zamknij</div>
-    </div>
+    <h1 style="color:var(--neon2)">Koniec!</h1>
+    <div id="final-text" style="font-size:2rem; margin:20px 0;"></div>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
 
-<audio id="bg" loop src="sounds/background.mp3"></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
-<audio id="snd-fanfare" src="sounds/fanfare.mp3"></audio>
 
 <script>
 const $=id=>document.getElementById(id);
-const questionEl=$('question'), answersEl=$('answers'), pointsEl=$('points'),
-      progressEl=$('progress'), finalEl=$('final'), finalText=$('final-text'),
-      adTop=$('adTop'), adBottom=$('adBottom'), adMid=$('adMid'), adFinal=$('adFinal');
-const bg=$('bg'), ding=$('snd-ding'), buzzer=$('snd-buzzer'), fanfare=$('snd-fanfare');
-
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
   { q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
   { q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
-  { q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:1 },
-  { q:"Największe miasto woj. mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
-  { q:"Najważniejszy polski noblista w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
+  { q:"Polski skoczek narciarski z medalami?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:1 },
+  { q:"Największe miasto mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
+  { q:"Noblistka w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
   { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
   { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
-  { q:"W którym roku Polska odzyskała niepodległość?", a:["1918","1945","1914","1939"], correct:0 },
-  { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu miasta"], correct:0 },
+  { q:"Rok odzyskania niepodległości?", a:["1918","1945","1914","1939"], correct:0 },
+  { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu"], correct:0 },
   { q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
-  { q:"Polski hymn zaczyna się od słów?", a:["Jeszcze Polska nie zginęła","Mazurka Dąbrowskiego","Bogurodzicy","Roty"], correct:0 },
-  { q:"Polski król zwany „Lwem Lechistanu”?", a:["Jan III Sobieski","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct:0 }
+  { q:"Hymn Polski to?", a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"], correct:0 },
+  { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, midAdShown = false;
-function getRandomSession(){ midAdShown = false; return QUESTIONS.map((q,i)=>({q,i})).sort(()=>Math.random()-0.5).slice(0,14).map(o=>o.i); }
-let sessionQuestions=getRandomSession();
+let points=0, current=0, session=QUESTIONS.map((q,i)=>i).sort(()=>Math.random()-0.5);
 
-// --- REKLAMY MONETAG (NAPRAWIONE) ---
-const injectAd = (zone, el) => {
-  const s = document.createElement('script');
-  // Zmieniono na pełny URL obsługujący tagi Monetag/Propeller
-  s.src = `native.propellerads.com{zone}`;
-  s.dataset.zone = zone;
-  s.setAttribute('data-cfasync', 'false');
-  s.async = true;
-  el.appendChild(s);
-};
-injectAd('10310895', adTop);
-injectAd('10310917', adBottom);
-injectAd('10310945', adMid);
-injectAd('10310963', adFinal);
+function injectAdScript() {
+    const s = document.createElement('script');
+    s.src = `native.propellerads.com`;
+    s.dataset.zone = "10310895"; s.async = true;
+    $('ad-content').innerHTML = '';
+    $('ad-content').appendChild(s);
+}
 
-// --- PWA LOGIC ---
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('saveBtn').style.display = 'flex'; });
-$('saveBtn').onclick = async () => { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt = null; $('saveBtn').style.display='none'; }};
-
-function playAudio(audio){ audio.play().catch(()=>{}); }
-document.body.addEventListener('click',()=>{ playAudio(bg); },{once:true});
-
-function showQuestion(){
-  if(current===7 && !midAdShown){
-    midAdShown = true;
-    adTop.style.display='none'; adBottom.style.display='none'; adMid.style.display='flex';
-    questionEl.textContent="Przerwa na reklamę...";
-    answersEl.innerHTML="";
-    setTimeout(() => showQuestion(), 5000); // Skrócono do 5s dla lepszej płynności
+function showQuestion() {
+  if(current === 7 || current === session.length) {
+    const isFinal = current === session.length;
+    $('answers').innerHTML = '';
+    $('question').textContent = isFinal ? "Generowanie wyniku..." : "Przerwa reklamowa...";
+    injectAdScript();
+    setTimeout(() => {
+        if(isFinal) finishQuiz();
+        else { current++; showQuestion(); }
+    }, 5000);
     return;
   }
-  if(current>=sessionQuestions.length){
-    finishQuiz();
-    return;
-  }
+
+  const q = QUESTIONS[session[current]];
+  $('question').textContent = q.q;
+  $('answers').innerHTML = '';
+  $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
   
-  adTop.style.display='flex'; adBottom.style.display='flex'; adMid.style.display='none';
-  const idx=sessionQuestions[current];
-  const q=QUESTIONS[idx];
-  questionEl.textContent=q.q;
-  answersEl.innerHTML='';
   q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
-    const b=document.createElement('div');
-    b.className='btn'; b.textContent=obj.ans;
-    b.onclick=()=>answer(obj.i,b,idx);
-    answersEl.appendChild(b);
+    const b = document.createElement('div');
+    b.className = 'btn'; b.textContent = obj.ans;
+    b.onclick = () => {
+      if(obj.i === q.correct) { b.classList.add('good'); points++; firework(); $('snd-ding').play().catch(()=>{}); }
+      else { b.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
+      pointsEl.textContent = points;
+      current++;
+      setTimeout(showQuestion, 800);
+    };
+    $('answers').appendChild(b);
   });
-  progressEl.textContent=`Pytanie ${current+1}/${sessionQuestions.length}`;
 }
 
-function answer(idxA,btn,qIdx){
-  if(idxA===QUESTIONS[qIdx].correct){ 
-    btn.classList.add('good'); 
-    ding.play().catch(()=>{}); 
-    firework(); // Twoje oryginalne fajerwerki
-    points++; 
-  }
-  else{ 
-    btn.classList.add('bad'); 
-    buzzer.play().catch(()=>{}); 
-  }
-  pointsEl.textContent=points;
-  current++;
-  setTimeout(showQuestion, 600);
+function finishQuiz() {
+  $('final-text').textContent = `Twój wynik: ${points} pkt`;
+  $('final').style.display = 'flex';
+  firework();
 }
 
-function finishQuiz(){ 
-    finalText.textContent=`${points} pkt`; 
-    finalEl.style.display='flex'; 
-    fanfare.play().catch(()=>{}); 
-    firework(); 
-}
-
-$('retryBtn').onclick = () => { points=0; current=0; pointsEl.textContent='0'; sessionQuestions=getRandomSession(); finalEl.style.display='none'; showQuestion(); };
-$('endBtn').onclick = () => { finalEl.style.display='none'; };
-
-// --- TWOJE ORYGINALNE FAJERWERKI (NIENARUSZONE) ---
+// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -236,6 +173,8 @@ function firework(){
   animate(); 
 }
 
+const pointsEl = $('points');
+injectAdScript();
 showQuestion();
 </script>
 </body>
