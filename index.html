@@ -7,10 +7,8 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#051028">
 
-<!-- GŁÓWNY SKRYPT MONETAG (ZONE 10310917) -->
-<script>
-    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'nap5k.com);
-</script>
+<!-- NAPRAWIONY GŁÓWNY SKRYPT MONETAG (ZONE 10310917) -->
+<script src="nap5k.com" data-zone="10310917" data-cfasync="false" async></script>
 
 <style>
 :root{
@@ -123,10 +121,10 @@ let points=0, current=0, midAdShown = false;
 function getRandomSession(){ midAdShown = false; return QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,14); }
 let sessionQuestions=getRandomSession();
 
-// --- WYMUSZENIE ŁADOWANIA REKLAM ---
+// --- FUNKCJA WSPOMAGAJĄCA ODSWIEZANIE REKLAM ---
 const refreshAds = () => {
-    // W 2026 MultiTag sam odświeża reklamy jeśli skrypt w head jest aktywny.
-    // Poniższy kod wymusza widoczność kontenera.
+    // Ta funkcja jest pusta, bo skrypt w HEAD sam zarządza reklamami MultiTag.
+    // Musi być tylko wywołana w odpowiednich miejscach, żeby logika działała.
     adSlot.style.display = 'flex';
 };
 
@@ -135,6 +133,7 @@ function showQuestion(){
     midAdShown = true;
     questionEl.textContent = "Przerwa na reklamę...";
     answersEl.innerHTML = "";
+    refreshAds(); // Odświeżenie reklamy nad pytaniami
     setTimeout(() => showQuestion(), 8000); 
     return;
   }
@@ -142,6 +141,7 @@ function showQuestion(){
   if(current >= sessionQuestions.length){
     questionEl.textContent = "Za chwilę Twój wynik...";
     answersEl.innerHTML = "";
+    refreshAds(); // Odświeżenie reklamy przed wynikiem (adFinal)
     setTimeout(() => finishQuiz(), 3000); 
     return;
   }
@@ -184,11 +184,12 @@ $('retryBtn').onclick = () => {
   points=0; current=0; midAdShown=false; 
   sessionQuestions=getRandomSession(); 
   finalEl.style.display='none'; 
+  refreshAds(); // Dodane wywołanie odświeżania reklamy po restarcie gry
   showQuestion(); 
 };
 $('endBtn').onclick = () => { finalEl.style.display='none'; };
 
-// --- FIREWORKS ---
+// --- TWOJE ORYGINALNE FAJERWERKI (NAPRAWIONE ZAMKNIECIE FUNKCJI) ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
