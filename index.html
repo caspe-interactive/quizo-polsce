@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
 
-<!-- TWÓJ NOWY KOD ONCLICK -->
+<!-- TWÓJ KOD REKLAMY ONCLICK -->
 <script>(function(s){s.dataset.zone='10310917',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <style>
@@ -36,7 +36,7 @@ body{
 .btn{
   display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
   user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:transform .12s ease, box-shadow .12s ease;
+  transition:all 0.12s ease;
   background:linear-gradient(90deg,var(--neon1),var(--neon2));
   box-shadow:0 10px 40px rgba(0,240,255,0.04);
   border:1px solid rgba(255,255,255,0.02);
@@ -68,11 +68,15 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 
 <div id="final">
   <div id="final-card">
-    <h1 style="color:var(--neon2)">Twój wynik</h1>
+    <h1 style="color:var(--neon2)">Wynik Końcowy</h1>
     <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
+
+<!-- PLIKI DŹWIĘKOWE -->
+<audio id="snd-ding" src="sounds/ding.mp3" preload="auto"></audio>
+<audio id="snd-buzzer" src="sounds/buzzer.mp3" preload="auto"></audio>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -113,21 +117,24 @@ function showQuestion(){
     const b=document.createElement('div');
     b.className='btn'; b.textContent=obj.ans;
     b.onclick=()=>{
-      const btns = document.querySelectorAll('.btn');
-      btns.forEach(btn => btn.style.pointerEvents = 'none');
+      document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
+      
       if(obj.i === q.correct){
         b.classList.add('good'); points++; firework();
+        $('snd-ding').play().catch(()=>{}); // Odtwórz dźwięk poprawnej odpowiedzi
       } else {
         b.classList.add('bad');
+        $('snd-buzzer').play().catch(()=>{}); // Odtwórz dźwięk błędu
       }
       $('points').textContent = points;
       current++;
-      setTimeout(showQuestion, 800);
+      setTimeout(showQuestion, 1000);
     };
     $('answers').appendChild(b);
   });
 }
 
+// TWOJE ORYGINALNE FAJERWERKI
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
