@@ -3,10 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>QuizoPolsce — FINAL 2026</title>
+    <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
     
-    <!-- TUTAJ WKLEJ NOWY KOD IN-PAGE PUSH ZAMIAST MULTITAGA, ABY NIE BYŁO REKLAM NA CAŁY EKRAN -->
-    <script src="https://quge5.com" data-zone="TWOJA_NOWA_STREFA_INPAGE_PUSH" async data-cfasync="false"></script>
+    <!-- Tutaj możesz dodać inne skrypty, jeśli potrzebujesz -->
 
     <style>
         :root{
@@ -17,16 +16,7 @@
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
-        .page{width:100%;max-width:920px;z-index:10;}
-        
-        /* POPRAWIONY BOKS REKLAMOWY - BEZ TŁA, ŻEBY NIE BYŁO PODWÓJNIE */
-        .ad-main {
-            display:flex; align-items:center; justify-content:center; 
-            margin-bottom:15px; min-height:100px; position:relative;
-            text-align:center;
-        }
-        .ad-status{ position:absolute; top:-10px; right:8px; font-size:0.6rem; color:var(--muted); }
-
+        .page{width:100%;max-width:920px;position:relative;z-index:10;}
         .card{
             background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
@@ -34,13 +24,12 @@
         }
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
-        .score{color:var(--accent);font-weight:bold;}
-        .question{font-size:1.4rem;text-align:center;margin:15px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
+        .score{color:var(--accent);font-weight:bold}
+        .question{font-size:1.4rem;text-align:center;margin:20px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
-        
         .btn{
-            display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;padding:14px;border-radius:12px;cursor:pointer;
             user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;
             transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
             box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
@@ -48,9 +37,8 @@
         }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
-        #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
+        #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
     </style>
 </head>
@@ -65,20 +53,16 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- CZYSTY KONTENER NA REKLAMĘ -->
-        <div class="ad-main" id="adMain">
-            <span class="ad-status">reklama</span>
-        </div>
-
-        <div id="question" class="question">Ładowanie...</div>
+        <div id="question" class="question">Ładowanie quizu...</div>
         <div id="answers" class="answers"></div>
+        <div id="progress" style="margin-top:15px; font-size:0.8rem; color:var(--muted); text-align:center;"></div>
     </div>
 </div>
 
 <div id="final">
     <div id="final-card">
         <h1 style="color:var(--neon2)">KONIEC!</h1>
-        <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent);">0 pkt</div>
+        <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent);">0 pkt</div>
         <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
     </div>
 </div>
@@ -108,11 +92,11 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // PRZERWA PO 7 I PRZED KONCEM
     if (current === 7 || current === session.length) {
         let isFinal = current === session.length;
         $('answers').innerHTML = '';
         $('question').textContent = isFinal ? "Przygotowanie wyniku..." : "Chwila przerwy...";
+        
         setTimeout(() => {
             if(isFinal) finishQuiz();
             else { current++; showQuestion(); }
@@ -123,12 +107,15 @@ function showQuestion() {
     const q = QUESTIONS[session[current]];
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
+    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
+            const all = document.querySelectorAll('.btn');
+            all.forEach(x => x.style.pointerEvents = 'none');
+
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
                 try { $('snd-ding').play(); } catch(e){}
