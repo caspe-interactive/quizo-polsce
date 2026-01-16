@@ -75,6 +75,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
 </div>
 
 <!-- PLIKI DŹWIĘKOWE -->
+<audio id="snd-bg" src="sounds/background.mp3" loop preload="auto"></audio>
 <audio id="snd-ding" src="sounds/ding.mp3" preload="auto"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3" preload="auto"></audio>
 
@@ -98,6 +99,15 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
+let bgMusicStarted = false;
+
+function startBgMusic() {
+    if (!bgMusicStarted) {
+        $('snd-bg').volume = 0.4; // Muzyka tła ciszej, by nie zagłuszała dźwięków
+        $('snd-bg').play().catch(e => console.log("Czekam na kliknięcie..."));
+        bgMusicStarted = true;
+    }
+}
 
 function showQuestion(){
   if(current >= session.length){
@@ -117,14 +127,17 @@ function showQuestion(){
     const b=document.createElement('div');
     b.className='btn'; b.textContent=obj.ans;
     b.onclick=()=>{
+      // Pierwsze kliknięcie w dowolną odpowiedź uruchamia muzykę w tle
+      startBgMusic();
+
       document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
       
       if(obj.i === q.correct){
         b.classList.add('good'); points++; firework();
-        $('snd-ding').play().catch(()=>{}); // Odtwórz dźwięk poprawnej odpowiedzi
+        $('snd-ding').play().catch(()=>{});
       } else {
         b.classList.add('bad');
-        $('snd-buzzer').play().catch(()=>{}); // Odtwórz dźwięk błędu
+        $('snd-buzzer').play().catch(()=>{});
       }
       $('points').textContent = points;
       current++;
