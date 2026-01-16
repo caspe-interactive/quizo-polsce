@@ -3,53 +3,32 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
+<title>QuizoPolsce — FINAL 2026</title>
 
-<!-- TWÓJ KOD REKLAMY ONCLICK -->
+<!-- REKLAMA: WKLEJ PONIŻEJ SWÓJ KOD ANTI-ADBLOCK Z PANELU MONETAG -->
+<!-- Używamy Twojego ostatniego Zone ID: 10310917 -->
 <script>(function(s){s.dataset.zone='10310917',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <style>
 :root{
-  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
-  --accent:#ffd27a; --radius:14px;
+  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
-body{
-  background:linear-gradient(180deg,var(--bg1),#051028 80%);
-  color:var(--text); display:flex;align-items:center;justify-content:center;padding:20px;
-}
-.page{width:100%;max-width:920px}
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius); padding:22px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.6);
-  border:1px solid rgba(0,255,255,0.04);
-}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.title{font-weight:800;color:var(--neon1);letter-spacing:0.6px; font-size:1.4rem;}
-.score{color:var(--accent); font-weight:bold;}
-.question{font-size:1.4rem;text-align:center;margin:18px 0 14px;color:var(--text); min-height:3.5rem; display:flex; align-items:center; justify-content:center;}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){ .answers{grid-template-columns:1fr} .question{font-size:1.08rem} }
-.btn{
-  display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
-  user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
-  transition:all 0.12s ease;
-  background:linear-gradient(90deg,var(--neon1),var(--neon2));
-  box-shadow:0 10px 40px rgba(0,240,255,0.04);
-  border:1px solid rgba(255,255,255,0.02);
-  text-align:center;
-}
-.btn:active{transform:translateY(2px)}
-.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
-.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.9);z-index:1200}
-#final-card{
-  background:#081322; padding:30px; border-radius:14px; text-align:center; width:94%; max-width:500px; border:1px solid var(--neon2);
-}
-canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);font-family:Inter,system-ui,Arial;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.page{width:100%;max-width:920px;z-index:10;}
+.card{background:rgba(255,255,255,0.02);border-radius:14px;padding:22px;box-shadow:0 10px 40px rgba(0,0,0,0.6);border:1px solid rgba(0,255,255,0.04);}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+.title{font-weight:800;color:var(--neon1);letter-spacing:1px;font-size:1.4rem;}
+.score{color:var(--accent);font-weight:bold;}
+.question{font-size:1.4rem;text-align:center;margin:20px 0;min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:700px){.answers{grid-template-columns:1fr;}}
+.btn{padding:14px;border-radius:12px;cursor:pointer;font-weight:800;text-align:center;background:linear-gradient(90deg,var(--neon1),var(--neon2));transition:0.2s;}
+.btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)!important;}
+.btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)!important;}
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.9);z-index:1200;}
+#final-card{background:#081322;padding:40px;border-radius:20px;text-align:center;border:2px solid var(--neon2);width:90%;max-width:500px;}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1100;}
 </style>
 </head>
 <body>
@@ -58,124 +37,87 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-
   <div class="card">
     <div class="top">
       <div class="title">QuizoPolsce</div>
-      <div class="score">Punkty: <span id="points">0</span></div>
+      <div class="score">PKT: <span id="points">0</span></div>
     </div>
     <div id="question" class="question">Ładowanie...</div>
     <div id="answers" class="answers"></div>
-    <div style="margin-top:15px; font-size:0.8rem; color:var(--muted); text-align:center;">Pytanie <span id="progress">0</span>/14</div>
+    <div style="margin-top:15px;text-align:center;font-size:0.8rem;color:var(--accent);">Postęp: <span id="progress">0</span>/14</div>
   </div>
 </div>
 
 <div id="final">
   <div id="final-card">
-    <h1 style="color:var(--neon2)">Wynik Końcowy</h1>
-    <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
+    <h1 style="color:var(--neon2)">KONIEC!</h1>
+    <div id="final-text" style="font-size:2.5rem;margin:20px 0;color:var(--accent);font-weight:800;">0 pkt</div>
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
 
-<!-- PLIKI DŹWIĘKOWE -->
-<audio id="snd-bg" src="sounds/background.mp3" loop preload="auto"></audio>
-<audio id="snd-ding" src="sounds/ding.mp3" preload="auto"></audio>
-<audio id="snd-buzzer" src="sounds/buzzer.mp3" preload="auto"></audio>
+<audio id="snd-bg" src="sounds/background.mp3" loop></audio>
+<audio id="snd-ding" src="sounds/ding.mp3"></audio>
+<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 
 <script>
 const $=id=>document.getElementById(id);
-const QUESTIONS=[
-  { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
-  { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
-  { q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
-  { q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
-  { q:"Polski skoczek narciarski z wieloma medalami olimpijskimi?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:1 },
-  { q:"Największe miasto woj. mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
-  { q:"Najważniejszy polski noblista w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
-  { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
-  { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
-  { q:"W którym roku Polska odzyskała niepodległość?", a:["1918","1945","1914","1939"], correct:0 },
-  { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu miasta"], correct:0 },
-  { q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
-  { q:"Polski hymn zaczyna się od słów?", a:["Jeszcze Polska nie zginęła","Mazurka Dąbrowskiego","Bogurodzica","Roty"], correct:0 },
-  { q:"Polski król zwany „Lwem Lechistanu”?", a:["Jan III Sobieski","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"], correct:0 }
+const Q=[
+  {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
+  {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
+  {q:"Największe miasto na południu?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
+  {q:"Polska w NATO od?",a:["1999","2004","1990","2001"],c:0},
+  {q:"Polski skoczek z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},
+  {q:"Stolica Mazowsza?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
+  {q:"Noblistka z chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},
+  {q:"Najdłuższa rzeka?",a:["Wisła","Odra","Warta","Bug"],c:0},
+  {q:"Najwyższy szczyt?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
+  {q:"Odzyskanie niepodległości?",a:["1918","1945","1914","1939"],c:0},
+  {q:"Orzeł w godle to symbol?",a:["Państwa","Flagi","Hymnu","Miasta"],c:0},
+  {q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},
+  {q:"Początek hymnu?",a:["Jeszcze Polska nie zginęła","Mazurek Dąbrowskiego","Bogurodzica","Rota"],c:0},
+  {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Bolesław Chrobry","Zygmunt Stary","Władysław Jagiełło"],c:0}
 ];
 
-let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
-let bgMusicStarted = false;
+let pts=0, cur=0, session=Q.map((_,i)=>i).sort(()=>Math.random()-0.5);
+let bgStarted = false;
 
-function startBgMusic() {
-    if (!bgMusicStarted) {
-        $('snd-bg').volume = 0.4; // Muzyka tła ciszej, by nie zagłuszała dźwięków
-        $('snd-bg').play().catch(e => console.log("Czekam na kliknięcie..."));
-        bgMusicStarted = true;
-    }
-}
-
-function showQuestion(){
-  if(current >= session.length){
-    $('final-text').textContent = `${points} pkt`;
+function show() {
+  if(cur >= session.length) {
+    $('final-text').textContent = `${pts} pkt`;
     $('final').style.display = 'flex';
-    firework();
+    fire();
     return;
   }
-  
-  const qIdx = session[current];
-  const q = QUESTIONS[qIdx];
+  const q = Q[session[cur]];
   $('question').textContent = q.q;
   $('answers').innerHTML = '';
-  $('progress').textContent = current + 1;
-
+  $('progress').textContent = cur + 1;
   q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
-    const b=document.createElement('div');
-    b.className='btn'; b.textContent=obj.ans;
+    const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans;
     b.onclick=()=>{
-      // Pierwsze kliknięcie w dowolną odpowiedź uruchamia muzykę w tle
-      startBgMusic();
-
-      document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
-      
-      if(obj.i === q.correct){
-        b.classList.add('good'); points++; firework();
-        $('snd-ding').play().catch(()=>{});
-      } else {
-        b.classList.add('bad');
-        $('snd-buzzer').play().catch(()=>{});
-      }
-      $('points').textContent = points;
-      current++;
-      setTimeout(showQuestion, 1000);
+      if(!bgStarted){$('snd-bg').volume=0.3;$('snd-bg').play();bgStarted=true;}
+      document.querySelectorAll('.btn').forEach(el=>el.style.pointerEvents='none');
+      if(obj.i===q.c){b.classList.add('good');pts++;fire();$('snd-ding').play();}
+      else{b.classList.add('bad');$('snd-buzzer').play();}
+      $('points').textContent=pts; cur++; setTimeout(show,1000);
     };
     $('answers').appendChild(b);
   });
 }
 
-// TWOJE ORYGINALNE FAJERWERKI
-let fireworkRunning = false;
-function firework(){ 
-  if(fireworkRunning) return; fireworkRunning = true; 
-  const canvas=$('fx'), ctx=canvas.getContext('2d'); 
-  canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
-  const particles=[]; 
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
-  const bursts=3+Math.floor(Math.random()*3); 
-  for(let b=0;b<bursts;b++){ 
-    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
-    for(let i=0;i<40;i++){ 
-      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*2}); 
-    } 
-  } 
-  function animate(){ 
-    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
-    for(let i=particles.length-1;i>=0;i--){ 
-      const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
-      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
-      if(p.alpha<=0) particles.splice(i,1); 
-    } 
-    if(particles.some(p=>p.alpha>0)) requestAnimationFrame(animate); 
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
-  } 
-  animate(); 
+function fire(){
+  const cv=$('fx'),cx=cv.getContext('2d');cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const p=[]; const cl=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c'];
+  for(let i=0;i<50;i++)p.push({x:cv.width/2,y:cv.height/2,vx:(Math.random()-0.5)*12,vy:(Math.random()-0.5)*12,a:1,c:cl[Math.floor(Math.random()*cl.length)]});
+  function anim(){
+    cx.clearRect(0,0,cv.width,cv.height);
+    p.forEach((pt,i)=>{
+      cx.globalAlpha=pt.a;cx.fillStyle=pt.c;cx.beginPath();cx.arc(pt.x,pt.y,3,0,7);cx.fill();
+      pt.x+=pt.vx;pt.y+=pt.vy;pt.a-=0.015;if(pt.a<=0)p.splice(i,1);
+    });
+    if(p.length)requestAnimationFrame(anim);
+  }
+  anim();
 }
-
-showQuestion();
+show();
 </script>
 </body>
 </html>
