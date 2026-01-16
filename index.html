@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- TWÓJ NOWY KOD MULTITAG -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
+    <!-- TUTAJ WKLEJ NOWY KOD IN-PAGE PUSH ZAMIAST MULTITAGA, ABY NIE BYŁO REKLAM NA CAŁY EKRAN -->
+    <script src="https://quge5.com" data-zone="TWOJA_NOWA_STREFA_INPAGE_PUSH" async data-cfasync="false"></script>
 
     <style>
         :root{
@@ -19,13 +19,13 @@
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
         
-        /* REKLAMA NAD PYTANIEM */
+        /* POPRAWIONY BOKS REKLAMOWY - BEZ TŁA, ŻEBY NIE BYŁO PODWÓJNIE */
         .ad-main {
-            background:rgba(0,0,0,0.5); color:white; display:flex; align-items:center; justify-content:center; 
-            margin-bottom:15px; border-radius:12px; padding:10px; min-height:120px; position:relative;
-            border:1px solid rgba(0,255,255,0.1); text-align:center;
+            display:flex; align-items:center; justify-content:center; 
+            margin-bottom:15px; min-height:100px; position:relative;
+            text-align:center;
         }
-        .ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:var(--accent); }
+        .ad-status{ position:absolute; top:-10px; right:8px; font-size:0.6rem; color:var(--muted); }
 
         .card{
             background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -34,7 +34,7 @@
         }
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
-        .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
+        .score{color:var(--accent);font-weight:bold;}
         .question{font-size:1.4rem;text-align:center;margin:15px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
@@ -51,9 +51,7 @@
         
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
-        
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-        .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
     </style>
 </head>
 <body>
@@ -67,26 +65,20 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- REKLAMA NAD PYTANIEM -->
+        <!-- CZYSTY KONTENER NA REKLAMĘ -->
         <div class="ad-main" id="adMain">
-            <span class="ad-status">REKLAMA</span>
-            <!-- Skrypt MultiTag 194238 sam wypełni to miejsce -->
+            <span class="ad-status">reklama</span>
         </div>
 
-        <div id="question" class="question">Zaczynamy...</div>
+        <div id="question" class="question">Ładowanie...</div>
         <div id="answers" class="answers"></div>
-        
-        <div class="meta">
-            <div id="progress">Pytanie 1/14</div>
-            <div>v2026.FINAL</div>
-        </div>
     </div>
 </div>
 
 <div id="final">
     <div id="final-card">
-        <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
-        <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
+        <h1 style="color:var(--neon2)">KONIEC!</h1>
+        <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent);">0 pkt</div>
         <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
     </div>
 </div>
@@ -116,33 +108,27 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // 1. REKLAMA PO 7 PYTANIU
-    if (current === 7) {
-        current++; 
-        renderAdBreak("Przerwa reklamowa...");
+    // PRZERWA PO 7 I PRZED KONCEM
+    if (current === 7 || current === session.length) {
+        let isFinal = current === session.length;
+        $('answers').innerHTML = '';
+        $('question').textContent = isFinal ? "Przygotowanie wyniku..." : "Chwila przerwy...";
+        setTimeout(() => {
+            if(isFinal) finishQuiz();
+            else { current++; showQuestion(); }
+        }, 5000);
         return;
     }
 
-    // 2. REKLAMA PRZED WYNIKIEM
-    if (current === session.length) {
-        renderAdBreak("Przygotowanie wyniku...");
-        setTimeout(finishQuiz, 5000);
-        return;
-    }
-
-    const qIdx = session[current];
-    const q = QUESTIONS[qIdx];
-    
+    const q = QUESTIONS[session[current]];
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
-
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
                 try { $('snd-ding').play(); } catch(e){}
@@ -156,13 +142,6 @@ function showQuestion() {
         };
         $('answers').appendChild(b);
     });
-}
-
-function renderAdBreak(msg) {
-    $('answers').innerHTML = '';
-    $('question').textContent = msg;
-    // MultiTag automatycznie zarządza reklamami Vignette w tych momentach
-    setTimeout(showQuestion, 5000);
 }
 
 function finishQuiz() {
