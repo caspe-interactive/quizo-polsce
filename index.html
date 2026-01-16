@@ -5,16 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG MULTITAG Z LIMITAMI (Frequency Capping) -->
-    <script 
-        src="https://quge5.com" 
-        data-zone="194238" 
-        async 
-        data-cfasync="false" 
-        data-vignette-options='{"frequency": 300}' 
-        data-interstitial-options='{"frequency": 600}'>
-    </script>
-
+    <!-- MONETAG MULTITAG - Oryginalny skrypt -->
+    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -23,18 +16,15 @@
         }
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
-        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+        .page{width:100%;max-width:920px;z-index:10;}
         
-        .page{width:100%;max-width:920px;z-index:10;position:relative;}
-        
-        /* Kontener na reklamę - ograniczony, by nie dublować */
-        .ad-container {
-            width: 100%;
-            max-width: 728px;
-            min-height: 90px;
-            margin-bottom: 15px;
-            text-align: center;
+        .ad-main {
+            background:rgba(0,0,0,0.5); color:white; display:flex; align-items:center; justify-content:center; 
+            margin-bottom:15px; border-radius:12px; padding:10px; min-height:120px; position:relative;
+            border:1px solid rgba(0,255,255,0.1); text-align:center;
         }
+        .ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:var(--accent); }
 
         .card{
             background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -69,9 +59,6 @@
 
 <canvas id="fx"></canvas>
 
-<!-- Miejsce na reklamę banerową (MultiTag sam tu wstawi reklamę) -->
-<div class="ad-container" id="top-ad"></div>
-
 <div class="page">
     <div class="card">
         <div class="top">
@@ -79,12 +66,16 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <div id="question" class="question">Ładowanie...</div>
+        <div class="ad-main" id="adMain">
+            <span class="ad-status">REKLAMA</span>
+        </div>
+
+        <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
         
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
-            <div>v2026.PRO</div>
+            <div onclick="toggleMusic()" style="cursor:pointer">🎵 MUZYKA</div>
         </div>
     </div>
 </div>
@@ -97,6 +88,8 @@
     </div>
 </div>
 
+<!-- DŹWIĘKI -->
+<audio id="snd-bg" src="sounds/music.mp3" loop></audio> <!-- MUZYKA W TLE -->
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 
@@ -111,7 +104,7 @@ const QUESTIONS=[
   { q:"Największe miasto mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
   { q:"Noblistka w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
   { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
-  { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
+  { q:"Najhighest szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
   { q:"Rok odzyskania niepodległości?", a:["1918","1945","1914","1939"], correct:0 },
   { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu"], correct:0 },
   { q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
@@ -120,6 +113,11 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
+
+function toggleMusic() {
+    const music = $('snd-bg');
+    if (music.paused) music.play(); else music.pause();
+}
 
 function showQuestion() {
     if (current === 7) {
@@ -143,9 +141,10 @@ function showQuestion() {
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
-        
-        // Zmienione na onpointerdown, by ograniczyć wyzwalanie Vignette Ads przez automat
-        b.onpointerdown = () => {
+        b.onclick = () => {
+            // Pierwsze kliknięcie odpala muzykę (wymóg przeglądarek)
+            $('snd-bg').play().catch(()=>{}); 
+            
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
@@ -163,7 +162,7 @@ function showQuestion() {
 }
 
 function renderAdBreak(msg) {
-    $('answers').innerHTML = '<div style="color:var(--accent)">Za chwilę dalsze pytania...</div>';
+    $('answers').innerHTML = '';
     $('question').textContent = msg;
     setTimeout(showQuestion, 5000);
 }
