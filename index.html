@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — Sprawdź wiedzę o Polsce</title>
     
-    <!-- GŁÓWNY SKRYPT MONETAG (ZAINICJOWANY W HEAD DLA 2026) -->
-    <script src="native.propellerads.com" data-cfasync="false" async></script>
+    <!-- TWÓJ KOD MULTITAG MONETAG -->
+    <script src="https://quge5.com" data-zone="193728" async data-cfasync="false"></script>
 
     <style>
         :root{
@@ -15,37 +15,49 @@
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+        
         .page{width:100%;max-width:920px;position:relative;z-index:10;}
+        
+        /* REKLAMA NAD PYTANIEM */
         .ad-main {
             background:rgba(0,0,0,0.4); color:white; display:flex; align-items:center; justify-content:center; 
             margin-bottom:15px; border-radius:12px; padding:10px; min-height:120px; position:relative;
             border:1px solid rgba(0,255,255,0.1);
         }
         .ad-status{ position:absolute; top:4px; right:8px; font-size:0.7rem; color:var(--accent); }
+
         .card{
             background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
             border:1px solid rgba(0,255,255,0.04);
         }
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-        .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px}
-        .score{color:var(--accent);font-weight:bold}
-        .question{font-size:1.4rem;text-align:center;margin:8px 0 14px;color:var(--text);min-height:3rem}
+        .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
+        .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
+        
+        .question{font-size:1.4rem;text-align:center;margin:20px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
+        
         .btn{
             display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
-            user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:52px;
+            user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;
             transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
             box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
+            text-align:center;
         }
-        .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0); }
-        .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94); }
-        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.9);z-index:1200}
-        #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px;}
-        canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+        .btn:active{transform:translateY(2px)}
+        .btn:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,240,255,0.2);}
+        .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
+        .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
+
+        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:1200}
+        #final-card{background:linear-gradient(180deg,#0b1220, #051028); padding:40px; border-radius:20px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
+        
+        canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+        .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
     </style>
 </head>
 <body>
@@ -59,22 +71,27 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- REKLAMA NAD PYTANIAMI -->
+        <!-- REKLAMA NAD PYTANIEM -->
         <div class="ad-main" id="adMain">
             <span class="ad-status">REKLAMA</span>
-            <div id="container-10310895"></div>
+            <!-- MultiTag automatycznie wypełni to miejsce -->
         </div>
 
-        <div id="question" class="question">Ładowanie...</div>
+        <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
+        
+        <div class="meta">
+            <div id="progress">Pytanie 1/14</div>
+            <div>v2026.FINAL</div>
+        </div>
     </div>
 </div>
 
 <div id="final">
     <div id="final-card">
-        <h1 style="color:var(--neon2)">Wynik Końcowy</h1>
-        <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent);"></div>
-        <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+        <h1 style="color:var(--neon2); margin-top:0;">KONIEC QUIZU!</h1>
+        <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
+        <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
     </div>
 </div>
 
@@ -103,16 +120,16 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // REKLAMA PO 7. PYTANIU
+    // 1. REKLAMA PO 7 PYTANIU
     if (current === 7) {
-        current++; 
-        handleAdBreak("Przerwa reklamowa...");
+        current++; // Przeskakujemy znacznik, by nie zapętlić
+        renderAdBreak("Przerwa reklamowa...");
         return;
     }
 
-    // REKLAMA PRZED WYNIKIEM
+    // 2. REKLAMA PRZED WYNIKIEM
     if (current === session.length) {
-        handleAdBreak("Przygotowanie wyniku...");
+        renderAdBreak("Generowanie wyniku...");
         setTimeout(finishQuiz, 5000);
         return;
     }
@@ -120,25 +137,34 @@ function showQuestion() {
     const q = QUESTIONS[session[current]];
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
+    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            if(obj.i === q.correct) { b.classList.add('good'); points++; firework(); $('snd-ding').play().catch(()=>{}); }
-            else { b.classList.add('bad'); $('snd-buzzer').play().catch(()=>{}); }
+            const btns = document.querySelectorAll('.btn');
+            btns.forEach(btn => btn.style.pointerEvents = 'none');
+
+            if(obj.i === q.correct) {
+                b.classList.add('good'); points++; firework();
+                try { $('snd-ding').play(); } catch(e){}
+            } else {
+                b.classList.add('bad');
+                try { $('snd-buzzer').play(); } catch(e){}
+            }
             $('points').textContent = points;
             current++;
-            setTimeout(showQuestion, 800);
+            setTimeout(showQuestion, 1000);
         };
         $('answers').appendChild(b);
     });
 }
 
-function handleAdBreak(msg) {
+function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    // Kod wymuszający odświeżenie reklamy (opcjonalnie)
+    // MultiTag sam obsłuży wyświetlenie reklamy Vignette/Interstitial w tym czasie
     setTimeout(showQuestion, 5000);
 }
 
@@ -148,7 +174,7 @@ function finishQuiz() {
     firework();
 }
 
-// --- TWOJE ORYGINALNE FAJERWERKI (NIERUSZANE) ---
+// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -176,6 +202,7 @@ function firework(){
   animate(); 
 }
 
+// Start quizu
 showQuestion();
 </script>
 </body>
