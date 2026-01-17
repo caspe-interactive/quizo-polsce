@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG MULTITAG - Oryginalny skrypt -->
+    <!-- MONETAG MULTITAG -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -75,7 +75,7 @@
         
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
-            <div onclick="toggleMusic()" style="cursor:pointer">🎵 MUZYKA</div>
+            <div id="m-status" style="color:var(--accent)">Muzyka czeka...</div>
         </div>
     </div>
 </div>
@@ -88,8 +88,8 @@
     </div>
 </div>
 
-<!-- DŹWIĘKI -->
-<audio id="snd-bg" src="sounds/music.mp3" loop></audio> <!-- MUZYKA W TLE -->
+<!-- PLIKI AUDIO -->
+<audio id="snd-bg" src="sounds/background.mp3" loop></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 
@@ -113,11 +113,7 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
-
-function toggleMusic() {
-    const music = $('snd-bg');
-    if (music.paused) music.play(); else music.pause();
-}
+let musicStarted = false;
 
 function showQuestion() {
     if (current === 7) {
@@ -142,9 +138,14 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            // Pierwsze kliknięcie odpala muzykę (wymóg przeglądarek)
-            $('snd-bg').play().catch(()=>{}); 
-            
+            // Start muzyki przy pierwszym kliku
+            if(!musicStarted){
+                $('snd-bg').play().then(() => {
+                    musicStarted = true;
+                    $('m-status').textContent = "Muzyka: ON";
+                }).catch(e => console.log("Audio wymaga interakcji"));
+            }
+
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
