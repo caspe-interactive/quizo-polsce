@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG MULTITAG - ORYGINALNY KOD -->
+    <!-- MONETAG MULTITAG - TYLKO TO JEST POTRZEBNE DO REKLAM -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -75,7 +75,7 @@
         
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
-            <div id="m-status">Muzyka czeka...</div>
+            <div id="m-stat" style="color:var(--accent)">v2026</div>
         </div>
     </div>
 </div>
@@ -112,23 +112,13 @@ const QUESTIONS=[
 ];
 
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
-let musicStarted = false;
+let mStarted = false;
 
 function showQuestion() {
-    if (current === 7) {
-        current++; 
-        renderAdBreak("Przerwa reklamowa...");
-        return;
-    }
-    if (current === session.length) {
-        renderAdBreak("Przygotowanie wyniku...");
-        setTimeout(finishQuiz, 5000);
-        return;
-    }
+    if (current === 7) { current++; renderAdBreak("Przerwa reklamowa..."); return; }
+    if (current === session.length) { renderAdBreak("Przygotowanie wyniku..."); setTimeout(finishQuiz, 5000); return; }
 
-    const qIdx = session[current];
-    const q = QUESTIONS[qIdx];
-    
+    const q = QUESTIONS[session[current]];
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
     $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
@@ -137,14 +127,7 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            // Start muzyki przy pierwszym kliku
-            if(!musicStarted){
-                $('snd-bg').play().then(() => {
-                    musicStarted = true;
-                    $('m-status').textContent = "Muzyka: ON";
-                }).catch(e => console.log("Muzyka wymaga kliknięcia"));
-            }
-
+            if(!mStarted) { $('snd-bg').play(); mStarted=true; }
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
@@ -199,7 +182,6 @@ function firework(){
   } 
   animate(); 
 }
-
 showQuestion();
 </script>
 </body>
