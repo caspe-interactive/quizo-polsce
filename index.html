@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG MULTITAG - Przywrócony do najprostszej wersji -->
+    <!-- MONETAG MULTITAG - ORYGINALNY KOD -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -19,7 +19,6 @@
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
         
-        /* Kontener reklamowy, który Monetag wypełnia */
         .ad-main {
             background:rgba(0,0,0,0.5); color:white; display:flex; align-items:center; justify-content:center; 
             margin-bottom:15px; border-radius:12px; padding:10px; min-height:120px; position:relative;
@@ -76,7 +75,7 @@
         
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
-            <div id="m-status">Muzyka: OFF</div>
+            <div id="m-status">Muzyka czeka...</div>
         </div>
     </div>
 </div>
@@ -89,7 +88,6 @@
     </div>
 </div>
 
-<!-- TWOJE PLIKI AUDIO -->
 <audio id="snd-bg" src="sounds/background.mp3" loop></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
@@ -139,12 +137,12 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            // Pierwsze kliknięcie włącza muzykę
+            // Start muzyki przy pierwszym kliku
             if(!musicStarted){
                 $('snd-bg').play().then(() => {
                     musicStarted = true;
                     $('m-status').textContent = "Muzyka: ON";
-                }).catch(e => console.log("Kliknij, aby włączyć audio"));
+                }).catch(e => console.log("Muzyka wymaga kliknięcia"));
             }
 
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
