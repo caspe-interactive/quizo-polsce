@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
 
-    <!-- 1. MIEJSCE NA TWOJE REKLAMY (MONETAG MULTITAG) -->
-    <!-- Wklej tutaj swój kod MultiTag z panelu Monetag. 
-         Dzięki temu reklamy załadują się raz i nie będą wyskakiwać podwójnie. -->
-    <script src="https://alwingulla.com" data-cfasync="false" async></script>
+    <!-- REKLAMA MONETAG - WSTAWIONA POPRAWNIE (ZAŁADUJE SIĘ RAZ) -->
+    <script src="https://quge5.com" data-zone="193728" async data-cfasync="false"></script>
 
     <style>
         :root{
@@ -63,6 +61,7 @@
     </div>
 </div>
 
+<!-- PLIKI AUDIO -->
 <audio id="snd-bg" src="sounds/background.mp3" loop></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
@@ -94,18 +93,25 @@ function showQuestion() {
         finishQuiz();
         return;
     }
+
     const qIdx = session[current];
     const q = QUESTIONS[qIdx];
+
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
     $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
+
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
             if(!musicStarted){
-                $('snd-bg').play().then(() => { musicStarted = true; $('m-status').textContent = "Muzyka: ON"; }).catch(() => {});
+                $('snd-bg').play().then(() => {
+                    musicStarted = true;
+                    $('m-status').textContent = "Muzyka: ON";
+                }).catch(() => {});
             }
+
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; triggerParticleEffect();
@@ -154,6 +160,7 @@ function triggerParticleEffect(){
   }
   animate();
 }
+
 showQuestion();
 </script>
 </body>
