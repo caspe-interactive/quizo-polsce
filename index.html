@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="pl">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta charset="utf-8""")/>>
+    <meta name="viewport" content="width=device-width,initial-scale=1""")/>>
     <title>QuizoPolsce — FINAL 2026</title>
 
-    <!-- REKLAMA MONETAG - WSTAWIONA POPRAWNIE (ZAŁADUJE SIĘ RAZ) -->
-    <script src="https://quge5.com" data-zone="193728" async data-cfasync="false"></script>
+    <!-- TWOJA REKLAMA MONETAG - WSTAWIONA POPRAWNIE -->
+    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
 
     <style>
         :root{
@@ -93,25 +93,18 @@ function showQuestion() {
         finishQuiz();
         return;
     }
-
     const qIdx = session[current];
     const q = QUESTIONS[qIdx];
-
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
     $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
-
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
             if(!musicStarted){
-                $('snd-bg').play().then(() => {
-                    musicStarted = true;
-                    $('m-status').textContent = "Muzyka: ON";
-                }).catch(() => {});
+                $('snd-bg').play().then(() => { musicStarted = true; $('m-status').textContent = "Muzyka: ON"; }).catch(() => {});
             }
-
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; triggerParticleEffect();
@@ -127,13 +120,11 @@ function showQuestion() {
         $('answers').appendChild(b);
     });
 }
-
 function finishQuiz() {
     $('final-text').textContent = `${points} pkt`;
     $('final').style.display = 'flex';
     triggerParticleEffect();
 }
-
 let particleEffectRunning = false;
 function triggerParticleEffect(){
   if(particleEffectRunning) return; particleEffectRunning = true;
@@ -160,7 +151,6 @@ function triggerParticleEffect(){
   }
   animate();
 }
-
 showQuestion();
 </script>
 </body>
