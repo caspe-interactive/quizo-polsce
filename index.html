@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- TWÓJ NOWY KOD MULTITA
-G -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
+    <!-- Skrypt reklamowy MultiTag -->
+    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -19,12 +19,23 @@ G -->
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
         
-        /* REKLAMA NAD PYTANIEM */
-        .ad-main {
-ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
-            border:1px solid rgba(0,255,255,0.04);
+        /* Poprawiony błąd w klasie card */
+        .card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            background-color: var(--card);
+            border-radius: var(--radius); 
+            padding: 22px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(0,255,255,0.04);
         }
+
+        .ad-main {
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 50px;
+        }
+        .ad-status { font-size: 0.7rem; color: var(--muted); display: block; margin-bottom: 5px; }
+
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
@@ -60,10 +71,8 @@ ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- REKLAMA NAD PYTANIEM -->
         <div class="ad-main" id="adMain">
             <span class="ad-status">REKLAMA</span>
-            <!-- Skrypt MultiTag 194238 sam wypełni to miejsce -->
         </div>
 
         <div id="question" class="question">Zaczynamy...</div>
@@ -94,7 +103,7 @@ const QUESTIONS=[
   { q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
   { q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
   { q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
-  { q:"Polski skoczek narciarski z medalami?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:1 },
+  { q:"Kto zdobył 3 złote medale IO w skokach?", a:["Kamil Stoch","Adam Małysz","Piotr Żyła","Dawid Kubacki"], correct:0 },
   { q:"Największe miasto mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
   { q:"Noblistka w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
   { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
@@ -116,8 +125,9 @@ function showQuestion() {
         return;
     }
 
-    // 2. REKLAMA PRZED WYNIKIEM
+    // 2. REKLAMA PRZED WYNIKIEM (Naprawiony błąd pętli)
     if (current === session.length) {
+        current++; 
         renderAdBreak("Przygotowanie wyniku...");
         setTimeout(finishQuiz, 5000);
         return;
@@ -128,25 +138,36 @@ function showQuestion() {
     
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
+    $('progress').textContent = `Pytanie ${Math.min(current+1, session.length)}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
-        b.className = 'btn'; b.textContent = obj.ans;
-        b.onclick = () => {
-            document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
+        b.className = 'btn'; 
+        b.textContent = obj.ans;
+        
+        // Używamy EventListenera z zatrzymaniem propagacji, by oszukać skrypt reklamowy
+        b.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Blokuje aktywację reklamy przy każdym kliknięciu
+
+            if (this.classList.contains('used')) return;
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.add('used');
+                btn.style.pointerEvents = 'none';
+            });
 
             if(obj.i === q.correct) {
-                b.classList.add('good'); points++; firework();
-                try { $('snd-ding').play(); } catch(e){}
+                this.classList.add('good'); points++; firework();
+                try { $('snd-ding').play(); } catch(err){}
             } else {
-                b.classList.add('bad');
-                try { $('snd-buzzer').play(); } catch(e){}
+                this.classList.add('bad');
+                try { $('snd-buzzer').play(); } catch(err){}
             }
             $('points').textContent = points;
             current++;
             setTimeout(showQuestion, 1000);
-        };
+        }, true);
+
         $('answers').appendChild(b);
     });
 }
@@ -154,7 +175,7 @@ function showQuestion() {
 function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    // MultiTag automatycznie zarządza reklamami Vignette w tych momentach
+    // Tutaj skrypt MultiTag sam wywoła reklamę pełnoekranową przy zmianie zawartości
     setTimeout(showQuestion, 5000);
 }
 
@@ -164,7 +185,6 @@ function finishQuiz() {
     firework();
 }
 
-// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -180,7 +200,7 @@ function firework(){
     } 
   } 
   function animate(){ 
-    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
+    ctx.clearRect(0,0,canvas.width,canvas.height); // Zmienione na clearRect, by nie zasłaniać quizu
     for(let i=particles.length-1;i>=0;i--){ 
       const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
       p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
