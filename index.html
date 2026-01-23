@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
+    <!-- Skrypt MultiTag -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -14,7 +16,7 @@
         }
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
-        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;}
         .page{width:100%;max-width:920px;z-index:10;}
         
         .card {
@@ -58,14 +60,11 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-
-        <div class="ad-main" id="adMain">
+        <div class="ad-main">
             <span style="font-size:0.7rem; color:var(--muted)">REKLAMA</span>
         </div>
-
         <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
-        
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
             <div>v2026.FINAL</div>
@@ -105,16 +104,29 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
-let firstClick = true;
+let points=0, current=0, firstClick=true;
+let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
+
+function triggerAd() {
+    // Symulacja kliknięcia w niewidoczny link dla skryptu reklamowego
+    const a = document.createElement('a');
+    a.href = "javascript:void(0)";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
 
 function showQuestion() {
-    // REKLAMA PO 7 PYTANIU I NA KOŃCU
+    // REKLAMA W PRZERWIE (Pytanie 7 i koniec)
     if (current === 7 || current === session.length) {
         let isFinal = (current === session.length);
-        renderAdBreak(isFinal ? "Przygotowanie wyniku..." : "Przerwa reklamowa...");
+        $('answers').innerHTML = '';
+        $('question').textContent = isFinal ? "Przygotowanie wyniku..." : "Przerwa reklamowa...";
         
+        triggerAd(); // Aktywacja reklamy
         current++; 
+
         setTimeout(() => {
             if(isFinal) finishQuiz();
             else showQuestion();
@@ -124,10 +136,9 @@ function showQuestion() {
 
     const qIdx = session[current];
     const q = QUESTIONS[qIdx];
-    
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
+    $('progress').textContent = `Pytanie ${Math.min(current+1, session.length)}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
@@ -135,16 +146,12 @@ function showQuestion() {
         b.textContent = obj.ans;
         
         b.addEventListener('click', function(e) {
-            // ODŁĄCZAMY REKLAMĘ OD PRZYCISKU
+            // Blokada reklamy przy zwykłej odpowiedzi
             e.stopPropagation();
 
-            // URUCHOMIENIE MUZYKI PRZY PIERWSZYM KLIKNIĘCIU
+            // Pierwsze kliknięcie odblokowuje muzykę i dźwięki
             if(firstClick) {
-                try { 
-                    $('snd-bg').play(); 
-                    $('snd-bg').volume = 0.3;
-                    firstClick = false; 
-                } catch(err){}
+                try { $('snd-bg').play(); $('snd-bg').volume = 0.3; firstClick = false; } catch(err){}
             }
 
             if(this.style.pointerEvents === 'none') return;
@@ -165,19 +172,12 @@ function showQuestion() {
     });
 }
 
-function renderAdBreak(msg) {
-    $('answers').innerHTML = '';
-    $('question').textContent = msg;
-    // Skrypt tag.min.js powinien sam wykryć zmianę zawartości/URL i odpalić reklamę
-}
-
 function finishQuiz() {
     $('final-text').textContent = `${points} pkt`;
     $('final').style.display = 'flex';
     firework();
 }
 
-// TWOJE ORYGINALNE FAJERWERKI
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
