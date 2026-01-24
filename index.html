@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT REKLAMOWY -->
-    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
-    
+    <!-- TWÓJ NOWY KOD MULTITA
+G -->
+    <script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -19,16 +19,12 @@
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
         
-        /* POPRAWIONE TŁO REKLAMY */
+        /* REKLAMA NAD PYTANIEM */
         .ad-main {
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
             border:1px solid rgba(0,255,255,0.04);
-            margin-bottom: 20px;
-            min-height: 100px; /* Zabezpieczenie miejsca na baner */
-            text-align: center;
         }
-        
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
@@ -51,7 +47,6 @@
         
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
         .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
-        .ad-status { font-size: 0.7rem; color: var(--muted); display: block; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -65,9 +60,10 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- REKLAMA (Tylko jeden kontener, aby uniknąć podwójnych banerów) -->
+        <!-- REKLAMA NAD PYTANIEM -->
         <div class="ad-main" id="adMain">
             <span class="ad-status">REKLAMA</span>
+            <!-- Skrypt MultiTag 194238 sam wypełni to miejsce -->
         </div>
 
         <div id="question" class="question">Zaczynamy...</div>
@@ -120,9 +116,8 @@ function showQuestion() {
         return;
     }
 
-    // 2. REKLAMA PRZED WYNIKIEM (Naprawiony błąd nieskończonej pętli)
+    // 2. REKLAMA PRZED WYNIKIEM
     if (current === session.length) {
-        current++; // Zwiększenie licznika zapobiega ponownemu wejściu w ten warunek
         renderAdBreak("Przygotowanie wyniku...");
         setTimeout(finishQuiz, 5000);
         return;
@@ -133,13 +128,12 @@ function showQuestion() {
     
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${Math.min(current+1, session.length)}/${session.length}`;
+    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            if(b.style.pointerEvents === 'none') return;
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
 
             if(obj.i === q.correct) {
@@ -160,7 +154,7 @@ function showQuestion() {
 function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    // Ważne: Jeśli reklama banerowa odświeża się sama, nie dodawaj tu ręcznego kodu odświeżania.
+    // MultiTag automatycznie zarządza reklamami Vignette w tych momentach
     setTimeout(showQuestion, 5000);
 }
 
@@ -170,6 +164,7 @@ function finishQuiz() {
     firework();
 }
 
+// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
