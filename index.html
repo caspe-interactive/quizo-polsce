@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG MULTITAG - Musi być w HEAD dla poprawnej weryfikacji i działania -->
+    <!-- 1. POPRAWKA CSP: Zezwala na ładowanie skryptów i reklam z domen Monetag -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+
+    <!-- 2. MONETAG MULTITAG -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+
+    <!-- 3. REJESTRACJA SERVICE WORKERA (Wymagane dla HTTPS na Render) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                    console.log('SW zarejestrowany:', reg.scope);
+                }).catch(function(err) {
+                    console.log('Błąd SW:', err);
+                });
+            });
+        }
+    </script>
 
     <style>
         :root{
@@ -18,10 +34,8 @@
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;position:relative;}
-        
         .card {
-            background: rgba(11, 18, 32, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(11, 18, 32, 0.9); backdrop-filter: blur(10px);
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
             border:1px solid rgba(0,255,255,0.1);
         }
@@ -31,7 +45,6 @@
         .question{font-size:1.4rem;text-align:center;margin:15px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
-        
         .btn{
             display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
             user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;
@@ -41,10 +54,8 @@
         }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
-        
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
         .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
     </style>
@@ -59,10 +70,8 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-
         <div id="question" class="question">Ładowanie quizu...</div>
         <div id="answers" class="answers"></div>
-        
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
             <div>v2026.FINAL</div>
@@ -103,22 +112,15 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // PRZERWY NA REKLAMY (Vignette/Interstitial)
     if (current === 7 || current === session.length) {
         let msg = current === 7 ? "Przerwa reklamowa..." : "Przygotowanie wyniku...";
         renderAdBreak(msg);
-        current++; // Zwiększamy, aby wyjść z warunku przerwy
+        current++; 
         return;
     }
-
-    if (current > session.length) {
-        finishQuiz();
-        return;
-    }
-
-    const qIdx = session[current === 8 ? 7 : (current > 7 ? current - 1 : current)];
+    if (current > session.length) { finishQuiz(); return; }
+    const qIdx = session[current > 7 ? current - 1 : current];
     const q = QUESTIONS[qIdx];
-    
     if(!q) { finishQuiz(); return; }
 
     $('question').textContent = q.q;
@@ -129,9 +131,7 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            // BRAK stopPropagation - pozwalamy Monetag wygrywać reklamy Popunder
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
-
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
                 try { $('snd-ding').play(); } catch(e){}
@@ -150,7 +150,6 @@ function showQuestion() {
 function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    // Czekamy 5 sekund - to czas dla Monetag na wyświetlenie reklamy pełnoekranowej
     setTimeout(showQuestion, 5000);
 }
 
@@ -167,8 +166,7 @@ function firework(){
   canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
   const particles=[]; 
   const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c']; 
-  const bursts=3; 
-  for(let b=0;b<bursts;b++){ 
+  for(let b=0;b<3;b++){ 
     const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
     for(let i=0;i<40;i++){ 
       particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2}); 
