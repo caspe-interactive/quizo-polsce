@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT MULTITAG (Zone 194238) -->
+    <!-- SKRYPT REKLAMOWY -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -15,37 +15,43 @@
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);color:var(--text);}
-        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);display:flex;align-items:center;justify-content:center;padding:20px;}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
+        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
-        .card {
+        
+        /* POPRAWIONE TŁO REKLAMY */
+        .ad-main {
             background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            background-color: var(--card);
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
             border:1px solid rgba(0,255,255,0.04);
+            margin-bottom: 20px;
+            min-height: 100px; /* Zabezpieczenie miejsca na baner */
+            text-align: center;
         }
+        
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
-        .question{font-size:1.4rem;text-align:center;margin:15px 0;min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
+        .question{font-size:1.4rem;text-align:center;margin:15px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
         
-        /* Przyciski */
-        .btn, .ad-link{
+        .btn{
             display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
             user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;
             transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
             box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
-            text-align:center; text-decoration:none;
+            text-align:center;
         }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        .ad-link{ background: var(--accent) !important; color: #000 !important; margin-top: 20px; }
-
+        
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
+        
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+        .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
+        .ad-status { font-size: 0.7rem; color: var(--muted); display: block; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -58,9 +64,19 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
+
+        <!-- REKLAMA (Tylko jeden kontener, aby uniknąć podwójnych banerów) -->
+        <div class="ad-main" id="adMain">
+            <span class="ad-status">REKLAMA</span>
+        </div>
+
         <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
-        <div id="progress" style="margin-top:15px; font-size:0.8rem; color:var(--muted);">Pytanie 1/14</div>
+        
+        <div class="meta">
+            <div id="progress">Pytanie 1/14</div>
+            <div>v2026.FINAL</div>
+        </div>
     </div>
 </div>
 
@@ -68,11 +84,10 @@
     <div id="final-card">
         <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
         <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
-        <a href="index.html" class="btn" style="width:100%">Zagraj ponownie</a>
+        <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
     </div>
 </div>
 
-<audio id="snd-bg" src="sounds/background.mp3" loop></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 
@@ -95,58 +110,44 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, firstClick=true;
-let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
+let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // KLUCZ: PRZERWA REKLAMOWA Z PRAWDZIWYM LINKIEM
-    if (current === 7 || current === session.length) {
-        let isFinal = (current === session.length);
-        $('answers').innerHTML = '';
-        $('question').textContent = isFinal ? "Quiz zakończony!" : "Chwila przerwy...";
-        
-        const a = document.createElement('a');
-        a.href = isFinal ? "#wynik" : "#kontynuuj"; // Zmiana kotwicy dla sieci reklamowej
-        a.className = 'ad-link';
-        a.textContent = isFinal ? "ZOBACZ SWÓJ WYNIK" : "KLIKNIJ, ABY GRAĆ DALEJ";
-        
-        a.onclick = () => {
-            // Brak stopPropagation - pozwalamy skryptowi Monetag przechwycić kliknięcie
-            if(isFinal) finishQuiz();
-            else { current++; showQuestion(); }
-        };
-        $('answers').appendChild(a);
+    // 1. REKLAMA PO 7 PYTANIU
+    if (current === 7) {
+        current++; 
+        renderAdBreak("Przerwa reklamowa...");
+        return;
+    }
+
+    // 2. REKLAMA PRZED WYNIKIEM (Naprawiony błąd nieskończonej pętli)
+    if (current === session.length) {
+        current++; // Zwiększenie licznika zapobiega ponownemu wejściu w ten warunek
+        renderAdBreak("Przygotowanie wyniku...");
+        setTimeout(finishQuiz, 5000);
         return;
     }
 
     const qIdx = session[current];
     const q = QUESTIONS[qIdx];
+    
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
+    $('progress').textContent = `Pytanie ${Math.min(current+1, session.length)}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
-        b.className = 'btn'; 
-        b.textContent = obj.ans;
-        
-        b.onclick = (e) => {
-            // Blokujemy reklamę tylko na przyciskach odpowiedzi
-            e.stopPropagation();
-
-            if(firstClick) {
-                try { $('snd-bg').play(); $('snd-bg').volume = 0.3; firstClick = false; } catch(err){}
-            }
-
+        b.className = 'btn'; b.textContent = obj.ans;
+        b.onclick = () => {
             if(b.style.pointerEvents === 'none') return;
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
 
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
-                try { $('snd-ding').play(); } catch(err){}
+                try { $('snd-ding').play(); } catch(e){}
             } else {
                 b.classList.add('bad');
-                try { $('snd-buzzer').play(); } catch(err){}
+                try { $('snd-buzzer').play(); } catch(e){}
             }
             $('points').textContent = points;
             current++;
@@ -154,6 +155,13 @@ function showQuestion() {
         };
         $('answers').appendChild(b);
     });
+}
+
+function renderAdBreak(msg) {
+    $('answers').innerHTML = '';
+    $('question').textContent = msg;
+    // Ważne: Jeśli reklama banerowa odświeża się sama, nie dodawaj tu ręcznego kodu odświeżania.
+    setTimeout(showQuestion, 5000);
 }
 
 function finishQuiz() {
@@ -188,6 +196,7 @@ function firework(){
   } 
   animate(); 
 }
+
 showQuestion();
 </script>
 </body>
