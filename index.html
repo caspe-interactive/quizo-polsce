@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT REKLAMOWY - upewnij się, że Zone ID jest poprawne -->
+    <!-- SKRYPT REKLAMOWY -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -16,7 +16,7 @@
         }
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);color:var(--text);}
-        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;}
+        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
         .card {
             background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -43,6 +43,9 @@
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
         .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
+        
+        /* Miejsce na reklamę banerową - tylko jedno */
+        #ad-container { min-height: 60px; margin-bottom: 10px; text-align:center; }
     </style>
 </head>
 <body>
@@ -55,7 +58,11 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-        <div id="question" class="question">Ładowanie...</div>
+
+        <!-- Tutaj pojawi się tylko jeden baner -->
+        <div id="ad-container"></div>
+
+        <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
@@ -99,30 +106,23 @@ let points=0, current=0, firstClick=true;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // SEKCJA REKLAMOWA
+    // PRZERWA REKLAMOWA (Pytanie 7 i koniec)
     if (current === 7 || current === session.length) {
         let isFinal = (current === session.length);
         $('answers').innerHTML = '';
-        $('question').textContent = isFinal ? "Obliczanie wyniku..." : "Przerwa reklamowa";
+        $('question').textContent = isFinal ? "Generowanie wyniku..." : "Przerwa reklamowa...";
         
-        // Tworzymy STANDARDOWY LINK <a> - skrypty reklamowe najlepiej reagują na tagi linków
-        const a = document.createElement('a');
-        a.className = 'btn';
-        a.style.background = 'var(--accent)';
-        a.style.color = '#000';
-        a.textContent = isFinal ? "ZOBACZ WYNIK" : "DALEJ";
-        a.href = isFinal ? "#result" : "#next"; // Zmiana hasha często wyzwala reklamę Vignette
-
-        a.onclick = (e) => {
-            // NIE używamy stopPropagation, pozwalamy skryptowi MultiTag zarejestrować kliknięcie
-            if(isFinal) {
-                finishQuiz();
-            } else {
-                current++;
-                showQuestion();
-            }
+        // Przycisk który NIE blokuje reklam (brak stopPropagation)
+        const b = document.createElement('div');
+        b.className = 'btn';
+        b.style.background = 'var(--accent)';
+        b.style.color = '#000';
+        b.textContent = isFinal ? "ZOBACZ WYNIK" : "KONTYNUUJ";
+        b.onclick = () => {
+            if(isFinal) finishQuiz();
+            else { current++; showQuestion(); }
         };
-        $('answers').appendChild(a);
+        $('answers').appendChild(b);
         return;
     }
 
@@ -137,8 +137,11 @@ function showQuestion() {
         b.className = 'btn'; 
         b.textContent = obj.ans;
         
+        // KLUCZ: Dodajemy atrybut, który niektóre skrypty reklamowe omijają
+        b.setAttribute('data-onclick', 'false');
+
         b.onclick = (e) => {
-            // Blokujemy reklamę przy każdym pytaniu, by nie irytować gracza
+            // Blokujemy reklamę tylko dla odpowiedzi
             e.stopPropagation();
 
             if(firstClick) {
@@ -169,7 +172,6 @@ function finishQuiz() {
     firework();
 }
 
-// FAJERWERKI 1:1
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -196,7 +198,6 @@ function firework(){
   } 
   animate(); 
 }
-
 showQuestion();
 </script>
 </body>
