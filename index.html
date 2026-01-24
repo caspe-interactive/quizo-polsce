@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- TWÓJ NOWY KOD MULTITA
-G -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
+    <!-- MONETAG MULTITAG -->
+    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -15,13 +15,12 @@ G -->
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
-        .page{width:100%;max-width:920px;z-index:10;}
+        .page{width:100%;max-width:920px;z-index:10;position:relative;}
         
-        /* REKLAMA NAD PYTANIEM */
-        .ad-main {
-ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        .card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
             border:1px solid rgba(0,255,255,0.04);
         }
@@ -47,6 +46,9 @@ ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
         
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
         .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
+        
+        /* Ukrywamy stary kontener ad-main, aby uniknąć duplikacji banerów */
+        #adMain { display: none; }
     </style>
 </head>
 <body>
@@ -58,12 +60,6 @@ ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
         <div class="top">
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
-        </div>
-
-        <!-- REKLAMA NAD PYTANIEM -->
-        <div class="ad-main" id="adMain">
-            <span class="ad-status">REKLAMA</span>
-            <!-- Skrypt MultiTag 194238 sam wypełni to miejsce -->
         </div>
 
         <div id="question" class="question">Zaczynamy...</div>
@@ -109,14 +105,12 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // 1. REKLAMA PO 7 PYTANIU
     if (current === 7) {
         current++; 
         renderAdBreak("Przerwa reklamowa...");
         return;
     }
 
-    // 2. REKLAMA PRZED WYNIKIEM
     if (current === session.length) {
         renderAdBreak("Przygotowanie wyniku...");
         setTimeout(finishQuiz, 5000);
@@ -133,15 +127,18 @@ function showQuestion() {
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
-        b.onclick = () => {
+        
+        // ZMIANA: e.stopPropagation() zapobiega otwieraniu reklam przy KAŻDYM kliknięciu
+        b.onclick = (e) => {
+            e.stopPropagation();
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
 
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
-                try { $('snd-ding').play(); } catch(e){}
+                try { $('snd-ding').play(); } catch(err){}
             } else {
                 b.classList.add('bad');
-                try { $('snd-buzzer').play(); } catch(e){}
+                try { $('snd-buzzer').play(); } catch(err){}
             }
             $('points').textContent = points;
             current++;
@@ -154,7 +151,7 @@ function showQuestion() {
 function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    // MultiTag automatycznie zarządza reklamami Vignette w tych momentach
+    // W tej przerwie skrypt Monetag może swobodnie wyświetlić reklamę (np. Popunder lub Interstitial)
     setTimeout(showQuestion, 5000);
 }
 
@@ -164,7 +161,6 @@ function finishQuiz() {
     firework();
 }
 
-// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -180,7 +176,7 @@ function firework(){
     } 
   } 
   function animate(){ 
-    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
+    ctx.fillStyle='rgba(7, 16, 37, 0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
     for(let i=particles.length-1;i>=0;i--){ 
       const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
       p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
