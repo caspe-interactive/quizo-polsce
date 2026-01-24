@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT MULTITAG -->
-    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
-    
+    <!-- TWÓJ NOWY KOD MULTITA
+G -->
+    <script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -17,27 +17,18 @@
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
-        
         .page{width:100%;max-width:920px;z-index:10;}
         
-        .card {
-            background: var(--card);
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        /* REKLAMA NAD PYTANIEM */
+        .ad-main {
+ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
             border:1px solid rgba(0,255,255,0.04);
         }
-
-        /* POPRAWIONY KONTENER REKLAMY (NAPRAWIONO BŁĄD CSS) */
-        .ad-main {
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border-radius:var(--radius); padding:10px; margin-bottom: 20px;
-            min-height: 120px; text-align: center; border:1px solid rgba(0,255,255,0.04);
-        }
-        
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
-        .question{font-size:1.4rem;text-align:center;margin:15px 0;min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
+        .question{font-size:1.4rem;text-align:center;margin:15px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
         
@@ -69,11 +60,13 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
+        <!-- REKLAMA NAD PYTANIEM -->
         <div class="ad-main" id="adMain">
-            <span style="font-size:0.7rem; color:var(--muted)">REKLAMA</span>
+            <span class="ad-status">REKLAMA</span>
+            <!-- Skrypt MultiTag 194238 sam wypełni to miejsce -->
         </div>
 
-        <div id="question" class="question">Ładowanie...</div>
+        <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
         
         <div class="meta">
@@ -116,17 +109,15 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // WYMUSZENIE ODŚWIEŻENIA REKLAMY (2026 Fix)
-    try { if(window.tag) window.tag.refresh('194238'); } catch(e){}
-
+    // 1. REKLAMA PO 7 PYTANIU
     if (current === 7) {
         current++; 
-        renderAdBreak("Chwila przerwy reklamowej...");
+        renderAdBreak("Przerwa reklamowa...");
         return;
     }
 
+    // 2. REKLAMA PRZED WYNIKIEM
     if (current === session.length) {
-        current++; 
         renderAdBreak("Przygotowanie wyniku...");
         setTimeout(finishQuiz, 5000);
         return;
@@ -137,14 +128,12 @@ function showQuestion() {
     
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${Math.min(current+1, session.length)}/${session.length}`;
+    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            // USUNIĘTO e.stopPropagation(), aby skrypt reklamowy widział kliknięcia
-            if(b.style.pointerEvents === 'none') return;
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
 
             if(obj.i === q.correct) {
@@ -165,14 +154,8 @@ function showQuestion() {
 function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    
-    // Dodanie przycisku kontynuacji dla lepszego wyzwalania reklam Vignette
-    const c = document.createElement('div');
-    c.className = 'btn';
-    c.style.marginTop = '20px';
-    c.textContent = 'KONTYNUUJ';
-    c.onclick = () => showQuestion();
-    $('answers').appendChild(c);
+    // MultiTag automatycznie zarządza reklamami Vignette w tych momentach
+    setTimeout(showQuestion, 5000);
 }
 
 function finishQuiz() {
@@ -181,6 +164,7 @@ function finishQuiz() {
     firework();
 }
 
+// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
