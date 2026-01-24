@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT REKLAMOWY -->
+    <!-- SKRYPT MULTITAG (Zone 194238) -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -30,22 +30,22 @@
         .question{font-size:1.4rem;text-align:center;margin:15px 0;min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
-        .btn{
+        
+        /* Przyciski */
+        .btn, .ad-link{
             display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
             user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;
             transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
             box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
-            text-align:center;
+            text-align:center; text-decoration:none;
         }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
+        .ad-link{ background: var(--accent) !important; color: #000 !important; margin-top: 20px; }
+
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-        .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
-        
-        /* Miejsce na reklamę banerową - tylko jedno */
-        #ad-container { min-height: 60px; margin-bottom: 10px; text-align:center; }
     </style>
 </head>
 <body>
@@ -58,16 +58,9 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-
-        <!-- Tutaj pojawi się tylko jeden baner -->
-        <div id="ad-container"></div>
-
         <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
-        <div class="meta">
-            <div id="progress">Pytanie 1/14</div>
-            <div>v2026.FINAL</div>
-        </div>
+        <div id="progress" style="margin-top:15px; font-size:0.8rem; color:var(--muted);">Pytanie 1/14</div>
     </div>
 </div>
 
@@ -75,7 +68,7 @@
     <div id="final-card">
         <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
         <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
-        <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
+        <a href="index.html" class="btn" style="width:100%">Zagraj ponownie</a>
     </div>
 </div>
 
@@ -106,23 +99,23 @@ let points=0, current=0, firstClick=true;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // PRZERWA REKLAMOWA (Pytanie 7 i koniec)
+    // KLUCZ: PRZERWA REKLAMOWA Z PRAWDZIWYM LINKIEM
     if (current === 7 || current === session.length) {
         let isFinal = (current === session.length);
         $('answers').innerHTML = '';
-        $('question').textContent = isFinal ? "Generowanie wyniku..." : "Przerwa reklamowa...";
+        $('question').textContent = isFinal ? "Quiz zakończony!" : "Chwila przerwy...";
         
-        // Przycisk który NIE blokuje reklam (brak stopPropagation)
-        const b = document.createElement('div');
-        b.className = 'btn';
-        b.style.background = 'var(--accent)';
-        b.style.color = '#000';
-        b.textContent = isFinal ? "ZOBACZ WYNIK" : "KONTYNUUJ";
-        b.onclick = () => {
+        const a = document.createElement('a');
+        a.href = isFinal ? "#wynik" : "#kontynuuj"; // Zmiana kotwicy dla sieci reklamowej
+        a.className = 'ad-link';
+        a.textContent = isFinal ? "ZOBACZ SWÓJ WYNIK" : "KLIKNIJ, ABY GRAĆ DALEJ";
+        
+        a.onclick = () => {
+            // Brak stopPropagation - pozwalamy skryptowi Monetag przechwycić kliknięcie
             if(isFinal) finishQuiz();
             else { current++; showQuestion(); }
         };
-        $('answers').appendChild(b);
+        $('answers').appendChild(a);
         return;
     }
 
@@ -137,11 +130,8 @@ function showQuestion() {
         b.className = 'btn'; 
         b.textContent = obj.ans;
         
-        // KLUCZ: Dodajemy atrybut, który niektóre skrypty reklamowe omijają
-        b.setAttribute('data-onclick', 'false');
-
         b.onclick = (e) => {
-            // Blokujemy reklamę tylko dla odpowiedzi
+            // Blokujemy reklamę tylko na przyciskach odpowiedzi
             e.stopPropagation();
 
             if(firstClick) {
