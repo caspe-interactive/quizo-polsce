@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- Skrypt MultiTag -->
+    <!-- SKRYPT REKLAMOWY -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -15,8 +15,8 @@
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
-        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);color:var(--text);}
+        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;}
         .page{width:100%;max-width:920px;z-index:10;}
         
         .card {
@@ -42,12 +42,14 @@
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
         
+        /* Styl dla przycisku reklamy */
+        .ad-btn { background: var(--accent); color: #000; margin-top: 20px; }
+
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
         
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
         .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
-        .ad-main { min-height: 50px; text-align: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -59,9 +61,6 @@
         <div class="top">
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
-        </div>
-        <div class="ad-main">
-            <span style="font-size:0.7rem; color:var(--muted)">REKLAMA</span>
         </div>
         <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
@@ -80,7 +79,6 @@
     </div>
 </div>
 
-<!-- PLIKI AUDIO -->
 <audio id="snd-bg" src="sounds/background.mp3" loop></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
@@ -107,30 +105,27 @@ const QUESTIONS=[
 let points=0, current=0, firstClick=true;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function triggerAd() {
-    // Symulacja kliknięcia w niewidoczny link dla skryptu reklamowego
-    const a = document.createElement('a');
-    a.href = "javascript:void(0)";
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
 function showQuestion() {
-    // REKLAMA W PRZERWIE (Pytanie 7 i koniec)
+    // PRZERWA REKLAMOWA
     if (current === 7 || current === session.length) {
         let isFinal = (current === session.length);
         $('answers').innerHTML = '';
-        $('question').textContent = isFinal ? "Przygotowanie wyniku..." : "Przerwa reklamowa...";
+        $('question').textContent = isFinal ? "Quiz ukończony!" : "Przerwa na reklamę";
         
-        triggerAd(); // Aktywacja reklamy
-        current++; 
-
-        setTimeout(() => {
+        // TWORZYMY PRZYCISK, KTÓRY FIZYCZNIE WYWOŁA REKLAMĘ
+        const b = document.createElement('div');
+        b.className = 'btn ad-btn';
+        b.textContent = isFinal ? "POKAŻ WYNIK" : "KONTYNUUJ QUIZ";
+        
+        b.onclick = () => {
+            // To kliknięcie jest widoczne dla MultiTag jako gest użytkownika
             if(isFinal) finishQuiz();
-            else showQuestion();
-        }, 5000);
+            else {
+                current++;
+                showQuestion();
+            }
+        };
+        $('answers').appendChild(b);
         return;
     }
 
@@ -138,23 +133,22 @@ function showQuestion() {
     const q = QUESTIONS[qIdx];
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${Math.min(current+1, session.length)}/${session.length}`;
+    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; 
         b.textContent = obj.ans;
         
-        b.addEventListener('click', function(e) {
-            // Blokada reklamy przy zwykłej odpowiedzi
+        b.onclick = (e) => {
+            // Blokujemy reklamę przy normalnych pytaniach
             e.stopPropagation();
 
-            // Pierwsze kliknięcie odblokowuje muzykę i dźwięki
             if(firstClick) {
                 try { $('snd-bg').play(); $('snd-bg').volume = 0.3; firstClick = false; } catch(err){}
             }
 
-            if(this.style.pointerEvents === 'none') return;
+            if(b.style.pointerEvents === 'none') return;
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
 
             if(obj.i === q.correct) {
@@ -167,7 +161,7 @@ function showQuestion() {
             $('points').textContent = points;
             current++;
             setTimeout(showQuestion, 1000);
-        });
+        };
         $('answers').appendChild(b);
     });
 }
