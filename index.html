@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT REKLAMOWY -->
+    <!-- SKRYPT REKLAMOWY - upewnij się, że Zone ID jest poprawne -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -18,7 +18,6 @@
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);color:var(--text);}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;}
         .page{width:100%;max-width:920px;z-index:10;}
-        
         .card {
             background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             background-color: var(--card);
@@ -31,7 +30,6 @@
         .question{font-size:1.4rem;text-align:center;margin:15px 0;min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
-        
         .btn{
             display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
             user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;
@@ -41,13 +39,8 @@
         }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        
-        /* Styl dla przycisku reklamy */
-        .ad-btn { background: var(--accent); color: #000; margin-top: 20px; }
-
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
-        
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
         .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
     </style>
@@ -62,7 +55,7 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-        <div id="question" class="question">Zaczynamy...</div>
+        <div id="question" class="question">Ładowanie...</div>
         <div id="answers" class="answers"></div>
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
@@ -106,26 +99,30 @@ let points=0, current=0, firstClick=true;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // PRZERWA REKLAMOWA
+    // SEKCJA REKLAMOWA
     if (current === 7 || current === session.length) {
         let isFinal = (current === session.length);
         $('answers').innerHTML = '';
-        $('question').textContent = isFinal ? "Quiz ukończony!" : "Przerwa na reklamę";
+        $('question').textContent = isFinal ? "Obliczanie wyniku..." : "Przerwa reklamowa";
         
-        // TWORZYMY PRZYCISK, KTÓRY FIZYCZNIE WYWOŁA REKLAMĘ
-        const b = document.createElement('div');
-        b.className = 'btn ad-btn';
-        b.textContent = isFinal ? "POKAŻ WYNIK" : "KONTYNUUJ QUIZ";
-        
-        b.onclick = () => {
-            // To kliknięcie jest widoczne dla MultiTag jako gest użytkownika
-            if(isFinal) finishQuiz();
-            else {
+        // Tworzymy STANDARDOWY LINK <a> - skrypty reklamowe najlepiej reagują na tagi linków
+        const a = document.createElement('a');
+        a.className = 'btn';
+        a.style.background = 'var(--accent)';
+        a.style.color = '#000';
+        a.textContent = isFinal ? "ZOBACZ WYNIK" : "DALEJ";
+        a.href = isFinal ? "#result" : "#next"; // Zmiana hasha często wyzwala reklamę Vignette
+
+        a.onclick = (e) => {
+            // NIE używamy stopPropagation, pozwalamy skryptowi MultiTag zarejestrować kliknięcie
+            if(isFinal) {
+                finishQuiz();
+            } else {
                 current++;
                 showQuestion();
             }
         };
-        $('answers').appendChild(b);
+        $('answers').appendChild(a);
         return;
     }
 
@@ -141,7 +138,7 @@ function showQuestion() {
         b.textContent = obj.ans;
         
         b.onclick = (e) => {
-            // Blokujemy reklamę przy normalnych pytaniach
+            // Blokujemy reklamę przy każdym pytaniu, by nie irytować gracza
             e.stopPropagation();
 
             if(firstClick) {
@@ -172,6 +169,7 @@ function finishQuiz() {
     firework();
 }
 
+// FAJERWERKI 1:1
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
