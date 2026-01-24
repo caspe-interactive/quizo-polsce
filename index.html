@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- TWÓJ NOWY KOD MULTITA
-G -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
+    <!-- SKRYPT REKLAMOWY MULTITAG -->
+    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -17,14 +17,25 @@ G -->
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+        
         .page{width:100%;max-width:920px;z-index:10;}
         
-        /* REKLAMA NAD PYTANIEM */
-        .ad-main {
-ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        /* POPRAWIONY KONTENER REKLAMY (NAPRAWIONO TŁO I BŁĄD CSS) */
+        .card {
+            background: var(--card);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
             border:1px solid rgba(0,255,255,0.04);
         }
+
+        .ad-main {
+            min-height: 100px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        }
+
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
@@ -42,6 +53,9 @@ ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
         
+        /* Styl dla przycisku przerwy reklamowej */
+        .btn-next { background: var(--accent); color: #000; margin: 20px auto; width: 100%; max-width: 300px; }
+
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
         
@@ -60,10 +74,9 @@ ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- REKLAMA NAD PYTANIEM -->
+        <!-- REKLAMA (Tylko jeden kontener - koniec z podwójnym banerem) -->
         <div class="ad-main" id="adMain">
-            <span class="ad-status">REKLAMA</span>
-            <!-- Skrypt MultiTag 194238 sam wypełni to miejsce -->
+            <span style="font-size:0.7rem; color:var(--muted)">REKLAMA</span>
         </div>
 
         <div id="question" class="question">Zaczynamy...</div>
@@ -109,17 +122,10 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // 1. REKLAMA PO 7 PYTANIU
-    if (current === 7) {
-        current++; 
-        renderAdBreak("Przerwa reklamowa...");
-        return;
-    }
-
-    // 2. REKLAMA PRZED WYNIKIEM
-    if (current === session.length) {
-        renderAdBreak("Przygotowanie wyniku...");
-        setTimeout(finishQuiz, 5000);
+    // PRZERWA REKLAMOWA
+    if (current === 7 || current === session.length) {
+        let isFinal = (current === session.length);
+        renderAdBreak(isFinal ? "Obliczanie wyniku..." : "Chwila przerwy na reklamę");
         return;
     }
 
@@ -132,16 +138,25 @@ function showQuestion() {
 
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
-        b.className = 'btn'; b.textContent = obj.ans;
-        b.onclick = () => {
+        b.className = 'btn'; 
+        b.textContent = obj.ans;
+        
+        // KLUCZ: Dodajemy atrybut, który sugeruje sieciom reklamowym ignorowanie tego kliknięcia
+        b.setAttribute('data-ad-ignore', 'true');
+
+        b.onclick = (e) => {
+            // Blokujemy "wyciek" kliknięcia, aby reklama nie wyskoczyła przy odpowiedzi
+            e.stopPropagation();
+
+            if(b.style.pointerEvents === 'none') return;
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
 
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
-                try { $('snd-ding').play(); } catch(e){}
+                try { $('snd-ding').play(); } catch(err){}
             } else {
                 b.classList.add('bad');
-                try { $('snd-buzzer').play(); } catch(e){}
+                try { $('snd-buzzer').play(); } catch(err){}
             }
             $('points').textContent = points;
             current++;
@@ -154,8 +169,21 @@ function showQuestion() {
 function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    // MultiTag automatycznie zarządza reklamami Vignette w tych momentach
-    setTimeout(showQuestion, 5000);
+
+    // TWORZYMY PRZYCISK KONTYNUACJI (Fizyczne kliknięcie wyzwala Vignette w 2026 r.)
+    const nextBtn = document.createElement('div');
+    nextBtn.className = 'btn btn-next';
+    nextBtn.textContent = 'KONTYNUUJ GRĘ';
+    
+    nextBtn.onclick = () => {
+        if(current > session.length) {
+            finishQuiz();
+        } else {
+            current++; // Zwiększamy licznik dopiero tutaj
+            showQuestion();
+        }
+    };
+    $('answers').appendChild(nextBtn);
 }
 
 function finishQuiz() {
@@ -164,7 +192,6 @@ function finishQuiz() {
     firework();
 }
 
-// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
