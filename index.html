@@ -3,15 +3,18 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>QuizoPolsce — FINAL 2026</title>
+    <title>Quiz o Polsce — quiz-o-polsce.pl</title>
     
+    <!-- Weryfikacja Monetag -->
+    <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
+
     <!-- 1. POPRAWKA CSP: Zezwala na ładowanie skryptów i reklam z domen Monetag -->
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
 
-    <!-- 2. MONETAG MULTITAG -->
+    <!-- 2. MONETAG MULTITAG (Zalecane: Wygeneruj nowy w panelu Monetag dla nowej domeny i podmień data-zone) -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
 
-    <!-- 3. REJESTRACJA SERVICE WORKERA (Wymagane dla HTTPS na Render) -->
+    <!-- 3. REJESTRACJA SERVICE WORKERA -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -67,7 +70,7 @@
 <div class="page">
     <div class="card">
         <div class="top">
-            <div class="title">QuizoPolsce</div>
+            <div class="title">Quiz o Polsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
         <div id="question" class="question">Ładowanie quizu...</div>
