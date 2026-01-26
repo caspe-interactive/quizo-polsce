@@ -1,19 +1,14 @@
 {
-  "name": "QuizProPL",
-  "short_name": "QuizProPL",
-  "start_url": ".",
+  "name": "Quiz o Polsce",
+  "short_name": "QuizPL",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#051028",
-  "theme_color": "#051028",
+  "background_color": "#071025",
+  "theme_color": "#00f0ff",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "https://quiz-o-polsce.pl",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
       "type": "image/png"
     }
   ]
