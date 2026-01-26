@@ -8,8 +8,8 @@
     <!-- Weryfikacja Monetag -->
     <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
 
-    <!-- POPRAWKA CSP: Zezwala na reklamy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+    <!-- POPRAWKA CSP: Zezwala na reklamy i dźwięki -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline'; audio-src * data: blob:;">
 
     <!-- MONETAG MULTITAG (Główny automat) -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
@@ -36,7 +36,6 @@
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
         
-        /* Kontener na reklamę górną */
         .ad-top { width: 100%; max-width: 728px; min-height: 60px; margin-bottom: 20px; text-align: center; }
 
         .page{width:100%;max-width:920px;z-index:10;position:relative;}
@@ -100,6 +99,7 @@
 
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
+<audio id="snd-bg" src="sounds/background.mp3" loop></audio>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -123,7 +123,6 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // LOGIKA REKLAMY: PO 7 PYTANIU ORAZ NA KONIEC (PRZED WYNIKIEM)
     if (current === 7 || current === session.length) {
         let msg = current === 7 ? "Przerwa reklamowa... (5s)" : "Przygotowanie wyniku... (5s)";
         renderAdBreak(msg);
@@ -147,6 +146,13 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
+            // URUCHOMIENIE MUZYKI PRZY PIERWSZYM KLIKNIĘCIU
+            const bg = $('snd-bg');
+            if(bg && bg.paused){
+                bg.volume = 0.3;
+                bg.play().catch(e=>console.log("Audio block"));
+            }
+
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
@@ -167,7 +173,7 @@ function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
 
-    // Wywołanie reklamy Vignette (Strefa 10523625)
+    // Ładowanie Vignette (Strefa 10523625)
     (function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
 
     setTimeout(showQuestion, 5000);
@@ -194,7 +200,7 @@ function firework(){
   } 
   function animate(){ 
     ctx.fillStyle='rgba(7, 16, 37, 0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
-    for(let i=particles.length-1;i>=0;i--){ 
+    for(let i=particles.length-1; i>=0; i--){ 
       const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
       p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
       if(p.alpha<=0) particles.splice(i,1); 
