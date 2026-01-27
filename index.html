@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>Quiz o Polsce — FINAL 2026</title>
+    <title>Quiz o Polsce — quiz-o-polsce.pl</title>
     
-    <!-- MULTITAG MONETAG (Zone: 205951) -->
-    <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
+    <!-- TWOJA WŁAŚCIWA STREFA REKLAMOWA (ID: 10526458) -->
+    <script src="https://quge5.com" data-zone="10526458" async data-cfasync="false"></script>
 
     <style>
         :root{ --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a; --radius:14px; }
@@ -108,9 +108,7 @@
                 if(!isAudioOn) { 
                     try { 
                         const bg = document.getElementById('snd-bg');
-                        bg.volume = 0.5; // PODGŁOŚNIONA MUZYKA (z 0.2 na 0.5)
-                        bg.play(); 
-                        isAudioOn=true; 
+                        bg.volume = 0.5; bg.play(); isAudioOn=true; 
                     } catch(e){} 
                 }
                 const allBtns = ansDiv.getElementsByTagName('button');
@@ -154,7 +152,6 @@
       } 
       animate(); 
     }
-
     showQuestion();
 </script>
 </body>
