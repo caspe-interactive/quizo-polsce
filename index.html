@@ -4,7 +4,10 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
+    
+    <!-- SKRYPT REKLAMOWY -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -12,11 +15,14 @@
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);color:var(--text);}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);color:var(--text);overflow-x:hidden;}
         body{display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,var(--bg1),#051028 80%);}
         .page{width:100%;max-width:920px;z-index:10;}
         .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
-        .ad-main { min-height: 250px; margin-bottom: 20px; }
+        
+        /* REKLAMA - musi być pusta i widoczna */
+        .ad-main { min-height: 250px; margin-bottom: 20px; width: 100%; }
+        
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;}
@@ -57,9 +63,10 @@
     </div>
 </div>
 
-<!-- ELEMENTY AUDIO -->
-<audio id="snd-ding" preload="auto"><source src="sounds/ding.mp3" type="audio/mpeg"></audio>
-<audio id="snd-buzzer" preload="auto"><source src="sounds/buzzer.mp3" type="audio/mpeg"></audio>
+<!-- AUDIO -->
+<audio id="snd-music" loop><source src="sounds/music.mp3" type="audio/mpeg"></audio>
+<audio id="snd-ding"><source src="sounds/ding.mp3" type="audio/mpeg"></audio>
+<audio id="snd-buzzer"><source src="sounds/buzzer.mp3" type="audio/mpeg"></audio>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -80,18 +87,23 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
+let points=0, current=0, audioStarted=false;
+let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function playSound(id) {
+function playSnd(id) {
     const s = $(id);
-    if (s) {
-        s.currentTime = 0;
-        s.play().catch(e => console.log("Audio block: user must click first"));
+    if(s) { s.currentTime=0; s.play().catch(()=>{}); }
+}
+
+function startAudio() {
+    if(!audioStarted) {
+        playSnd('snd-music');
+        audioStarted = true;
     }
 }
 
 function showQuestion() {
-    if (current >= session.length) { finishQuiz(); return; }
+    if (current >= session.length) { $('final').style.display='flex'; $('final-text').textContent=`${points} pkt`; return; }
     const q = QUESTIONS[session[current]];
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
@@ -101,13 +113,12 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
+            startAudio(); // Odblokowanie dźwięku przy pierwszym kliknięciu
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
-                b.classList.add('good'); points++;
-                playSound('snd-ding');
+                b.classList.add('good'); points++; playSnd('snd-ding');
             } else {
-                b.classList.add('bad');
-                playSound('snd-buzzer');
+                b.classList.add('bad'); playSnd('snd-buzzer');
             }
             $('points').textContent = points;
             current++;
@@ -115,11 +126,6 @@ function showQuestion() {
         };
         $('answers').appendChild(b);
     });
-}
-
-function finishQuiz() {
-    $('final-text').textContent = `${points} pkt`;
-    $('final').style.display = 'flex';
 }
 
 window.onload = showQuestion;
