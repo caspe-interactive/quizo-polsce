@@ -2,15 +2,15 @@
 <html lang="pl">
 <head>
     <meta charset="utf-8"/>
+    <!-- TAG WERYFIKACYJNY -->
     <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPTY REKLAMOWE -->
-    <script src="https://5gvci.com" data-cfasync="false" async></script>
+    <!-- GŁÓWNE SKRYPTY (Uproszczone dla lepszej zgodności) -->
     <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
-    <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
+    <script src="https://5gvci.com" data-cfasync="false" async></script>
+    
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -23,8 +23,8 @@
         .page{width:100%;max-width:500px;z-index:10;}
         .card{background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
         
-        /* Kontener reklamy In-Page */
-        .ad-main { min-height: 250px; width: 100%; margin-bottom: 15px; background: rgba(255,255,255,0.01); display: block !important; visibility: visible !important; }
+        /* Kontener reklamy - wymuszone wymiary dla 2026 */
+        .ad-main { min-height: 280px; width: 100%; margin-bottom: 15px; background: rgba(255,255,255,0.02); display: block !important; }
         
         .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
         .title{font-weight:800;color:var(--neon1);font-size:1.3rem;}
@@ -37,7 +37,6 @@
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:1200}
         #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:85%; max-width:400px; border:1px solid var(--neon2);}
-        .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.75rem; color:var(--muted);}
     </style>
 </head>
 <body>
@@ -54,7 +53,7 @@
         <div id="question" class="question">Ładowanie...</div>
         <div id="answers" class="answers"></div>
         
-        <div class="meta">
+        <div style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.75rem; color:var(--muted);">
             <div id="progress">Pytanie 1/14</div>
             <div>v2026.FINAL</div>
         </div>
@@ -64,7 +63,7 @@
 <div id="final">
     <div id="final-card">
         <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
-        <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
+        <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
         <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
     </div>
 </div>
@@ -95,20 +94,12 @@ const QUESTIONS=[
 let points=0, current=0, audioStarted=false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function forceAds() {
-    // Wymuszenie odświeżenia reklam In-Page i Vignette
-    if(window.collect_wrapper) window.collect_wrapper();
-}
-
 function showQuestion() {
     if (current >= session.length) { 
         $('final').style.display='flex'; 
         $('final-text').textContent=`${points} pkt`; 
         return; 
     }
-    
-    forceAds(); // Próba wywołania reklamy przy każdym nowym pytaniu
-
     const q = QUESTIONS[session[current]];
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
@@ -122,6 +113,8 @@ function showQuestion() {
                 $('snd-bg').volume = 0.3;
                 $('snd-bg').play().catch(()=>{});
                 audioStarted = true;
+                // Wywołanie Vignette przy pierwszym kliknięciu
+                if(window.collect_wrapper) window.collect_wrapper();
             }
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
@@ -139,7 +132,9 @@ function showQuestion() {
 window.onload = showQuestion;
 </script>
 
-<!-- POPUNDER -->
+<!-- REKLAMY DODATKOWE -->
+<script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 <script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 </body>
 </html>
