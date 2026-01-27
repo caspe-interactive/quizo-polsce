@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>Quiz o Polsce — FINAL 2026</title>
     
-    <!-- TWOJA DZIAŁAJĄCA STREFA MULTITAG (Zone: 205951) -->
+    <!-- MULTITAG MONETAG (Zone: 205951) -->
     <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
 
     <style>
@@ -52,13 +52,12 @@
 <script>
     let points = 0, current = 0, deferredPrompt, isAudioOn = false;
 
-    // Obsługa PWA i przycisków
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
     function restartQuiz() { window.location.reload(); }
     function shareQuiz() {
         const p = document.getElementById('points').innerText;
         if (navigator.share) { navigator.share({ title: 'Quiz o Polsce', text: 'Zdobyłem '+p+' pkt!', url: window.location.href }); }
-        else { alert("Wynik: "+p+" pkt!"); }
+        else { alert("Mój wynik: "+p+" pkt!"); }
     }
     function installPWA() { if(deferredPrompt) deferredPrompt.prompt(); else alert("Użyj menu przeglądarki"); }
 
@@ -106,7 +105,14 @@
             const b = document.createElement('button');
             b.className = 'btn'; b.innerText = ansObj.text;
             b.onclick = () => {
-                if(!isAudioOn) { try { document.getElementById('snd-bg').play(); isAudioOn=true; } catch(e){} }
+                if(!isAudioOn) { 
+                    try { 
+                        const bg = document.getElementById('snd-bg');
+                        bg.volume = 0.5; // PODGŁOŚNIONA MUZYKA (z 0.2 na 0.5)
+                        bg.play(); 
+                        isAudioOn=true; 
+                    } catch(e){} 
+                }
                 const allBtns = ansDiv.getElementsByTagName('button');
                 for(let btn of allBtns) btn.disabled = true;
                 if(ansObj.isCorrect) {
@@ -123,7 +129,6 @@
         });
     }
 
-    // --- TWOJE ORYGINALNE FAJERWERKI ---
     let fireworkRunning = false;
     function firework(){ 
       if(fireworkRunning) return; fireworkRunning = true; 
