@@ -7,8 +7,14 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MULTITAG (BANNERY I PUSH) -->
-    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    <!-- 1. SKRYPT ZGODNY Z TWOIM sw.js (Zone 10241780) -->
+    <script src="https://5gvci.com" data-cfasync="false" async></script>
+
+    <!-- 2. TWÓJ NOWY MULTITAG (Zone 205951) -->
+    <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
+
+    <!-- 3. REKLAMA VIGNETTE (Zone 10523625) -->
+    <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         :root{
@@ -21,7 +27,10 @@
         body{display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,var(--bg1),#051028 80%);}
         .page{width:100%;max-width:920px;z-index:10;}
         .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
-        .ad-main { min-height: 250px; margin-bottom: 20px; width: 100%; background: rgba(255,255,255,0.01); border-radius: 8px; }
+        
+        /* Kontener na banner In-Page Push */
+        .ad-main { min-height: 280px; margin-bottom: 20px; width: 100%; background: rgba(255,255,255,0.01); border-radius: 8px; display: block !important; }
+        
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;}
@@ -45,7 +54,7 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
         
-        <!-- Tu wczyta się banner In-Page -->
+        <!-- Tu wczyta się banner z MultiTag 205951 -->
         <div class="ad-main" id="adMain"></div>
 
         <div id="question" class="question">Ładowanie quizu...</div>
@@ -90,19 +99,8 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, audioStarted=false, adsLoaded=false;
+let points=0, current=0, audioStarted=false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
-
-function loadAggressiveAds() {
-    if(adsLoaded) return;
-    adsLoaded = true;
-    
-    // VIGNETTE
-    (function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-    
-    // POPUNDER
-    (function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-}
 
 function initGame() {
     if(!audioStarted) {
@@ -110,7 +108,6 @@ function initGame() {
         bg.volume = 0.4;
         bg.play().catch(()=>{});
         audioStarted = true;
-        loadAggressiveAds(); // Uruchom reklamy tylko RAZ przy pierwszym kliknięciu
     }
 }
 
@@ -129,7 +126,7 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            initGame(); 
+            initGame(); // Włącza muzykę i odblokowuje reklamy przy pierwszym kliknięciu
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; $('snd-ding').play().catch(()=>{});
@@ -145,5 +142,9 @@ function showQuestion() {
 }
 window.onload = showQuestion;
 </script>
+
+<!-- 4. POPUNDER (Zone 10523608) -->
+<script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 </body>
 </html>
