@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT REKLAMOWY (Musi być jak najwyżej w head) -->
+    <!-- TWÓJ DZIAŁAJĄCY SKRYPT REKLAMOWY -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -15,13 +15,13 @@
             --accent:#ffd27a; --radius:14px;
         }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
         .card {background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
         
-        /* KONTENER REKLAMOWY - Musi być widoczny i pusty */
-        .ad-main { min-height: 250px; margin-bottom: 20px; background: rgba(255,255,255,0.01); display: block; width: 100%; }
+        /* REKLAMA - styl, który nie blokuje wstrzykiwania kodu */
+        .ad-main { min-height: 250px; margin-bottom: 20px; text-align: center; }
         
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
@@ -49,10 +49,10 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- REKLAMA (ID musi być czyste) -->
+        <!-- MIEJSCE NA REKLAMĘ - ZOSTAWIAM PUSTE DLA SKRYPTU -->
         <div class="ad-main" id="adMain"></div>
 
-        <div id="question" class="question">Ładowanie...</div>
+        <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
         
         <div class="meta">
@@ -92,22 +92,30 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    if (current === 7 || current === session.length) {
-        renderAdBreak(current === 7 ? "Przerwa reklamowa..." : "Przygotowanie wyniku...");
+    if (current >= session.length) {
+        finishQuiz();
         return;
     }
+
     const qIdx = session[current];
     const q = QUESTIONS[qIdx];
+    
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
     $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
+
     q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
-            if(obj.i === q.correct) { b.classList.add('good'); points++; firework(); } 
-            else { b.classList.add('bad'); }
+            const btns = document.querySelectorAll('.btn');
+            btns.forEach(btn => btn.style.pointerEvents = 'none');
+
+            if(obj.i === q.correct) {
+                b.classList.add('good'); points++;
+            } else {
+                b.classList.add('bad');
+            }
             $('points').textContent = points;
             current++;
             setTimeout(showQuestion, 1000);
@@ -116,42 +124,12 @@ function showQuestion() {
     });
 }
 
-function renderAdBreak(msg) {
-    $('answers').innerHTML = '';
-    $('question').textContent = msg;
-    // WYMUSZENIE ODŚWIEŻENIA REKLAM (Kluczowe w 2026)
-    if(window.collect_wrapper) window.collect_wrapper();
-    setTimeout(() => {
-        if(current > session.length) finishQuiz();
-        else { current++; showQuestion(); }
-    }, 5000);
-}
-
 function finishQuiz() {
     $('final-text').textContent = `${points} pkt`;
     $('final').style.display = 'flex';
 }
 
-function firework(){ 
-  const canvas=$('fx'), ctx=canvas.getContext('2d'); 
-  canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
-  const particles=[]; 
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c']; 
-  for(let i=0;i<40;i++){ 
-    particles.push({x:canvas.width/2,y:canvas.height/2,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:3}); 
-  } 
-  function animate(){ 
-    ctx.fillStyle='rgba(7,16,37,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
-    particles.forEach((p,i)=>{
-      ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
-      p.x+=p.vx; p.y+=p.vy; p.alpha-=0.02;
-    });
-    if(particles[0].alpha > 0) requestAnimationFrame(animate);
-  } 
-  animate(); 
-}
-
-window.onload = showQuestion;
+showQuestion();
 </script>
 </body>
 </html>
