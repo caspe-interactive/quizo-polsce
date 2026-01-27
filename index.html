@@ -3,61 +3,62 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>QuizoPolsce — FINAL 2026</title>
+    <title>Quiz o Polsce — quiz-o-polsce.pl</title>
     
-    <!-- MULTITAG (Strefa 194238) -->
-    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#071025">
+
+    <!-- TWOJA STREFA REKLAMOWA (Vignette) -->
+    <script src="https://quge5.com" data-zone="10523625" async data-cfasync="false"></script>
 
     <style>
-        :root{ --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a; --radius:14px; }
+        :root{
+            --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
+            --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
+            --accent:#ffd27a; --radius:14px;
+        }
         *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
-        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
-        .page{width:100%;max-width:920px;z-index:10;}
+        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
+        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+        .ad-top { width: 100%; max-width: 728px; min-height: 60px; margin-bottom: 20px; text-align: center; }
+        .page{width:100%;max-width:920px;z-index:10;position:relative;}
         .card { background: rgba(11, 18, 32, 0.9); backdrop-filter: blur(10px); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.1); }
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
-        .ad-main { background: rgba(255,255,255,0.02); border-radius:10px; padding:10px; margin-bottom:15px; text-align:center; min-height:100px; border:1px solid rgba(0,255,255,0.05); }
         .question{font-size:1.4rem;text-align:center;margin:15px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
-        .btn{ display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2)); box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02); text-align:center; margin-bottom:5px; }
+        .btn{ display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2)); box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02); text-align:center; margin-bottom: 8px; }
         .btn.secondary { background: #1a263f; border: 1px solid var(--neon1); }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:9999}
-        #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:2px solid var(--neon2);}
-        canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-        .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
+        
+        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:9999}
+        #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:2px solid var(--neon2); position:relative; z-index:10000;}
+        canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:5000}
     </style>
 </head>
 <body>
 
 <canvas id="fx"></canvas>
 
-<!-- ELEMENTY AUDIO -->
-<audio id="snd-ding" src="sounds/ding.mp3" preload="auto"></audio>
-<audio id="snd-buzzer" src="sounds/buzzer.mp3" preload="auto"></audio>
-<audio id="snd-bg" src="sounds/background.mp3" preload="auto" loop></audio>
+<div class="ad-top">
+    <!-- TWOJA STREFA REKLAMOWA (In-Page Push) -->
+    <script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+</div>
 
 <div class="page">
     <div class="card">
         <div class="top">
-            <div class="title">QuizoPolsce</div>
+            <div class="title">Quiz o Polsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-
-        <div class="ad-main" id="adMain">
-            <div style="font-size:0.7rem; color:var(--muted);">REKLAMA</div>
-        </div>
-
         <div id="question" class="question">Ładowanie...</div>
         <div id="answers" class="answers"></div>
-        
-        <div class="meta">
+        <div class="meta" style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);">
             <div id="progress">Pytanie 1/14</div>
-            <div>v2026.FINAL</div>
+            <div>v2026.LIVE</div>
         </div>
     </div>
 </div>
@@ -65,15 +66,20 @@
 <div id="final">
     <div id="final-card">
         <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
-        <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
-        <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+        <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
+        <div class="btn" onclick="window.location.reload()">Zagraj ponownie</div>
         <div class="btn secondary" onclick="shareQuiz()">Poleć znajomemu</div>
+        <div class="btn secondary" onclick="installPWA()">Zapisz na ekranie</div>
     </div>
 </div>
 
+<audio id="snd-ding" src="sounds/ding.mp3"></audio>
+<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
+<audio id="snd-bg" src="sounds/background.mp3" loop></audio>
+
 <script>
 const $=id=>document.getElementById(id);
-let points=0, current=0, isAudioInit = false;
+let points=0, current=0, deferredPrompt;
 
 const QUESTIONS=[
   { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
@@ -84,7 +90,7 @@ const QUESTIONS=[
   { q:"Największe miasto mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
   { q:"Noblistka w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
   { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
-  { q:"Najhighest szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
+  { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
   { q:"Rok odzyskania niepodległości?", a:["1918","1945","1914","1939"], correct:0 },
   { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu"], correct:0 },
   { q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
@@ -94,37 +100,51 @@ const QUESTIONS=[
 
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function startAudio() {
-    if(!isAudioInit) {
-        const bg = $('snd-bg');
-        bg.volume = 0.2;
-        bg.play().catch(e => console.log("Audio waiting for click"));
-        isAudioInit = true;
+window.addEventListener('beforeinstallprompt', (e) => { 
+    e.preventDefault(); 
+    deferredPrompt = e; 
+});
+
+async function installPWA() {
+    if (deferredPrompt) { 
+        deferredPrompt.prompt(); 
+        deferredPrompt = null; 
+    } else { 
+        alert('Aby zapisać: Kliknij "Udostępnij" i "Dodaj do ekranu głównego" w Twojej przeglądarce.'); 
     }
 }
 
 function showQuestion() {
-    if (current === 7) { current++; renderAdBreak("Przerwa reklamowa..."); return; }
-    if (current === session.length) { renderAdBreak("Przygotowanie wyniku..."); setTimeout(finishQuiz, 5000); return; }
+    if (current === 7 || current === session.length) {
+        renderAdBreak(current === 7 ? "Przerwa reklamowa... (5s)" : "Przygotowanie wyniku... (5s)");
+        current++; return;
+    }
+    if (current > session.length) { finishQuiz(); return; }
 
-    const qIdx = session[current];
+    const qIdx = session[current > 7 ? current - 1 : current];
     const q = QUESTIONS[qIdx];
+    
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${current+1}/${session.length}`;
+    $('progress').textContent = `Pytanie ${current > 7 ? current : current + 1}/${session.length}`;
 
-    q.a.forEach((ans,i)=>{
+    q.a.forEach((ans, i) => {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = ans;
         b.onclick = () => {
-            startAudio(); // Uruchom muzykę przy pierwszym kliknięciu
+            const bg = $('snd-bg');
+            if(bg && bg.paused) { 
+                bg.volume = 0.3; 
+                bg.play().catch(e=>console.log("Audio startup blocked")); 
+            }
+            
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(i === q.correct) {
                 b.classList.add('good'); points++; firework();
-                try { $('snd-ding').currentTime=0; $('snd-ding').play(); } catch(e){}
+                try { $('snd-ding').play(); } catch(e){}
             } else {
                 b.classList.add('bad');
-                try { $('snd-buzzer').currentTime=0; $('snd-buzzer').play(); } catch(e){}
+                try { $('snd-buzzer').play(); } catch(e){}
             }
             $('points').textContent = points;
             current++;
@@ -135,8 +155,13 @@ function showQuestion() {
 }
 
 function renderAdBreak(msg) {
-    $('answers').innerHTML = '<div style="color:var(--neon1);">PROSZĘ CZEKAĆ...</div>';
+    $('answers').innerHTML = '';
     $('question').textContent = msg;
+    // PRZEŁADOWANIE TAGU REKLAMOWEGO PRZY PRZERWIE
+    const s = document.createElement('script');
+    s.dataset.zone = '10523625';
+    s.src = 'https://quge5.com';
+    document.body.appendChild(s);
     setTimeout(showQuestion, 5000);
 }
 
@@ -147,20 +172,46 @@ function finishQuiz() {
 }
 
 function shareQuiz() {
+    const shareData = {
+        title: 'Quiz o Polsce',
+        text: `Zdobyłem ${points} pkt! Sprawdź czy znasz Polskę lepiej:`,
+        url: 'https://quiz-o-polsce.pl'
+    };
     if (navigator.share) {
-        navigator.share({ title: 'Quiz o Polsce', text: `Mój wynik: ${points} pkt!`, url: window.location.href });
+        navigator.share(shareData).catch(() => alert("Błąd udostępniania"));
+    } else {
+        alert(shareData.text + " " + shareData.url);
     }
 }
 
-// Prosta funkcja fajerwerków
+let fireworkRunning = false;
 function firework(){ 
+  if(fireworkRunning) return; fireworkRunning = true; 
   const canvas=$('fx'), ctx=canvas.getContext('2d'); 
   canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
-  ctx.fillStyle='#00f0ff'; ctx.fillRect(window.innerWidth/2, window.innerHeight/2, 10, 10);
-  setTimeout(()=>ctx.clearRect(0,0,canvas.width,canvas.height), 500);
+  const particles=[]; 
+  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c']; 
+  for(let b=0;b<3;b++){ 
+    const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
+    for(let i=0;i<40;i++){ 
+      particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2}); 
+    } 
+  } 
+  function animate(){ 
+    ctx.fillStyle='rgba(7, 16, 37, 0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
+    for(let i=particles.length-1; i>=0; i--){ 
+      const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
+      if(p.alpha<=0) particles.splice(i,1); 
+    } 
+    if(particles.length > 0) requestAnimationFrame(animate); 
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
+  } 
+  animate(); 
 }
 
 showQuestion();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
 </html>
