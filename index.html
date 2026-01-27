@@ -2,14 +2,17 @@
 <html lang="pl">
 <head>
     <meta charset="utf-8"/>
-    <!-- TAG WERYFIKACYJNY MONETAG -->
+    <!-- WERYFIKACJA DOMENY -->
     <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- POPRAWIONY SKRYPT REKLAMOWY MONETAG -->
+    <!-- 1. MULTITAG (In-Page Push, Interstitials) -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
-    
+
+    <!-- 2. VIGNETTE (Reklama pełnoekranowa) -->
+    <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -44,9 +47,12 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
+        
         <div class="ad-main" id="adMain"></div>
+
         <div id="question" class="question">Ładowanie quizu...</div>
         <div id="answers" class="answers"></div>
+        
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
             <div>v2026.FINAL</div>
@@ -62,6 +68,7 @@
     </div>
 </div>
 
+<!-- AUDIO -->
 <audio id="snd-bg" loop><source src="sounds/background.mp3" type="audio/mpeg"></audio>
 <audio id="snd-ding"><source src="sounds/ding.mp3" type="audio/mpeg"></audio>
 <audio id="snd-buzzer"><source src="sounds/buzzer.mp3" type="audio/mpeg"></audio>
@@ -88,16 +95,11 @@ const QUESTIONS=[
 let points=0, current=0, audioStarted=false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function playEffect(id) {
-    const s = $(id);
-    if(s) { s.currentTime=0; s.play().catch(()=>{}); }
-}
-
 function initAudio() {
     if(!audioStarted) {
         const bg = $('snd-bg');
         bg.volume = 0.4;
-        bg.play().catch(e => console.log("Audio waiting for user..."));
+        bg.play().catch(()=>{});
         audioStarted = true;
     }
 }
@@ -117,12 +119,12 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            initAudio();
+            initAudio(); 
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
-                b.classList.add('good'); points++; playEffect('snd-ding');
+                b.classList.add('good'); points++; $('snd-ding').play().catch(()=>{});
             } else {
-                b.classList.add('bad'); playEffect('snd-buzzer');
+                b.classList.add('bad'); $('snd-buzzer').play().catch(()=>{});
             }
             $('points').textContent = points;
             current++;
@@ -133,5 +135,9 @@ function showQuestion() {
 }
 window.onload = showQuestion;
 </script>
+
+<!-- 3. POPUNDER (Otwiera nową kartę przy kliknięciu) -->
+<script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 </body>
 </html>
