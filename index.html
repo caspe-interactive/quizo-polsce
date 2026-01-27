@@ -4,14 +4,12 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>Quiz o Polsce — quiz-o-polsce.pl</title>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#071025">
-
-    <!-- REKLAMA VIGNETTE -->
-    <script src="https://quge5.com" data-zone="10523625" async data-cfasync="false"></script>
+    
+    <!-- MONETAG MULTITAG - NAJBARDZIEJ STABILNY W 2026 -->
+    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
 
     <style>
-        :root{ --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6; --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a; --radius:14px; }
+        :root{ --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a; --radius:14px; }
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
@@ -37,9 +35,8 @@
 
 <canvas id="fx"></canvas>
 
-<div class="ad-top">
-    <!-- REKLAMA IN-PAGE PUSH -->
-    <script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<div class="ad-top" id="topAdContainer">
+    <!-- Miejsce na In-Page Push / Smart Tag -->
 </div>
 
 <div class="page">
@@ -52,7 +49,7 @@
         <div id="answers" class="answers"></div>
         <div class="meta" style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);">
             <div id="progress">Pytanie 1/14</div>
-            <div>v2026.LIVE</div>
+            <div>v2026.FINAL</div>
         </div>
     </div>
 </div>
@@ -61,7 +58,7 @@
     <div id="final-card">
         <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
         <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
-        <div class="btn" onclick="window.location.reload()">Zagraj ponownie</div>
+        <div class="btn" onclick="restartQuiz()">Zagraj ponownie</div>
         <div class="btn secondary" onclick="shareQuiz()">Poleć znajomemu</div>
         <div class="btn secondary" onclick="installPWA()">Zapisz na ekranie</div>
     </div>
@@ -94,30 +91,25 @@ const QUESTIONS=[
 
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-window.addEventListener('beforeinstallprompt', (e) => { 
-    e.preventDefault(); 
-    deferredPrompt = e; 
-});
+// FUNKCJE PRZYCISKÓW - TERAZ NA PEWNO DZIAŁAJĄ
+function restartQuiz() { window.location.reload(); }
 
-async function installPWA() {
-    if (deferredPrompt) { 
-        deferredPrompt.prompt(); 
-        deferredPrompt = null; 
-    } else { 
-        alert('Aby zainstalować: Użyj menu przeglądarki "Dodaj do ekranu głównego".'); 
-    }
+function shareQuiz() {
+    if (navigator.share) {
+        navigator.share({ title: 'Quiz o Polsce', text: `Zdobyłem ${points} pkt!`, url: window.location.href });
+    } else { alert("Link: " + window.location.href); }
 }
 
+function installPWA() {
+    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+    else { alert("Użyj menu przeglądarki: 'Dodaj do ekranu głównego'"); }
+}
+
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+
 function showQuestion() {
-    // NAPRAWA: Poprawna obsługa przerw i końca quizu
-    if (current === 7) {
-        renderAdBreak("Przerwa reklamowa...");
-        return;
-    }
-    if (current >= session.length) {
-        finishQuiz();
-        return;
-    }
+    if (current === 7) { renderAdBreak("Przerwa reklamowa..."); return; }
+    if (current >= session.length) { finishQuiz(); return; }
 
     const qIdx = session[current];
     const q = QUESTIONS[qIdx];
@@ -131,10 +123,7 @@ function showQuestion() {
         b.className = 'btn'; b.textContent = ans;
         b.onclick = () => {
             const bg = $('snd-bg');
-            if(bg && bg.paused) { 
-                bg.volume = 0.3; 
-                bg.play().catch(e=>{}); 
-            }
+            if(bg && bg.paused) { bg.volume = 0.2; bg.play().catch(e=>{}); }
             
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(i === q.correct) {
@@ -146,38 +135,23 @@ function showQuestion() {
             }
             $('points').textContent = points;
             current++;
-            setTimeout(showQuestion, 1000);
+            setTimeout(showQuestion, 1200);
         };
         $('answers').appendChild(b);
     });
 }
 
 function renderAdBreak(msg) {
-    $('answers').innerHTML = '<div style="color:var(--neon1); font-weight:bold;">ŁADOWANIE...</div>';
+    $('answers').innerHTML = '<div style="color:var(--neon1); font-weight:bold;">ZARAZ WRACAMY...</div>';
     $('question').textContent = msg;
-
-    // Przeładowanie skryptu Monetag (Vignette)
-    const s = document.createElement('script');
-    s.dataset.zone = '10523625';
-    s.src = 'https://quge5.com';
-    document.body.appendChild(s);
-
-    setTimeout(() => {
-        current++; // Idziemy do pytania nr 8
-        showQuestion();
-    }, 5000);
+    // MultiTag (194238) sam obsłuży Vignette przy zmianie stanu
+    setTimeout(() => { current++; showQuestion(); }, 5000);
 }
 
 function finishQuiz() {
-    $('final-text').textContent = `${points} pkt`;
     $('final').style.display = 'flex';
+    $('final-text').textContent = `${points} pkt`;
     firework();
-}
-
-function shareQuiz() {
-    const shareData = { title: 'Quiz o Polsce', text: `Wynik: ${points} pkt!`, url: window.location.href };
-    if (navigator.share) { navigator.share(shareData); } 
-    else { alert("Skopiuj link: " + window.location.href); }
 }
 
 let fireworkRunning = false;
