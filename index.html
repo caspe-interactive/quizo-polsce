@@ -7,9 +7,8 @@
     
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#071025">
-    <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline'; audio-src * data: blob:;">
 
+    <!-- GŁÓWNY TAG MONETAG (Vignette / In-Page Push) -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
 
     <style>
@@ -21,7 +20,7 @@
         *{box-sizing:border-box}
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow-x:hidden;}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
-        .ad-top { width: 100%; max-width: 728px; min-height: 60px; margin-bottom: 20px; text-align: center; }
+        .ad-top { width: 100%; max-width: 728px; min-height: 90px; margin-bottom: 20px; text-align: center; }
         .page{width:100%;max-width:920px;z-index:10;position:relative;}
         .card { background: rgba(11, 18, 32, 0.9); backdrop-filter: blur(10px); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.1); }
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
@@ -34,8 +33,6 @@
         .btn.secondary { background: #1a263f; border: 1px solid var(--neon1); }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        
-        /* POPRAWKA: Z-INDEX DLA EKRANU KOŃCOWEGO */
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:9999}
         #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:2px solid var(--neon2); position:relative; z-index:10000;}
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:5000}
@@ -45,7 +42,8 @@
 
 <canvas id="fx"></canvas>
 
-<div class="ad-top">
+<!-- BANNER GÓRNY -->
+<div class="ad-top" id="monetag-banner">
     <script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </div>
 
@@ -101,44 +99,31 @@ const QUESTIONS=[
 
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-window.addEventListener('beforeinstallprompt', (e) => { 
-    e.preventDefault(); 
-    deferredPrompt = e; 
-});
-
-async function installPWA() {
-    if (deferredPrompt) { 
-        deferredPrompt.prompt(); 
-        deferredPrompt = null; 
-    } else { 
-        alert('Aby zapisać: Kliknij "Udostępnij" i "Dodaj do ekranu głównego" w Twojej przeglądarce.'); 
-    }
-}
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
 function showQuestion() {
-    if (current === 7 || current === session.length) {
-        renderAdBreak(current === 7 ? "Przerwa reklamowa... (5s)" : "Przygotowanie wyniku... (5s)");
-        current++; return;
+    if (current === 7) {
+        renderAdBreak("Przerwa reklamowa... Zaraz wracamy!");
+        return;
     }
-    if (current > session.length) { finishQuiz(); return; }
+    if (current >= session.length) { 
+        renderAdBreak("Przygotowanie wyniku...");
+        return; 
+    }
 
-    const qIdx = session[current > 7 ? current - 1 : current];
+    const qIdx = session[current];
     const q = QUESTIONS[qIdx];
     
     $('question').textContent = q.q;
     $('answers').innerHTML = '';
-    $('progress').textContent = `Pytanie ${current > 7 ? current : current + 1}/${session.length}`;
+    $('progress').textContent = `Pytanie ${current + 1}/${session.length}`;
 
     q.a.forEach((ans, i) => {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = ans;
         b.onclick = () => {
-            // NAPRAWA MUZYKI TŁA
             const bg = $('snd-bg');
-            if(bg && bg.paused) { 
-                bg.volume = 0.3; 
-                bg.play().catch(e=>console.log("Audio startup blocked")); 
-            }
+            if(bg && bg.paused) { bg.volume = 0.3; bg.play().catch(e=>{}); }
             
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(i === q.correct) {
@@ -150,20 +135,30 @@ function showQuestion() {
             }
             $('points').textContent = points;
             current++;
-            setTimeout(showQuestion, 1000);
+            setTimeout(showQuestion, 1200);
         };
         $('answers').appendChild(b);
     });
 }
 
 function renderAdBreak(msg) {
-    $('answers').innerHTML = '';
+    $('answers').innerHTML = '<div style="color:var(--neon1); font-weight:bold; animation: pulse 1s infinite;">ŁADOWANIE REKLAMY...</div>';
     $('question').textContent = msg;
+
+    // Wstrzyknięcie tagu On-Click / Interstitial na żądanie
     const s = document.createElement('script');
-    s.dataset.zone = '10523625';
+    s.dataset.zone = '10523625'; 
     s.src = 'https://gizokraijaw.net';
     document.body.appendChild(s);
-    setTimeout(showQuestion, 5000);
+
+    // Wydłużony czas, aby reklama miała szansę się zainicjować
+    setTimeout(() => {
+        if (current >= session.length) finishQuiz();
+        else {
+            current++; // Przeskocz trigger przerwy
+            showQuestion();
+        }
+    }, 6000);
 }
 
 function finishQuiz() {
@@ -173,16 +168,12 @@ function finishQuiz() {
 }
 
 function shareQuiz() {
-    const shareData = {
-        title: 'Quiz o Polsce',
-        text: `Zdobyłem ${points} pkt! Sprawdź czy znasz Polskę lepiej:`,
-        url: 'https://quiz-o-polsce.pl'
-    };
-    if (navigator.share) {
-        navigator.share(shareData).catch(() => alert("Błąd udostępniania"));
-    } else {
-        alert(shareData.text + " " + shareData.url);
-    }
+    const shareData = { title: 'Quiz o Polsce', text: `Zdobyłem ${points} pkt!`, url: window.location.href };
+    if (navigator.share) navigator.share(shareData);
+}
+
+async function installPWA() {
+    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
 }
 
 let fireworkRunning = false;
@@ -212,7 +203,12 @@ function firework(){
 }
 
 showQuestion();
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
+
+<style>
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+</style>
+
 </body>
 </html>
