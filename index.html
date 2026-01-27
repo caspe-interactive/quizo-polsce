@@ -10,7 +10,6 @@
     <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline'; audio-src * data: blob:;">
 
-    <!-- MONETAG MULTITAG -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
 
     <style>
@@ -35,9 +34,11 @@
         .btn.secondary { background: #1a263f; border: 1px solid var(--neon1); }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
-        #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
-        canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+        
+        /* POPRAWKA: Z-INDEX DLA EKRANU KOŃCOWEGO */
+        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:9999}
+        #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:2px solid var(--neon2); position:relative; z-index:10000;}
+        canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:5000}
     </style>
 </head>
 <body>
@@ -58,7 +59,7 @@
         <div id="answers" class="answers"></div>
         <div class="meta" style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);">
             <div id="progress">Pytanie 1/14</div>
-            <div>v2026.FINAL</div>
+            <div>v2026.LIVE</div>
         </div>
     </div>
 </div>
@@ -67,7 +68,7 @@
     <div id="final-card">
         <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
         <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
-        <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+        <div class="btn" onclick="window.location.reload()">Zagraj ponownie</div>
         <div class="btn secondary" onclick="shareQuiz()">Poleć znajomemu</div>
         <div class="btn secondary" onclick="installPWA()">Zapisz na ekranie</div>
     </div>
@@ -100,11 +101,18 @@ const QUESTIONS=[
 
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+window.addEventListener('beforeinstallprompt', (e) => { 
+    e.preventDefault(); 
+    deferredPrompt = e; 
+});
 
 async function installPWA() {
-    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-    else { alert('Aby zapisać: Użyj opcji "Dodaj do ekranu głównego" w menu przeglądarki.'); }
+    if (deferredPrompt) { 
+        deferredPrompt.prompt(); 
+        deferredPrompt = null; 
+    } else { 
+        alert('Aby zapisać: Kliknij "Udostępnij" i "Dodaj do ekranu głównego" w Twojej przeglądarce.'); 
+    }
 }
 
 function showQuestion() {
@@ -125,8 +133,13 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = ans;
         b.onclick = () => {
+            // NAPRAWA MUZYKI TŁA
             const bg = $('snd-bg');
-            if(bg && bg.paused) { bg.volume = 0.3; bg.play().catch(()=>{}); }
+            if(bg && bg.paused) { 
+                bg.volume = 0.3; 
+                bg.play().catch(e=>console.log("Audio startup blocked")); 
+            }
+            
             document.querySelectorAll('.btn').forEach(btn => btn.style.pointerEvents = 'none');
             if(i === q.correct) {
                 b.classList.add('good'); points++; firework();
@@ -160,9 +173,16 @@ function finishQuiz() {
 }
 
 function shareQuiz() {
-    const text = `Zdobyłem ${points} pkt w Quizie o Polsce! Sprawdź się: https://quiz-o-polsce.pl`;
-    if (navigator.share) { navigator.share({ title: 'Quiz o Polsce', text: text, url: 'https://quiz-o-polsce.pl' }); }
-    else { alert(text); }
+    const shareData = {
+        title: 'Quiz o Polsce',
+        text: `Zdobyłem ${points} pkt! Sprawdź czy znasz Polskę lepiej:`,
+        url: 'https://quiz-o-polsce.pl'
+    };
+    if (navigator.share) {
+        navigator.share(shareData).catch(() => alert("Błąd udostępniania"));
+    } else {
+        alert(shareData.text + " " + shareData.url);
+    }
 }
 
 let fireworkRunning = false;
