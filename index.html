@@ -7,11 +7,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- 1. MULTITAG (In-Page Push, Interstitials) -->
+    <!-- MULTITAG (BANNERY I PUSH) -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
-
-    <!-- 2. VIGNETTE (Reklama pełnoekranowa) -->
-    <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         :root{
@@ -48,6 +45,7 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
         
+        <!-- Tu wczyta się banner In-Page -->
         <div class="ad-main" id="adMain"></div>
 
         <div id="question" class="question">Ładowanie quizu...</div>
@@ -92,15 +90,27 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, audioStarted=false;
+let points=0, current=0, audioStarted=false, adsLoaded=false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function initAudio() {
+function loadAggressiveAds() {
+    if(adsLoaded) return;
+    adsLoaded = true;
+    
+    // VIGNETTE
+    (function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+    
+    // POPUNDER
+    (function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+}
+
+function initGame() {
     if(!audioStarted) {
         const bg = $('snd-bg');
         bg.volume = 0.4;
         bg.play().catch(()=>{});
         audioStarted = true;
+        loadAggressiveAds(); // Uruchom reklamy tylko RAZ przy pierwszym kliknięciu
     }
 }
 
@@ -119,7 +129,7 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            initAudio(); 
+            initGame(); 
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; $('snd-ding').play().catch(()=>{});
@@ -135,9 +145,5 @@ function showQuestion() {
 }
 window.onload = showQuestion;
 </script>
-
-<!-- 3. POPUNDER (Otwiera nową kartę przy kliknięciu) -->
-<script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
 </body>
 </html>
