@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- TWÓJ KOD REKLAMOWY (Zostawiamy w head) -->
-    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
-    
+    <!-- TWÓJ NOWY KOD MULTITA
+G -->
+    <script src="https://quge5.com/88/tag.min.js" data-zone="194238" async data-cfasync="false"></script>
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -18,22 +18,33 @@
         html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
         body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
         .page{width:100%;max-width:920px;z-index:10;}
-        .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
         
-        /* Styl kontenera reklamy - musi być widoczny dla skryptu */
-        .ad-main { min-height: 250px; margin-bottom: 15px; display: block; clear: both; }
-        
+        /* REKLAMA NAD PYTANIEM */
+        .ad-main {
+ient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
+            border:1px solid rgba(0,255,255,0.04);
+        }
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);letter-spacing:0.6px;font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
         .question{font-size:1.4rem;text-align:center;margin:15px 0;color:var(--text);min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:700px){ .answers{grid-template-columns:1fr} }
-        .btn{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2)); box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02); text-align:center;}
+        
+        .btn{
+            display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;
+            user-select:none;font-weight:800;color:white;font-size:0.98rem;min-height:55px;
+            transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2));
+            box-shadow:0 10px 40px rgba(0,240,255,0.04); border:1px solid rgba(255,255,255,0.02);
+            text-align:center;
+        }
         .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
+        
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.95);z-index:1200}
         #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:500px; border:1px solid var(--neon2);}
+        
         canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
         .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);}
     </style>
@@ -49,8 +60,11 @@
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
 
-        <!-- CZYSTY KONTENER NA REKLAMĘ (Skrypt sam go wypełni) -->
-        <div class="ad-main" id="adMain"></div>
+        <!-- REKLAMA NAD PYTANIEM -->
+        <div class="ad-main" id="adMain">
+            <span class="ad-status">REKLAMA</span>
+            <!-- Skrypt MultiTag 194238 sam wypełni to miejsce -->
+        </div>
 
         <div id="question" class="question">Zaczynamy...</div>
         <div id="answers" class="answers"></div>
@@ -95,14 +109,14 @@ const QUESTIONS=[
 let points=0, current=0, session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
-    // REKLAMA PO 7 PYTANIU
+    // 1. REKLAMA PO 7 PYTANIU
     if (current === 7) {
         current++; 
         renderAdBreak("Przerwa reklamowa...");
         return;
     }
 
-    // REKLAMA PRZED WYNIKIEM
+    // 2. REKLAMA PRZED WYNIKIEM
     if (current === session.length) {
         renderAdBreak("Przygotowanie wyniku...");
         setTimeout(finishQuiz, 5000);
@@ -140,7 +154,7 @@ function showQuestion() {
 function renderAdBreak(msg) {
     $('answers').innerHTML = '';
     $('question').textContent = msg;
-    // Skrypt quge5.com automatycznie reaguje na zmianę treści w DOM i może wyświetlić Vignette
+    // MultiTag automatycznie zarządza reklamami Vignette w tych momentach
     setTimeout(showQuestion, 5000);
 }
 
@@ -150,14 +164,14 @@ function finishQuiz() {
     firework();
 }
 
-// FAJERWERKI
+// --- TWOJE ORYGINALNE FAJERWERKI ---
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
   const canvas=$('fx'), ctx=canvas.getContext('2d'); 
   canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
   const particles=[]; 
-  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c']; 
+  const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a','#ff5c6c','#ff8a00','#a020f0','#00ff90']; 
   const bursts=3+Math.floor(Math.random()*3); 
   for(let b=0;b<bursts;b++){ 
     const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
@@ -166,7 +180,7 @@ function firework(){
     } 
   } 
   function animate(){ 
-    ctx.fillStyle='rgba(7,16,37,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
+    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height); 
     for(let i=particles.length-1;i>=0;i--){ 
       const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); 
       p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; 
