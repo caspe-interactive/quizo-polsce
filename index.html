@@ -3,19 +3,10 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>Quiz o Polsce — FINAL</title>
+    <title>Quiz o Polsce — FINAL 2026</title>
     
-    <!-- MULTITAG - ZABEZPIECZONY PRZED BLOKOWANIEM KODU -->
-    <script>
-        (function() {
-            var s = document.createElement('script');
-            s.src = 'https://quge5.com';
-            s.dataset.zone = '205951';
-            s.async = true;
-            s.onerror = function() { console.log("Monetag blocked, but quiz continues"); };
-            document.head.appendChild(s);
-        })();
-    </script>
+    <!-- TWOJA STREFA MULTITAG -->
+    <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
 
     <style>
         :root{ --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c; --accent:#ffd27a; --radius:14px; }
@@ -27,12 +18,9 @@
         .good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
         .bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
         #final{ position:fixed; inset:0; background:rgba(3,6,10,0.98); display:none; align-items:center; justify-content:center; z-index:9999; }
-        canvas#fx{position:fixed; inset:0; pointer-events:none; z-index:5000}
     </style>
 </head>
 <body>
-
-<canvas id="fx"></canvas>
 
 <div class="card">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
@@ -50,24 +38,40 @@
         <div id="final-score" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
         <button class="btn" onclick="restartQuiz()">Zagraj ponownie</button>
         <button class="btn secondary" onclick="shareQuiz()">Poleć znajomemu</button>
+        <button class="btn secondary" onclick="installPWA()">Zapisz na ekranie</button>
     </div>
 </div>
 
-<!-- DŹWIĘKI -->
-<audio id="snd-ding" src="sounds/ding.mp3" preload="auto"></audio>
-<audio id="snd-buzzer" src="sounds/buzzer.mp3" preload="auto"></audio>
-<audio id="snd-bg" src="sounds/background.mp3" loop preload="auto"></audio>
+<audio id="snd-ding" src="sounds/ding.mp3"></audio>
+<audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
+<audio id="snd-bg" src="sounds/background.mp3" loop></audio>
 
 <script>
-    // FUNKCJE PRZYCISKÓW IZOLOWANE NA GÓRZE
-    window.restartQuiz = function() { window.location.reload(); };
-    
-    window.shareQuiz = function() {
+    let points = 0, current = 0, deferredPrompt, isAudioOn = false;
+
+    // Obsługa PWA
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+    });
+
+    function restartQuiz() { window.location.reload(); }
+
+    function shareQuiz() {
         const p = document.getElementById('points').innerText;
         if (navigator.share) {
             navigator.share({ title: 'Quiz o Polsce', text: 'Zdobyłem '+p+' pkt! Spróbuj i Ty!', url: window.location.href });
         } else { alert("Mój wynik: "+p+" pkt! Graj na quiz-o-polsce.pl"); }
-    };
+    }
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt = null;
+        } else {
+            alert("Użyj menu przeglądarki: 'Dodaj do ekranu głównego'");
+        }
+    }
 
     const QUESTIONS=[
       { q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
@@ -86,12 +90,11 @@
       { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
     ];
 
-    let points=0, current=0, isAudioOn=false;
     let session = QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
     function showQuestion() {
         if (current === 7) { 
-            document.getElementById('answers').innerHTML = "<div style='color:var(--neon1)'>PRZERWA REKLAMOWA...</div>";
+            document.getElementById('answers').innerHTML = "<div style='color:var(--neon1); font-weight:bold;'>REKLAMA...</div>";
             setTimeout(() => { current++; showQuestion(); }, 4000); 
             return; 
         }
@@ -107,11 +110,15 @@
         
         const ansDiv = document.getElementById('answers');
         ansDiv.innerHTML = '';
+
+        // MIESZANIE ODPOWIEDZI
+        let answers = q.a.map((ans, i) => ({ text: ans, isCorrect: i === q.correct }));
+        answers.sort(() => Math.random() - 0.5);
         
-        q.a.forEach((ans, i) => {
+        answers.forEach((ansObj) => {
             const b = document.createElement('button');
             b.className = 'btn';
-            b.innerText = ans;
+            b.innerText = ansObj.text;
             b.onclick = () => {
                 if(!isAudioOn) { 
                     try { document.getElementById('snd-bg').play(); isAudioOn=true; } catch(e){}
@@ -119,7 +126,7 @@
                 const allBtns = ansDiv.getElementsByTagName('button');
                 for(let btn of allBtns) btn.disabled = true;
                 
-                if(i === q.correct) {
+                if(ansObj.isCorrect) {
                     b.classList.add('good'); points++;
                     try { document.getElementById('snd-ding').play(); } catch(e){}
                 } else {
@@ -134,7 +141,6 @@
         });
     }
 
-    // Start
     showQuestion();
 </script>
 </body>
