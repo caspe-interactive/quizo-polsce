@@ -2,10 +2,12 @@
 <html lang="pl">
 <head>
     <meta charset="utf-8"/>
+    <!-- TAG WERYFIKACYJNY MONETAG -->
+    <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- SKRYPT REKLAMOWY MONETAG -->
+    <!-- POPRAWIONY SKRYPT REKLAMOWY MONETAG -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
     
     <style>
@@ -19,10 +21,7 @@
         body{display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,var(--bg1),#051028 80%);}
         .page{width:100%;max-width:920px;z-index:10;}
         .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
-        
-        /* KONTENER REKLAMOWY - musi być pusty i widoczny dla skryptu */
         .ad-main { min-height: 250px; margin-bottom: 20px; width: 100%; background: rgba(255,255,255,0.01); border-radius: 8px; }
-        
         .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
         .title{font-weight:800;color:var(--neon1);font-size:1.4rem;}
         .score{color:var(--accent);font-weight:bold;}
@@ -45,13 +44,9 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-        
-        <!-- Tu wstrzykiwana jest reklama MultiTag -->
         <div class="ad-main" id="adMain"></div>
-
         <div id="question" class="question">Ładowanie quizu...</div>
         <div id="answers" class="answers"></div>
-        
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
             <div>v2026.FINAL</div>
@@ -67,7 +62,6 @@
     </div>
 </div>
 
-<!-- AUDIO SEKCJA -->
 <audio id="snd-bg" loop><source src="sounds/background.mp3" type="audio/mpeg"></audio>
 <audio id="snd-ding"><source src="sounds/ding.mp3" type="audio/mpeg"></audio>
 <audio id="snd-buzzer"><source src="sounds/buzzer.mp3" type="audio/mpeg"></audio>
@@ -102,7 +96,7 @@ function playEffect(id) {
 function initAudio() {
     if(!audioStarted) {
         const bg = $('snd-bg');
-        bg.volume = 0.4; // Muzyka w tle nieco ciszej
+        bg.volume = 0.4;
         bg.play().catch(e => console.log("Audio waiting for user..."));
         audioStarted = true;
     }
@@ -123,15 +117,13 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            initAudio(); // Aktywacja muzyki background.mp3 przy pierwszym kliknięciu
+            initAudio();
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
-            
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; playEffect('snd-ding');
             } else {
                 b.classList.add('bad'); playEffect('snd-buzzer');
             }
-            
             $('points').textContent = points;
             current++;
             setTimeout(showQuestion, 1100);
@@ -139,8 +131,6 @@ function showQuestion() {
         $('answers').appendChild(b);
     });
 }
-
-// Start gry
 window.onload = showQuestion;
 </script>
 </body>
