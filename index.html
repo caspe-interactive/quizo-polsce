@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG: Skrypty stref reklamowych -->
+    <!-- MONETAG TAG 1: OnClick -->
     <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
-    <script src="https://5gvci.com" data-cfasync="false" async></script>
+    
+    <!-- MONETAG TAG 2: Vignette -->
     <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
@@ -22,7 +23,6 @@
         body{display:flex;align-items:center;justify-content:center;padding:15px;background:linear-gradient(180deg,var(--bg1),#051028 80%);}
         .page{width:100%;max-width:500px;z-index:10;}
         .card{background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
-        .ad-placeholder { min-height: 50px; width: 100%; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(255,255,255,0.1); font-size: 0.7rem; color: var(--muted); }
         .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
         .title{font-weight:800;color:var(--neon1);font-size:1.3rem;}
         .score{color:var(--accent);font-weight:bold;}
@@ -46,16 +46,11 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-        
-        <!-- Miejsce na baner reklamowy -->
-        <div class="ad-placeholder">REKLAMA</div>
-
-        <div id="question" class="question">Ładowanie quizu...</div>
+        <div id="question" class="question">Ładowanie...</div>
         <div id="answers" class="answers"></div>
-
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
-            <div>v2026.MONETIZE</div>
+            <div>v2026.ADS-READY</div>
         </div>
     </div>
 </div>
@@ -65,7 +60,6 @@
         <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
         <div id="final-text" style="font-size:2.5rem; margin:20px 0; color:var(--accent); font-weight:800;">0 pkt</div>
         <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
-        <p style="color:var(--muted); font-size:0.8rem; margin-top:15px;">Dziękujemy za grę!</p>
     </div>
 </div>
 
@@ -84,7 +78,7 @@ const QUESTIONS=[
   { q:"Największe miasto mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
   { q:"Noblistka w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
   { q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
-  { q:"Najhighest szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
+  { q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
   { q:"Rok odzyskania niepodległości?", a:["1918","1945","1914","1939"], correct:0 },
   { q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu"], correct:0 },
   { q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
@@ -95,24 +89,22 @@ const QUESTIONS=[
 let points=0, current=0, audioStarted=false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-// Funkcja wywołująca reklamę (bezpieczna)
-function triggerAd() {
-    try {
-        if(window.collect_wrapper) window.collect_wrapper();
-    } catch(e) { console.log("Ad delay"); }
+// GŁÓWNY WYZWALACZ REKLAM
+function forceAds() {
+    console.log("Triggering Ads...");
+    if(typeof window.collect_wrapper === 'function') {
+        try { window.collect_wrapper(); } catch(e) { console.error(e); }
+    }
 }
 
 function showQuestion() {
-    // PRZERWA REKLAMOWA PO 7 PYTANIU
     if (current === 7) {
         current++; 
-        renderAdBreak("Przerwa na reklamę", 6, showQuestion);
+        renderAdBreak("Przerwa na reklamę", 8, showQuestion);
         return;
     }
-
-    // PRZERWA PRZED WYNIKIEM
     if (current === session.length) {
-        renderAdBreak("Generowanie wyniku...", 5, finishQuiz);
+        renderAdBreak("Pobieranie wyniku...", 5, finishQuiz);
         return;
     }
 
@@ -125,20 +117,18 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
+            forceAds(); // Reklama przy kliku
             if(!audioStarted) {
                 $('snd-bg').volume = 0.2;
                 $('snd-bg').play().catch(()=>{});
                 audioStarted = true;
-                triggerAd(); // Reklama przy pierwszym kliknięciu
             }
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
-            
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; $('snd-ding').play().catch(()=>{});
             } else {
                 b.classList.add('bad'); $('snd-buzzer').play().catch(()=>{});
             }
-            
             $('points').textContent = points;
             current++;
             setTimeout(showQuestion, 1000);
@@ -148,38 +138,28 @@ function showQuestion() {
 }
 
 function renderAdBreak(msg, seconds, callback) {
-    triggerAd(); // Wywołaj reklamę na początku przerwy
-    
-    const tips = ["Czy wiesz, że Polska ma 16 województw?", "Zaraz wracamy do gry!", "Sprawdź swoje siły w finale!"];
-    const randomTip = tips[Math.floor(Math.random() * tips.length)];
-
-    $('question').innerHTML = `<span style="color:var(--neon2)">${msg}</span><br><small style="font-size:0.85rem; color:var(--muted);">${randomTip}</small>`;
-    $('answers').innerHTML = `<div id="timer-box" style="grid-column: 1/-1; text-align:center; width:100%;">
-        <div id="timer">${seconds}</div>
-        <div style="font-size:0.9rem; color:var(--muted)">Poczekaj chwilę...</div>
-    </div>`;
+    forceAds();
+    $('question').innerHTML = `<span style="color:var(--neon2)">${msg}</span>`;
+    $('answers').innerHTML = `<div id="timer-box" style="grid-column: 1/-1; text-align:center;"><div id="timer">${seconds}</div><p style="font-size:0.9rem; color:var(--muted)">Zaraz wracamy do quizu!</p></div>`;
     
     const interval = setInterval(() => {
         seconds--;
         if ($('timer')) $('timer').textContent = seconds;
         if (seconds <= 0) {
             clearInterval(interval);
-            triggerAd(); // Wywołaj reklamę na koniec przerwy
+            forceAds();
             callback();
         }
     }, 1000);
 }
 
 function finishQuiz() {
+    forceAds();
     $('final-text').textContent = `${points} pkt`;
     $('final').style.display = 'flex';
-    triggerAd(); // Reklama na ekranie końcowym
 }
 
 window.onload = showQuestion;
 </script>
-
-<!-- MONETAG MultiTag (Smart Tag) -->
-<script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </body>
 </html>
