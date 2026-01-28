@@ -2,16 +2,9 @@
 <html lang="pl">
 <head>
     <meta charset="utf-8"/>
-    <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG TAG 1: OnClick -->
-    <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
-    
-    <!-- MONETAG TAG 2: Vignette -->
-    <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
     <style>
         :root{
             --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
@@ -26,7 +19,7 @@
         .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
         .title{font-weight:800;color:var(--neon1);font-size:1.3rem;}
         .score{color:var(--accent);font-weight:bold;}
-        .question{font-size:1.2rem;text-align:center;margin:15px 0;min-height:5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.3;}
+        .question{font-size:1.2rem;text-align:center;margin:15px 0;min-height:5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;}
         .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         @media(max-width:450px){ .answers{grid-template-columns:1fr} }
         .btn{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;min-height:55px;transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2)); text-align:center;}
@@ -46,11 +39,11 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-        <div id="question" class="question">Ładowanie...</div>
+        <div id="question" class="question">Ładowanie quizu...</div>
         <div id="answers" class="answers"></div>
         <div class="meta">
             <div id="progress">Pytanie 1/14</div>
-            <div>v2026.ADS-READY</div>
+            <div>v2026.CLEAN-ADS</div>
         </div>
     </div>
 </div>
@@ -86,25 +79,24 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, audioStarted=false;
+let points=0, current=0, audioStarted=false, firstClickDone = false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-// GŁÓWNY WYZWALACZ REKLAM
-function forceAds() {
-    console.log("Triggering Ads...");
+function triggerAd() {
+    console.log("Ad request sent");
     if(typeof window.collect_wrapper === 'function') {
-        try { window.collect_wrapper(); } catch(e) { console.error(e); }
+        try { window.collect_wrapper(); } catch(e) {}
     }
 }
 
 function showQuestion() {
     if (current === 7) {
         current++; 
-        renderAdBreak("Przerwa na reklamę", 8, showQuestion);
+        renderAdBreak("Krótka przerwa na reklamę", 8, showQuestion);
         return;
     }
     if (current === session.length) {
-        renderAdBreak("Pobieranie wyniku...", 5, finishQuiz);
+        renderAdBreak("Przygotowanie wyniku...", 6, finishQuiz);
         return;
     }
 
@@ -117,7 +109,10 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            forceAds(); // Reklama przy kliku
+            if (!firstClickDone) {
+                triggerAd(); // Reklama przy pierwszym starcie
+                firstClickDone = true;
+            }
             if(!audioStarted) {
                 $('snd-bg').volume = 0.2;
                 $('snd-bg').play().catch(()=>{});
@@ -138,28 +133,30 @@ function showQuestion() {
 }
 
 function renderAdBreak(msg, seconds, callback) {
-    forceAds();
+    triggerAd(); // Reklama na start przerwy
     $('question').innerHTML = `<span style="color:var(--neon2)">${msg}</span>`;
-    $('answers').innerHTML = `<div id="timer-box" style="grid-column: 1/-1; text-align:center;"><div id="timer">${seconds}</div><p style="font-size:0.9rem; color:var(--muted)">Zaraz wracamy do quizu!</p></div>`;
+    $('answers').innerHTML = `<div id="timer-box" style="grid-column: 1 / -1; text-align:center;"><div id="timer">${seconds}</div><p style="color:var(--muted); font-size:0.8rem;">Dzięki reklamom nasz quiz jest darmowy!</p></div>`;
     
     const interval = setInterval(() => {
         seconds--;
         if ($('timer')) $('timer').textContent = seconds;
         if (seconds <= 0) {
             clearInterval(interval);
-            forceAds();
             callback();
         }
     }, 1000);
 }
 
 function finishQuiz() {
-    forceAds();
     $('final-text').textContent = `${points} pkt`;
     $('final').style.display = 'flex';
 }
 
 window.onload = showQuestion;
 </script>
+
+<!-- TWOJA GŁÓWNA STREFA MULTITAG -->
+<script>(function(s){s.dataset.zone='10526456',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 </body>
 </html>
