@@ -2,12 +2,12 @@
 <html lang="pl">
 <head>
     <meta charset="utf-8"/>
-    <!-- TAG WERYFIKACYJNY -->
+    <!-- TAG WERYFIKACYJNY MONETAG -->
     <meta name="monetag" content="0dc0948046ec5b9ee0b466b72ae33769">
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- GŁÓWNE SKRYPTY (Uproszczone dla lepszej zgodności) -->
+    <!-- GŁÓWNE SKRYPTY REKLAMOWE (POPRAWIONE ŚCIEŻKI) -->
     <script src="https://quge5.com" data-zone="205951" async data-cfasync="false"></script>
     <script src="https://5gvci.com" data-cfasync="false" async></script>
     
@@ -22,10 +22,7 @@
         body{display:flex;align-items:center;justify-content:center;padding:15px;background:linear-gradient(180deg,var(--bg1),#051028 80%);}
         .page{width:100%;max-width:500px;z-index:10;}
         .card{background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
-        
-        /* Kontener reklamy - wymuszone wymiary dla 2026 */
         .ad-main { min-height: 280px; width: 100%; margin-bottom: 15px; background: rgba(255,255,255,0.02); display: block !important; }
-        
         .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
         .title{font-weight:800;color:var(--neon1);font-size:1.3rem;}
         .score{color:var(--accent);font-weight:bold;}
@@ -37,6 +34,7 @@
         .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
         #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:1200}
         #final-card{background:#081322; padding:30px; border-radius:14px; text-align:center; width:85%; max-width:400px; border:1px solid var(--neon2);}
+        .meta{margin-top:15px; display:flex; justify-content:space-between; font-size:0.75rem; color:var(--muted);}
     </style>
 </head>
 <body>
@@ -47,13 +45,10 @@
             <div class="title">QuizoPolsce</div>
             <div class="score">PKT: <span id="points">0</span></div>
         </div>
-        
         <div class="ad-main" id="adMain"></div>
-
         <div id="question" class="question">Ładowanie...</div>
         <div id="answers" class="answers"></div>
-        
-        <div style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.75rem; color:var(--muted);">
+        <div class="meta">
             <div id="progress">Pytanie 1/14</div>
             <div>v2026.FINAL</div>
         </div>
@@ -113,7 +108,6 @@ function showQuestion() {
                 $('snd-bg').volume = 0.3;
                 $('snd-bg').play().catch(()=>{});
                 audioStarted = true;
-                // Wywołanie Vignette przy pierwszym kliknięciu
                 if(window.collect_wrapper) window.collect_wrapper();
             }
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
@@ -132,7 +126,7 @@ function showQuestion() {
 window.onload = showQuestion;
 </script>
 
-<!-- REKLAMY DODATKOWE -->
+<!-- REKLAMY DODATKOWE (POPRAWIONE ŚCIEŻKI) -->
 <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 <script>(function(s){s.dataset.zone='10523608',s.src='https://nap5k.com'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
