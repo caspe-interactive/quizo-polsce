@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- TAGI REKLAMOWE W HEAD (dla formatów In-Page/Vignette) -->
+    <!-- MONETAG TAGS -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         :root{
@@ -61,9 +62,10 @@
     </div>
 </div>
 
-<!-- POPRAWIONE AUDIO -->
-<audio id="snd-ding" preload="auto"><source src="sounds/ding.mp3" type="audio/mpeg"></audio>
-<audio id="snd-buzzer" preload="auto"><source src="sounds/buzzer.mp3" type="audio/mpeg"></audio>
+<!-- AUDIO ELEMENTS -->
+<audio id="snd-bg" loop><source src="sounds/background.mp3" type="audio/mpeg"></audio>
+<audio id="snd-ding"><source src="sounds/ding.mp3" type="audio/mpeg"></audio>
+<audio id="snd-buzzer"><source src="sounds/buzzer.mp3" type="audio/mpeg"></audio>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -84,20 +86,12 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, firstClickDone = false;
+let points=0, current=0, gameStarted = false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function callAd() {
     if(window.collect_wrapper) {
-        try { window.collect_wrapper(); } catch(e) { console.log("Ad Blocked"); }
-    }
-}
-
-function playSnd(id) {
-    const s = $(id);
-    if(s) {
-        s.currentTime = 0;
-        s.play().catch(e => console.log("Audio block"));
+        try { window.collect_wrapper(); } catch(e) {}
     }
 }
 
@@ -121,14 +115,22 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            if(!firstClickDone) { callAd(); firstClickDone = true; }
+            // WŁĄCZ MUZYKĘ I REKLAMĘ PRZY PIERWSZYM KLIKU
+            if(!gameStarted) {
+                const bg = $('snd-bg');
+                bg.volume = 0.2;
+                bg.play().catch(e => console.log("Audio block"));
+                callAd();
+                gameStarted = true;
+            }
+
             document.querySelectorAll('.btn').forEach(el => el.style.pointerEvents = 'none');
             if(obj.i === q.correct) {
                 b.classList.add('good'); points++; firework();
-                playSnd('snd-ding');
+                $('snd-ding').play();
             } else {
                 b.classList.add('bad');
-                playSnd('snd-buzzer');
+                $('snd-buzzer').play();
             }
             $('points').textContent = points;
             current++;
@@ -141,7 +143,7 @@ function showQuestion() {
 function renderAdBreak(msg, seconds, callback) {
     callAd();
     $('question').innerHTML = `<span style="color:var(--neon2)">${msg}</span>`;
-    $('answers').innerHTML = `<div style="grid-column:1/-1;text-align:center;"><div id="timer">${seconds}</div><p style="color:var(--muted)">Proszę czekać...</p></div>`;
+    $('answers').innerHTML = `<div style="grid-column:1/-1;text-align:center;"><div id="timer">${seconds}</div><p style="color:var(--muted)">Zaraz wracamy...</p></div>`;
     const interval = setInterval(() => {
         seconds--;
         if ($('timer')) $('timer').textContent = seconds;
@@ -156,7 +158,7 @@ function finishQuiz() {
     firework();
 }
 
-// FAJERWERKI (Twoja wersja)
+// FIREWORKS FX
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
@@ -164,8 +166,7 @@ function firework(){
   canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
   const particles=[]; 
   const colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a']; 
-  const bursts=3; 
-  for(let b=0;b<bursts;b++){ 
+  for(let b=0;b<3;b++){ 
     const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; 
     for(let i=0;i<40;i++){ 
       particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2}); 
@@ -186,9 +187,5 @@ function firework(){
 
 window.onload = showQuestion;
 </script>
-
-<!-- VIGNETTE NA DOLE (Zgodnie z Twoim ID) -->
-<script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
 </body>
 </html>
