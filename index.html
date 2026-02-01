@@ -12,9 +12,10 @@
   --accent:#ffd27a; --radius:14px;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow:hidden;}
-body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
-.page{width:100%;max-width:500px;z-index:10;position:relative;}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);}
+body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;}
+#ad-top{width:100%; max-width:500px; text-align:center; margin:12px auto; min-height:90px;}
+.page{width:100%;max-width:500px;z-index:10;position:relative;margin-top:10px;}
 .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .title{font-weight:800;color:var(--neon1);font-size:1.4rem;}
@@ -29,39 +30,46 @@ body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text)
 #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:400px; border:1px solid var(--neon2);}
 canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
 #timer{font-size:3.5rem; color:var(--neon1); font-weight:800; margin:5px 0;}
-#ad-top{width:100%; max-width:500px; margin:0 auto 12px; text-align:center; min-height:90px;}
 </style>
 </head>
 <body>
 
-<!-- BANNER NA GÓRZE -->
+<!-- Prawdziwy banner u góry -->
 <div id="ad-top">
-<script>(function(s){s.dataset.zone='10552577';s.src='https://gizokraijaw.net/vignette.min.js';s.async=true;document.body.appendChild(s);})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script>
+  // Przykładowy In-Page Push / Banner Monetag
+  (function(s){
+    s.src='https://quge5.com'; // Twój kod Monetag In-Page Push
+    s.dataset.zone='10552577';
+    s.async=true;
+    document.getElementById('ad-top').appendChild(s);
+  })(document.createElement('script'));
+</script>
 </div>
 
 <canvas id="fx"></canvas>
 
 <div class="page">
-    <div class="card">
-        <div class="top">
-            <div class="title">QuizoPolsce</div>
-            <div class="score">PKT: <span id="points">0</span></div>
-        </div>
-        <div id="question" class="question">Zaczynamy...</div>
-        <div id="answers" class="answers"></div>
-        <div style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);">
-            <div id="progress">Pytanie 1/14</div>
-            <div>v2026.FINAL</div>
-        </div>
+  <div class="card">
+    <div class="top">
+      <div class="title">QuizoPolsce</div>
+      <div class="score">PKT: <span id="points">0</span></div>
     </div>
+    <div id="question" class="question">Zaczynamy...</div>
+    <div id="answers" class="answers"></div>
+    <div style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted);">
+      <div id="progress">Pytanie 1/14</div>
+      <div>v2026.FINAL</div>
+    </div>
+  </div>
 </div>
 
 <div id="final">
-    <div id="final-card">
-        <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
-        <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
-        <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
-    </div>
+  <div id="final-card">
+    <h1 style="color:var(--neon2); margin:0;">KONIEC!</h1>
+    <div id="final-text" style="font-size:2.5rem; margin:25px 0; color:var(--accent); font-weight:800;">0 pkt</div>
+    <div class="btn" onclick="location.reload()" style="width:100%">Zagraj ponownie</div>
+  </div>
 </div>
 
 <audio id="snd-bg" loop><source src="sounds/background.mp3" type="audio/mpeg"></audio>
@@ -87,45 +95,45 @@ const QUESTIONS=[
   { q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
-let points=0, current=0, gameStarted=false;
+let points=0,current=0,gameStarted=false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function showQuestion() {
-    if(current===7){ loadVignette('10552577'); current++; renderAdBreak("Przerwa reklamowa...",6,showQuestion); return; }
-    if(current===session.length){ loadVignette('10552582'); renderAdBreak("Przygotowanie wyniku...",5,finishQuiz); return; }
+function showQuestion(){
+  if(current===7){ loadVignette('10552577'); current++; renderAdBreak("Przerwa reklamowa...",6,showQuestion); return; }
+  if(current===session.length){ loadVignette('10552582'); renderAdBreak("Przygotowanie wyniku...",5,finishQuiz); return; }
 
-    const q=QUESTIONS[session[current]];
-    $('question').textContent=q.q;
-    $('answers').innerHTML='';
-    $('progress').textContent=`Pytanie ${current+1}/${session.length}`;
+  const q=QUESTIONS[session[current]];
+  $('question').textContent=q.q;
+  $('answers').innerHTML='';
+  $('progress').textContent=`Pytanie ${current+1}/${session.length}`;
 
-    q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
-        const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans;
-        b.onclick=()=>{
-            if(!gameStarted){ const bg=$('snd-bg'); bg.volume=0.2; bg.play().catch(e=>{}); gameStarted=true; }
-            document.querySelectorAll('.btn').forEach(el=>el.style.pointerEvents='none');
-            if(obj.i===q.correct){ b.classList.add('good'); points++; firework(); $('snd-ding').play(); } 
-            else{ b.classList.add('bad'); $('snd-buzzer').play(); }
-            $('points').textContent=points; current++; setTimeout(showQuestion,1000);
-        };
-        $('answers').appendChild(b);
-    });
+  q.a.map((ans,i)=>({ans,i})).sort(()=>Math.random()-0.5).forEach(obj=>{
+    const b=document.createElement('div'); b.className='btn'; b.textContent=obj.ans;
+    b.onclick=()=>{
+      if(!gameStarted){ $('snd-bg').volume=0.2; $('snd-bg').play().catch(e=>{}); gameStarted=true; }
+      document.querySelectorAll('.btn').forEach(el=>el.style.pointerEvents='none');
+      if(obj.i===q.correct){ b.classList.add('good'); points++; firework(); $('snd-ding').play(); } 
+      else{ b.classList.add('bad'); $('snd-buzzer').play(); }
+      $('points').textContent=points; current++; setTimeout(showQuestion,1000);
+    };
+    $('answers').appendChild(b);
+  });
 }
 
 function renderAdBreak(msg, seconds, callback){
-    $('question').innerHTML=`<span style="color:var(--neon2)">${msg}</span>`;
-    $('answers').innerHTML=`<div style="grid-column:1/-1;text-align:center;"><div id="timer">${seconds}</div><p style="color:var(--muted)">Zaraz wracamy...</p></div>`;
-    const interval=setInterval(()=>{ seconds--; if($('timer')) $('timer').textContent=seconds; if(seconds<=0){ clearInterval(interval); callback(); }},1000);
+  $('question').innerHTML=`<span style="color:var(--neon2)">${msg}</span>`;
+  $('answers').innerHTML=`<div style="grid-column:1/-1;text-align:center;"><div id="timer">${seconds}</div><p style="color:var(--muted)">Zaraz wracamy...</p></div>`;
+  const interval=setInterval(()=>{ seconds--; if($('timer')) $('timer').textContent=seconds; if(seconds<=0){ clearInterval(interval); callback(); }},1000);
 }
 
 function finishQuiz(){ $('final-text').textContent=`${points} pkt`; $('final').style.display='flex'; firework(); }
 
 let fireworkRunning=false;
-function firework(){ 
+function firework(){
   if(fireworkRunning) return; fireworkRunning=true;
-  const canvas=$('fx'), ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; 
-  const particles=[], colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a']; 
-  for(let b=0;b<3;b++){ const x=Math.random()*canvas.width, y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2}); } }
+  const canvas=$('fx'),ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const particles=[],colors=['#ff3fc4','#00f0ff','#16d36a','#ffd27a'];
+  for(let b=0;b<3;b++){ const x=Math.random()*canvas.width,y=Math.random()*canvas.height*0.5; for(let i=0;i<40;i++){ particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,alpha:1,color:colors[Math.floor(Math.random()*colors.length)],size:2}); } }
   function animate(){ ctx.fillStyle='rgba(7,16,37,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill(); p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.02; if(p.alpha<=0) particles.splice(i,1); } if(particles.length>0) requestAnimationFrame(animate); else ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } animate();
 }
 
