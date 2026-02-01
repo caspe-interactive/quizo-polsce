@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG START -->
-    <!-- Tag 1: In-Page Push -->
-    <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
+    <!-- MONETAG START - ZAKTUALIZOWANE STREFY DLA quiz-o-polsce.pl -->
+    <!-- In-Page Push -->
+    <script src="https://quge5.com" data-zone="10526457" async data-cfasync="false"></script>
     
-    <!-- Tag 2: Onclick / Popunder - Uproszczony dla lepszej wykrywalności -->
+    <!-- OnClick (Popunder) -->
     <script src="https://gizokraijaw.net" data-cfasync="false" async></script>
+    
+    <!-- Vignette Banner (opcjonalnie, skoro go masz w panelu) -->
+    <script src="https://quge5.com" data-zone="10526458" async data-cfasync="false"></script>
     <!-- MONETAG END -->
 
     <style>
@@ -92,8 +95,6 @@ const QUESTIONS=[
 
 let points=0, current=0, gameStarted = false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
-
-// USUNIĘTO BŁĘDNE CALLAD() - Monetag Onclick działa automatycznie na kliknięcia w dokumencie
 
 function showQuestion() {
     if (current === 7) {
