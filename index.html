@@ -18,14 +18,21 @@ body{display:flex;justify-content:center;align-items:center;padding:12px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{color:var(--n1);font-weight:800}
 .score{color:#ffd27a;font-weight:700}
-.question{text-align:center;font-size:1.3rem;min-height:4rem;display:flex;align-items:center;justify-content:center}
+.question{text-align:center;font-size:1.3rem;min-height:4.5rem;display:flex;align-items:center;justify-content:center}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;
-background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer}
+.btn{
+padding:14px;border-radius:12px;font-weight:800;color:#fff;
+background:linear-gradient(90deg,var(--n1),var(--n2));
+cursor:pointer;user-select:none
+}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#020814ee;z-index:20}
+#final{
+position:fixed;inset:0;display:none;
+align-items:center;justify-content:center;
+background:#020814ee;z-index:20
+}
 #final-card{background:#081322;padding:40px;border-radius:14px;text-align:center}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 </style>
@@ -41,8 +48,10 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 <div class="title">QuizoPolsce</div>
 <div class="score">PKT: <span id="pts">0</span></div>
 </div>
+
 <div id="q" class="question"></div>
 <div id="a" class="answers"></div>
+
 <div style="margin-top:10px;font-size:.8rem;color:var(--muted)">
 <span id="prog"></span>
 </div>
@@ -51,59 +60,64 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 
 <div id="final">
 <div id="final-card">
-<h1>KONIEC</h1>
+<h1>KONIEC!</h1>
 <div id="final-score" style="font-size:2.5rem;margin:20px 0"></div>
 <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
 </div>
 </div>
 
-<!-- AUDIO -->
+<!-- AUDIO – NIE RUSZANE, TYLKO GŁOŚNOŚĆ -->
 <audio id="snd-bg" loop src="sounds/background.mp3"></audio>
 <audio id="snd-ding" src="sounds/ding.mp3"></audio>
 <audio id="snd-buzzer" src="sounds/buzzer.mp3"></audio>
 
 <script>
-const Q=[
-["Stolica Polski?",["Warszawa","Kraków","Gdańsk","Wrocław"],0],
-["Największy port?",["Gdańsk","Gdynia","Szczecin","Świnoujście"],0],
-["Największe miasto południa?",["Kraków","Wrocław","Katowice","Łódź"],0],
-["Polska w NATO od?",["1999","2004","1990","2001"],0],
-["Skoczek z medalami?",["Małysz","Stoch","Żyła","Stękała"],1],
-["Stolica Mazowsza?",["Warszawa","Radom","Płock","Siedlce"],0],
-["Noblistka – chemia?",["Skłodowska","Banach","Kalecki","Czochralski"],0],
-["Najdłuższa rzeka?",["Wisła","Odra","Bug","Warta"],0],
-["Najwyższy szczyt?",["Rysy","Śnieżka","Giewont","Babia"],0],
-["Niepodległość?",["1918","1939","1945","1914"],0],
-["Orzeł to symbol?",["Godła","Flagi","Hymnu","Herbu"],0],
-["Największe miasto Śląska?",["Katowice","Gliwice","Bytom","Zabrze"],0],
-["Hymn Polski?",["Mazurek","Rota","Bogurodzica","Oda"],0],
-["Król Lechistanu?",["Sobieski","Jagiełło","Zygmunt","Chrobry"],0]
+const QUESTIONS=[
+{ q:"Stolica Polski?", a:["Warszawa","Kraków","Gdańsk","Wrocław"], correct:0 },
+{ q:"Największy polski port morski?", a:["Gdańsk","Gdynia","Szczecin","Świnoujście"], correct:0 },
+{ q:"Największe miasto na południu Polski?", a:["Kraków","Wrocław","Katowice","Łódź"], correct:0 },
+{ q:"Polska jest członkiem NATO od?", a:["1999","2004","1990","2001"], correct:0 },
+{ q:"Polski skoczek narciarski z medalami?", a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"], correct:1 },
+{ q:"Największe miasto mazowieckiego?", a:["Warszawa","Radom","Płock","Siedlce"], correct:0 },
+{ q:"Noblistka w dziedzinie chemii?", a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"], correct:0 },
+{ q:"Najdłuższa rzeka w Polsce?", a:["Wisła","Odra","Warta","Bug"], correct:0 },
+{ q:"Najwyższy szczyt w Polsce?", a:["Rysy","Śnieżka","Giewont","Babia Góra"], correct:0 },
+{ q:"Rok odzyskania niepodległości?", a:["1918","1945","1914","1939"], correct:0 },
+{ q:"Polski orzeł jest symbolem?", a:["Godła","Flagi","Hymnu","Herbu"], correct:0 },
+{ q:"Największe miasto na Śląsku?", a:["Katowice","Gliwice","Częstochowa","Bytom"], correct:0 },
+{ q:"Hymn Polski to?", a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"], correct:0 },
+{ q:"Król „Lew Lechistanu”?", a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"], correct:0 }
 ];
 
 let i=0,pts=0,started=false;
-const q=document.getElementById("q"),
-a=document.getElementById("a"),
-p=document.getElementById("prog");
+const qEl=document.getElementById("q"),
+aEl=document.getElementById("a"),
+pEl=document.getElementById("prog");
 
 function show(){
-if(i===Q.length){end();return;}
-q.textContent=Q[i][0];
-a.innerHTML="";
-p.textContent=`Pytanie ${i+1}/${Q.length}`;
+if(i===QUESTIONS.length){end();return;}
+const Q=QUESTIONS[i];
+qEl.textContent=Q.q;
+aEl.innerHTML="";
+pEl.textContent=`Pytanie ${i+1}/${QUESTIONS.length}`;
 
-Q[i][1].map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5)
+Q.a.map((t,idx)=>({t,idx}))
+.sort(()=>Math.random()-0.5)
 .forEach(o=>{
 const b=document.createElement("div");
-b.className="btn";b.textContent=o.t;
+b.className="btn";
+b.textContent=o.t;
 b.onclick=()=>{
 if(!started){
 const bg=document.getElementById("snd-bg");
-bg.volume=0.25;bg.play().catch(()=>{});
+bg.volume=0.4;
+bg.play().catch(()=>{});
 started=true;
 }
 document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
-if(o.idx===Q[i][2]){
-pts++;b.classList.add("good");
+if(o.idx===Q.correct){
+pts++;
+b.classList.add("good");
 document.getElementById("snd-ding").play();
 firework();
 }else{
@@ -113,7 +127,7 @@ document.getElementById("snd-buzzer").play();
 document.getElementById("pts").textContent=pts;
 setTimeout(()=>{i++;show()},900);
 };
-a.appendChild(b);
+aEl.appendChild(b);
 });
 }
 
@@ -134,14 +148,17 @@ for(let i=0;i<40;i++)
 p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
 }
 (function anim(){
-x.fillStyle="rgba(7,16,37,.2)";x.fillRect(0,0,c.width,c.height);
+x.fillStyle="rgba(7,16,37,.2)";
+x.fillRect(0,0,c.width,c.height);
 for(let i=p.length-1;i>=0;i--){
-const o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
+const o=p[i];
+x.globalAlpha=o.a;x.fillStyle=o.c;
 x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
 o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
 if(o.a<=0)p.splice(i,1);
 }
-if(p.length)requestAnimationFrame(anim);else x.clearRect(0,0,c.width,c.height);
+if(p.length)requestAnimationFrame(anim);
+else x.clearRect(0,0,c.width,c.height);
 })();
 }
 
