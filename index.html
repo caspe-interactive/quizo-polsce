@@ -1,46 +1,40 @@
 <!doctype html>
 <html lang="pl">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>QuizoPolsce — FINAL 2026</title>
-    
-    <!-- MONETAG START - ZAKTUALIZOWANE STREFY DLA quiz-o-polsce.pl -->
-    <!-- In-Page Push -->
-    <script src="https://quge5.com" data-zone="10526457" async data-cfasync="false"></script>
-    
-    <!-- OnClick (Popunder) -->
-    <script src="https://gizokraijaw.net" data-cfasync="false" async></script>
-    
-    <!-- Vignette Banner (opcjonalnie, skoro go masz w panelu) -->
-    <script src="https://quge5.com" data-zone="10526458" async data-cfasync="false"></script>
-    <!-- MONETAG END -->
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QuizoPolsce — FINAL 2026</title>
 
-    <style>
-        :root{
-            --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
-            --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
-            --accent:#ffd27a; --radius:14px;
-        }
-        *{box-sizing:border-box}
-        html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow:hidden;}
-        body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
-        .page{width:100%;max-width:500px;z-index:10;position:relative;}
-        .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
-        .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-        .title{font-weight:800;color:var(--neon1);font-size:1.4rem;}
-        .score{color:var(--accent);font-weight:bold;font-size:1.1rem}
-        .question{font-size:1.3rem;text-align:center;margin:15px 0;min-height:4rem;display:flex;align-items:center;justify-content:center;}
-        .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        @media(max-width:450px){ .answers{grid-template-columns:1fr} }
-        .btn{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;min-height:55px;transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2)); text-align:center;}
-        .btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
-        .btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
-        #final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:1200}
-        #final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:400px; border:1px solid var(--neon2);}
-        canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
-        #timer{font-size:3.5rem; color:var(--neon1); font-weight:800; margin:5px 0;}
-    </style>
+<!-- MONETAG BANNER TOP -->
+<div id="ad-top"></div>
+<script src="KOD_BANNERA"></script>
+
+<style>
+:root{
+  --bg1:#071025; --card:#0b1220; --text:#e6f7ff; --muted:#9fb6d6;
+  --neon1:#00f0ff; --neon2:#ff3fc4; --good:#16d36a; --bad:#ff5c6c;
+  --accent:#ffd27a; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg1);overflow:hidden;}
+body{background:linear-gradient(180deg,var(--bg1),#051028 80%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+.page{width:100%;max-width:500px;z-index:10;position:relative;}
+.card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(0,255,255,0.04);}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.title{font-weight:800;color:var(--neon1);font-size:1.4rem;}
+.score{color:var(--accent);font-weight:bold;font-size:1.1rem}
+.question{font-size:1.3rem;text-align:center;margin:15px 0;min-height:4rem;display:flex;align-items:center;justify-content:center;}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:450px){ .answers{grid-template-columns:1fr} }
+.btn{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;cursor:pointer;user-select:none;font-weight:800;color:white;min-height:55px;transition:all .12s ease; background:linear-gradient(90deg,var(--neon1),var(--neon2)); text-align:center;}
+.btn.good{ background: linear-gradient(90deg,var(--good),#8df3b0) !important; }
+.btn.bad{ background: linear-gradient(90deg,var(--bad),#ff8a94) !important; }
+#final{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,10,0.98);z-index:1200}
+#final-card{background:#081322; padding:40px; border-radius:14px; text-align:center; width:90%; max-width:400px; border:1px solid var(--neon2);}
+canvas#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1100}
+#timer{font-size:3.5rem; color:var(--neon1); font-weight:800; margin:5px 0;}
+#ad-top{width:100%; max-width:500px; margin:0 auto 12px; text-align:center; min-height:90px;}
+</style>
 </head>
 <body>
 
@@ -69,7 +63,6 @@
     </div>
 </div>
 
-<!-- AUDIO ELEMENTS -->
 <audio id="snd-bg" loop><source src="sounds/background.mp3" type="audio/mpeg"></audio>
 <audio id="snd-ding"><source src="sounds/ding.mp3" type="audio/mpeg"></audio>
 <audio id="snd-buzzer"><source src="sounds/buzzer.mp3" type="audio/mpeg"></audio>
@@ -98,11 +91,13 @@ let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
 function showQuestion() {
     if (current === 7) {
+        loadVignette('10552577');
         current++; 
         renderAdBreak("Przerwa reklamowa...", 6, showQuestion);
         return;
     }
     if (current === session.length) {
+        loadVignette('10552582');
         renderAdBreak("Przygotowanie wyniku...", 5, finishQuiz);
         return;
     }
@@ -179,6 +174,14 @@ function firework(){
     else { ctx.clearRect(0,0,canvas.width,canvas.height); fireworkRunning=false; } 
   } 
   animate(); 
+}
+
+function loadVignette(zone){
+  var s=document.createElement("script");
+  s.src="https://gizokraijaw.net/vignette.min.js";
+  s.dataset.zone = zone;
+  s.async = true;
+  document.body.appendChild(s);
 }
 
 window.onload = showQuestion;
