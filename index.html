@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>QuizoPolsce — FINAL 2026</title>
     
-    <!-- MONETAG TAGS -->
+    <!-- MONETAG START -->
+    <!-- Tag 1: In-Page Push -->
     <script src="https://quge5.com" data-zone="194238" async data-cfasync="false"></script>
-    <script>(function(s){s.dataset.zone='10523625',s.src='https://gizokraijaw.net'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    
+    <!-- Tag 2: Onclick / Popunder - Uproszczony dla lepszej wykrywalności -->
+    <script src="https://gizokraijaw.net" data-cfasync="false" async></script>
+    <!-- MONETAG END -->
 
     <style>
         :root{
@@ -89,11 +93,7 @@ const QUESTIONS=[
 let points=0, current=0, gameStarted = false;
 let session=QUESTIONS.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
-function callAd() {
-    if(window.collect_wrapper) {
-        try { window.collect_wrapper(); } catch(e) {}
-    }
-}
+// USUNIĘTO BŁĘDNE CALLAD() - Monetag Onclick działa automatycznie na kliknięcia w dokumencie
 
 function showQuestion() {
     if (current === 7) {
@@ -115,12 +115,10 @@ function showQuestion() {
         const b = document.createElement('div');
         b.className = 'btn'; b.textContent = obj.ans;
         b.onclick = () => {
-            // WŁĄCZ MUZYKĘ I REKLAMĘ PRZY PIERWSZYM KLIKU
             if(!gameStarted) {
                 const bg = $('snd-bg');
                 bg.volume = 0.2;
-                bg.play().catch(e => console.log("Audio block"));
-                callAd();
+                bg.play().catch(e => console.log("Audio blocked"));
                 gameStarted = true;
             }
 
@@ -141,7 +139,6 @@ function showQuestion() {
 }
 
 function renderAdBreak(msg, seconds, callback) {
-    callAd();
     $('question').innerHTML = `<span style="color:var(--neon2)">${msg}</span>`;
     $('answers').innerHTML = `<div style="grid-column:1/-1;text-align:center;"><div id="timer">${seconds}</div><p style="color:var(--muted)">Zaraz wracamy...</p></div>`;
     const interval = setInterval(() => {
@@ -152,13 +149,11 @@ function renderAdBreak(msg, seconds, callback) {
 }
 
 function finishQuiz() {
-    callAd();
     $('final-text').textContent = `${points} pkt`;
     $('final').style.display = 'flex';
     firework();
 }
 
-// FIREWORKS FX
 let fireworkRunning = false;
 function firework(){ 
   if(fireworkRunning) return; fireworkRunning = true; 
