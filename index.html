@@ -12,7 +12,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;align-items:center;padding:12px}
+body{display:flex;justify-content:center;align-items:center;padding:12px;position:relative;}
 .page{width:100%;max-width:520px;z-index:5}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -52,8 +52,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 
 <canvas id="fx"></canvas>
 
-<!-- GÓRNY BANER OD STARTU -->
-<div id="ad-top"></div>
+<!-- GÓRNY BANER OD STARTU (PRZYKLEJONY DO GÓRY) -->
+<div id="ad-top" style="position:fixed;top:0;left:0;width:100%;text-align:center;z-index:15;"></div>
 <script>
   const sTop = document.createElement('script');
   sTop.src = 'https://gizokraijaw.net/vignette.min.js';
