@@ -6,61 +6,21 @@
 <title>QuizoPolsce</title>
 
 <style>
-:root{
---bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
---n1:#00f0ff;--n2:#ff3fc4;--good:#16d36a;--bad:#ff5c6c;--accent:#ffd27a;
-}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;align-items:center;padding:12px}
-.page{width:100%;max-width:520px}
-.card{background:var(--card);border-radius:16px;padding:26px}
-
-.question{
-min-height:6rem;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:1.6rem;
-font-weight:800;
-margin-bottom:14px;
-}
-
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+body{margin:0;font-family:system-ui;background:#071025;color:#fff;padding-top:0}
+.page{max-width:520px;margin:auto;padding:12px}
+.card{background:#0b1220;border-radius:14px;padding:20px}
+.question{min-height:4.5rem;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.3rem;margin-bottom:12px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
+.btn{padding:14px;border-radius:12px;font-weight:700;color:#fff;background:linear-gradient(90deg,#00f0ff,#ff3fc4);cursor:pointer;text-align:center;user-select:none}
+.btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
+.btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
 
-.btn{
-padding:16px;border-radius:14px;font-weight:800;color:#fff;
-background:linear-gradient(90deg,var(--n1),var(--n2));
-cursor:pointer;text-align:center;
-}
-
-.btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
-.btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-
-#start,#final{
-position:fixed;inset:0;background:#020814ee;
-display:flex;align-items:center;justify-content:center;z-index:20
-}
+#start,#final{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:20}
 #final{display:none}
-
-.box{
-background:#081322;padding:40px;border-radius:16px;
-max-width:360px;width:90%;text-align:center
-}
-input{
-width:100%;padding:14px;border-radius:12px;
-border:2px solid var(--n1);background:#050c18;color:#fff;
-margin-bottom:18px;font-size:1rem;text-align:center
-}
-
-.ad-box{
-width:100%;
-display:flex;
-justify-content:center;
-margin:16px 0;
-}
+.box{background:#081322;padding:40px;border-radius:14px;max-width:360px;width:90%;text-align:center}
+input{width:100%;padding:14px;border-radius:12px;border:2px solid #00f0ff;background:#000;color:#fff;margin-bottom:16px;font-size:1rem;text-align:center}
+.ad-box{width:100%;display:flex;justify-content:center;margin:16px 0}
 </style>
 </head>
 
@@ -74,8 +34,7 @@ margin:16px 0;
 <!-- START -->
 <div id="start">
   <div class="box">
-    <h1 style="color:var(--n2)">QuizoPolsce</h1>
-    <p>Sprawdź swoją wiedzę 🇵🇱</p>
+    <h2>QuizoPolsce</h2>
     <input id="nick" placeholder="Twój nick" maxlength="15">
     <div class="btn" onclick="startGame()">START</div>
   </div>
@@ -86,20 +45,21 @@ margin:16px 0;
   <div class="card">
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
-    <div id="prog" style="margin-top:12px;font-size:.85rem;color:var(--muted);text-align:center"></div>
+    <div id="prog" style="margin-top:10px;color:#9fb6d6;font-size:.85rem;text-align:center"></div>
   </div>
 </div>
 
 <!-- KONIEC -->
 <div id="final">
   <div class="box">
-    <h1 style="color:var(--n2)">KONIEC</h1>
+    <h2>KONIEC</h2>
+
     <!-- 🔽 REKLAMA PRZED WYNIKIEM -->
     <div id="ad-end" class="ad-box">
       <script src="https://gizokraijaw.net/banner.js" data-zone="10552577"></script>
     </div>
 
-    <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
+    <div id="finalScore" style="font-size:2rem;color:#ffd27a;margin:20px 0"></div>
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
     <div class="btn" onclick="share()">Poleć znajomemu</div><br>
     <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
@@ -107,7 +67,7 @@ margin:16px 0;
 </div>
 
 <!-- AUDIO -->
-<audio id="bg" loop src="sounds/background.mp3"></audio>
+<audio id="bg" src="sounds/background.mp3" loop></audio>
 <audio id="ok" src="sounds/ding.mp3"></audio>
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
@@ -161,7 +121,7 @@ function show(){
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
       document.querySelectorAll(".btn").forEach(x=>x.onclick=null);
-      const snd=o.idx===q.c?ok:bad;
+      const snd=o.idx===q.c?document.getElementById("ok"):document.getElementById("bad");
       snd.currentTime=0; snd.play();
       if(o.idx===q.c) b.classList.add("good");
       else b.classList.add("bad");
@@ -187,4 +147,3 @@ function addHome(){pwa?pwa.prompt():alert("Niedostępne")}
 
 </body>
 </html>
-
