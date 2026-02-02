@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
 <style>
-body{margin:0;font-family:system-ui;background:#071025;color:#fff;padding-top:70px;}
+body{margin:0;font-family:system-ui;background:#071025;color:#fff;padding-top:70px;text-align:center;}
 #ad-top{position:fixed;top:0;left:0;width:100%;height:70px;background:#000;display:flex;align-items:center;justify-content:center;z-index:100;}
 .ad-box{width:100%;display:flex;justify-content:center;margin:20px 0;}
 .page{max-width:520px;margin:auto;padding:12px;}
 .card{background:#0b1220;border-radius:14px;padding:30px;}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px;}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px;justify-items:center;}
 @media(max-width:500px){.answers{grid-template-columns:1fr}}
-.btn{padding:18px;border-radius:12px;background:linear-gradient(90deg,#00f0ff,#ff3fc4);font-weight:700;text-align:center;font-size:1.1rem;cursor:pointer;user-select:none;}
+.btn{padding:18px;border-radius:12px;background:linear-gradient(90deg,#00f0ff,#ff3fc4);font-weight:700;text-align:center;font-size:1.1rem;cursor:pointer;user-select:none;min-width:120px;}
 .btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
 #start,#final{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:200;}
@@ -20,7 +20,7 @@ body{margin:0;font-family:system-ui;background:#071025;color:#fff;padding-top:70
 .box{background:#081322;padding:40px;border-radius:14px;width:90%;max-width:400px;text-align:center;}
 .box h2{font-size:2rem;margin-bottom:20px;}
 input{width:100%;padding:16px;border-radius:12px;border:2px solid #00f0ff;background:#000;color:#fff;margin-bottom:16px;font-size:1rem;}
-#q{font-size:1.3rem;font-weight:600;margin-bottom:10px;}
+#q{font-size:1.5rem;font-weight:700;margin-bottom:20px;}
 #prog{margin-top:10px;color:#9fb6d6;font-size:0.9rem;}
 #finalScore{font-size:2rem;color:#ffd27a;margin:20px 0;}
 iframe{border:0;overflow:hidden;}
@@ -30,7 +30,7 @@ iframe{border:0;overflow:hidden;}
 
 <!-- BANER GÓRA -->
 <div id="ad-top" class="ad-box">
-  <iframe src="https://gizokraijaw.net/banner_iframe.php?zone=10552577" width="320" height="50"></iframe>
+  <script src="https://monetag.com/banner.js" data-zone="10552577"></script>
 </div>
 
 <!-- START -->
@@ -51,7 +51,7 @@ iframe{border:0;overflow:hidden;}
 
     <!-- PO 7 PYTANIU -->
     <div id="ad-mid" class="ad-box" style="display:none">
-      <iframe src="https://gizokraijaw.net/banner_iframe.php?zone=10552582" width="320" height="50"></iframe>
+      <script src="https://monetag.com/banner.js" data-zone="10552582"></script>
     </div>
   </div>
 </div>
@@ -64,7 +64,7 @@ iframe{border:0;overflow:hidden;}
 
     <!-- PRZED WYNIKIEM -->
     <div id="ad-end" class="ad-box">
-      <iframe src="https://gizokraijaw.net/banner_iframe.php?zone=10552577" width="320" height="50"></iframe>
+      <script src="https://monetag.com/banner.js" data-zone="10552577"></script>
     </div>
 
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
@@ -79,7 +79,6 @@ iframe{border:0;overflow:hidden;}
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <script>
-// pytania
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
