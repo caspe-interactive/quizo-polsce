@@ -52,14 +52,10 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 
 <canvas id="fx"></canvas>
 
-<!-- GÓRNY BANER OD STARTU (PRZYKLEJONY DO GÓRY) -->
-<div id="ad-top" style="position:fixed;top:0;left:0;width:100%;text-align:center;z-index:15;"></div>
-<script>
-  const sTop = document.createElement('script');
-  sTop.src = 'https://gizokraijaw.net/vignette.min.js';
-  sTop.dataset.zone = '10552577';
-  document.getElementById('ad-top').appendChild(sTop);
-</script>
+<!-- GÓRNY BANER (PRZYKLEJONY DO GÓRY) -->
+<div id="ad-top" style="position:fixed;top:0;left:0;width:100%;text-align:center;z-index:15;">
+  <script src="https://gizokraijaw.net/vignette.min.js" data-zone="10552577"></script>
+</div>
 
 <!-- START -->
 <div id="start">
@@ -84,13 +80,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
 
     <!-- ŚRODKOWA REKLAMA PO 7 PYTANIU -->
-    <div id="ad-mid"></div>
-    <script>
-      const sMid = document.createElement('script');
-      sMid.src = 'https://gizokraijaw.net/vignette.min.js';
-      sMid.dataset.zone = '10552582';
-      document.getElementById('ad-mid').appendChild(sMid);
-    </script>
+    <div id="ad-mid">
+      <script src="https://gizokraijaw.net/vignette.min.js" data-zone="10552582"></script>
+    </div>
   </div>
 </div>
 
@@ -101,13 +93,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
 
     <!-- KOŃCOWA REKLAMA -->
-    <div id="ad-end"></div>
-    <script>
-      const sEnd = document.createElement('script');
-      sEnd.src = 'https://gizokraijaw.net/vignette.min.js';
-      sEnd.dataset.zone = '10552577';
-      document.getElementById('ad-end').appendChild(sEnd);
-    </script>
+    <div id="ad-end">
+      <script src="https://gizokraijaw.net/vignette.min.js" data-zone="10552577"></script>
+    </div>
 
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
     <div class="btn" onclick="share()">Poleć znajomemu</div><br>
