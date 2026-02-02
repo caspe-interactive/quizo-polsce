@@ -5,14 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
 
-<!-- MONETAG -->
-<!-- Górny baner od startu -->
-<div id="ad-top">
-  <script>
-    (function(s){s.dataset.zone='10552577',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-  </script>
-</div>
-
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -53,12 +45,21 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;font-size:1rem;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
-#ad-mid,#ad-end{margin:15px 0;text-align:center;}
+#ad-top,#ad-mid,#ad-end{margin:15px 0;text-align:center;}
 </style>
 </head>
 <body>
 
 <canvas id="fx"></canvas>
+
+<!-- GÓRNY BANER OD STARTU -->
+<div id="ad-top"></div>
+<script>
+  const sTop = document.createElement('script');
+  sTop.src = 'https://gizokraijaw.net/vignette.min.js';
+  sTop.dataset.zone = '10552577';
+  document.getElementById('ad-top').appendChild(sTop);
+</script>
 
 <!-- START -->
 <div id="start">
@@ -78,18 +79,18 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
       <div class="score">PKT: <span id="pts">0</span></div>
     </div>
 
-    <!-- pytanie -->
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
-
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
 
-    <!-- reklama po 7 pytaniu -->
-    <div id="ad-mid">
-      <script>
-        (function(s){s.dataset.zone='10552582',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-      </script>
-    </div>
+    <!-- ŚRODKOWA REKLAMA PO 7 PYTANIU -->
+    <div id="ad-mid"></div>
+    <script>
+      const sMid = document.createElement('script');
+      sMid.src = 'https://gizokraijaw.net/vignette.min.js';
+      sMid.dataset.zone = '10552582';
+      document.getElementById('ad-mid').appendChild(sMid);
+    </script>
   </div>
 </div>
 
@@ -99,12 +100,14 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <h1 style="color:var(--n2)">KONIEC</h1>
     <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
 
-    <!-- reklama przed końcem -->
-    <div id="ad-end">
-      <script>
-        (function(s){s.dataset.zone='10552577',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-      </script>
-    </div>
+    <!-- KOŃCOWA REKLAMA -->
+    <div id="ad-end"></div>
+    <script>
+      const sEnd = document.createElement('script');
+      sEnd.src = 'https://gizokraijaw.net/vignette.min.js';
+      sEnd.dataset.zone = '10552577';
+      document.getElementById('ad-end').appendChild(sEnd);
+    </script>
 
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
     <div class="btn" onclick="share()">Poleć znajomemu</div><br>
@@ -140,7 +143,7 @@ let i=0,pts=0,started=false,nick="Gracz";
 function startGame(){
   nick=document.getElementById("nick").value||"Gracz";
   const bg=document.getElementById("bg");
-  bg.volume=0.6; // głośniejsza muzyka
+  bg.volume=0.6;
   bg.play().catch(()=>{});
   started=true;
   document.getElementById("start").style.display="none";
