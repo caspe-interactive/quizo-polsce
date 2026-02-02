@@ -24,14 +24,15 @@ body{display:flex;justify-content:center;align-items:center;padding:12px;positio
 .btn{
 padding:14px;border-radius:12px;font-weight:800;color:#fff;
 background:linear-gradient(90deg,var(--n1),var(--n2));
-cursor:pointer;text-align:center;user-select:none
+cursor:pointer;text-align:center;user-select:none;border:none;font-family:inherit;
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
 
 #start,#final{
 position:fixed;inset:0;background:#020814ee;
-display:flex;align-items:center;justify-content:center;z-index:20
+display:flex;align-items:center;justify-content:center;z-index:20;
+touch-action: manipulation;
 }
 #final{display:none}
 
@@ -52,8 +53,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 
 <canvas id="fx"></canvas>
 
-<!-- GÓRNY BANER (PRZYKLEJONY DO GÓRY) -->
-<div id="ad-top" style="position:fixed;top:0;left:0;width:100%;text-align:center;z-index:15;">
+<!-- GÓRNY BANER (PRZYKLEJONY DO GÓRY, 60px) -->
+<div id="ad-top" style="position:fixed;top:0;left:0;width:100%;height:60px;text-align:center;z-index:15;display:block;">
   <script src="https://gizokraijaw.net/vignette.min.js" data-zone="10552577"></script>
 </div>
 
@@ -63,7 +64,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <h1 style="color:var(--n2)">QuizoPolsce</h1>
     <p>Sprawdź swoją wiedzę 🇵🇱</p>
     <input id="nick" placeholder="Twój nick" maxlength="15">
-    <div class="btn" onclick="startGame()">START</div>
+    <button class="btn" onclick="startGame()">START</button>
   </div>
 </div>
 
@@ -97,9 +98,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
       <script src="https://gizokraijaw.net/vignette.min.js" data-zone="10552577"></script>
     </div>
 
-    <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
-    <div class="btn" onclick="share()">Poleć znajomemu</div><br>
-    <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
+    <button class="btn" onclick="location.reload()">Zagraj ponownie</button><br>
+    <button class="btn" onclick="share()">Poleć znajomemu</button><br>
+    <button class="btn" onclick="addHome()">Zapisz na ekranie</button>
   </div>
 </div>
 
@@ -146,7 +147,7 @@ function show(){
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
-    const b=document.createElement("div");
+    const b=document.createElement("button");
     b.className="btn";b.textContent=o.t;
     b.onclick=()=>{
       document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
