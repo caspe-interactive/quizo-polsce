@@ -120,7 +120,7 @@ let i=0,pts=0,nick="Gracz",v7=false;
 function startGame(){
   nick=document.getElementById("nick").value||"Gracz";
   const bg=document.getElementById("bg");
-  bg.volume=0.4;
+  bg.volume=0.6;
   bg.play().catch(()=>{});
   document.getElementById("start").style.display="none";
   show();
