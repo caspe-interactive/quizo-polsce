@@ -6,78 +6,91 @@
 <title>QuizoPolsce</title>
 
 <style>
-:root{
---bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
---n1:#00f0ff;--n2:#ff3fc4;--good:#16d36a;--bad:#ff5c6c;--accent:#ffd27a;
+body{
+margin:0;font-family:system-ui;background:#071025;color:#fff;
+padding-top:70px;
 }
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{padding-top:60px}
-
-/* BANER GÓRA */
 #ad-top{
-position:fixed;top:0;left:0;width:100%;height:60px;
-background:#000;z-index:50;text-align:center;
+position:fixed;
+top:0;left:0;
+width:100%;
+height:70px;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:100;
 }
-
-.page{display:flex;justify-content:center;padding:12px}
-.card{background:var(--card);border-radius:14px;padding:22px;width:100%;max-width:520px}
-.top{display:flex;justify-content:space-between;margin-bottom:10px}
-.title{color:var(--n1);font-weight:800}
-.score{color:var(--accent);font-weight:700}
-.question{text-align:center;font-size:1.3rem;margin:15px 0}
+.ad-box{
+width:100%;
+display:flex;
+justify-content:center;
+margin:20px 0;
+}
+.page{
+max-width:520px;
+margin:auto;
+padding:12px;
+}
+.card{
+background:#0b1220;
+border-radius:14px;
+padding:20px;
+}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:450px){.answers{grid-template-columns:1fr}}
+@media(max-width:500px){.answers{grid-template-columns:1fr}}
 .btn{
-padding:16px;border-radius:12px;font-weight:800;color:#fff;
-background:linear-gradient(90deg,var(--n1),var(--n2));
-text-align:center;cursor:pointer
+padding:16px;
+border-radius:12px;
+background:linear-gradient(90deg,#00f0ff,#ff3fc4);
+font-weight:700;
+text-align:center;
+cursor:pointer;
 }
-.btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
-.btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-
-#ad-mid,#ad-end{margin:15px 0;text-align:center;display:none}
-
+.btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
+.btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
 #start,#final{
-position:fixed;inset:0;background:#020814ee;
-display:flex;align-items:center;justify-content:center;z-index:40
+position:fixed;inset:0;
+background:#020814ee;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:200
 }
 #final{display:none}
-
 .box{
-background:#081322;padding:40px;border-radius:14px;
-max-width:360px;width:90%;text-align:center
+background:#081322;
+padding:30px;
+border-radius:14px;
+width:90%;
+max-width:360px;
+text-align:center;
 }
 input{
-width:100%;padding:14px;border-radius:12px;
-border:2px solid var(--n1);background:#050c18;color:#fff;
-margin-bottom:18px;font-size:1rem;text-align:center
+width:100%;
+padding:14px;
+border-radius:12px;
+border:2px solid #00f0ff;
+background:#000;
+color:#fff;
+margin-bottom:16px;
 }
-
-canvas{position:fixed;inset:0;pointer-events:none;z-index:30}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:50}
 </style>
 </head>
-
 <body>
 
 <canvas id="fx"></canvas>
 
-<!-- BANER GÓRA -->
+<!-- 🔝 BANER GÓRA -->
 <div id="ad-top">
-<script>
-(function(s){
-s.dataset.zone='10552577';
-s.src='https://gizokraijaw.net/vignette.min.js';
-document.body.appendChild(s);
-})(document.createElement('script'));
-</script>
+<script src="https://gizokraijaw.net/banner.js" data-zone="10552577"></script>
 </div>
 
 <!-- START -->
 <div id="start">
   <div class="box">
-    <h1 style="color:var(--n2)">QuizoPolsce</h1>
-    <p>Sprawdź swoją wiedzę 🇵🇱</p>
+    <h2>QuizoPolsce</h2>
     <input id="nick" placeholder="Twój nick">
     <div class="btn" onclick="startGame()">START</div>
   </div>
@@ -85,43 +98,27 @@ document.body.appendChild(s);
 
 <!-- QUIZ -->
 <div class="page">
-<div class="card">
-  <div class="top">
-    <div class="title">QuizoPolsce</div>
-    <div class="score">PKT: <span id="pts">0</span></div>
-  </div>
+  <div class="card">
+    <div id="q"></div>
+    <div id="a" class="answers"></div>
+    <div id="prog" style="margin-top:10px;color:#9fb6d6;font-size:.85rem"></div>
 
-  <div id="q" class="question"></div>
-  <div id="a" class="answers"></div>
-  <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-
-  <!-- PO 7 PYTANIU -->
-  <div id="ad-mid">
-    <script>
-    (function(s){
-      s.dataset.zone='10552582';
-      s.src='https://gizokraijaw.net/vignette.min.js';
-      document.body.appendChild(s);
-    })(document.createElement('script'));
-    </script>
+    <!-- 📢 PO 7 PYTANIU -->
+    <div id="ad-mid" class="ad-box" style="display:none">
+      <script src="https://gizokraijaw.net/banner.js" data-zone="10552582"></script>
+    </div>
   </div>
-</div>
 </div>
 
 <!-- KONIEC -->
 <div id="final">
   <div class="box">
-    <h1 style="color:var(--n2)">KONIEC</h1>
-    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
+    <h2>KONIEC</h2>
+    <div id="finalScore" style="font-size:2rem;color:#ffd27a;margin:20px 0"></div>
 
-    <div id="ad-end">
-      <script>
-      (function(s){
-        s.dataset.zone='10552577';
-        s.src='https://gizokraijaw.net/vignette.min.js';
-        document.body.appendChild(s);
-      })(document.createElement('script'));
-      </script>
+    <!-- 📢 PRZED WYNIKIEM -->
+    <div id="ad-end" class="ad-box">
+      <script src="https://gizokraijaw.net/banner.js" data-zone="10552577"></script>
     </div>
 
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
@@ -158,31 +155,25 @@ let i=0,pts=0,nick="Gracz",pwaPrompt=null;
 function startGame(){
 nick=document.getElementById("nick").value||"Gracz";
 document.getElementById("start").style.display="none";
-const bg=document.getElementById("bg");
-bg.volume=0.5;bg.currentTime=0;bg.play().catch(()=>{});
+const bg=document.getElementById("bg"); bg.volume=0.5; bg.play().catch(()=>{});
 show();
 }
 
 function show(){
 if(i>=Q.length){end();return;}
 const q=Q[i];
-q && (document.getElementById("q").textContent=q.q);
+document.getElementById("q").textContent=q.q;
 document.getElementById("a").innerHTML="";
 document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
-if(i===7) document.getElementById("ad-mid").style.display="block";
+if(i===7) document.getElementById("ad-mid").style.display="flex";
 
 q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
 const b=document.createElement("div");
-b.className="btn";b.textContent=o.t;
+b.className="btn"; b.textContent=o.t;
 b.onclick=()=>{
 document.querySelectorAll(".btn").forEach(x=>x.onclick=null);
-if(o.idx===q.c){
-pts++;b.classList.add("good");
-ok.currentTime=0;ok.play();fire();
-}else{
-b.classList.add("bad");
-bad.currentTime=0;bad.play();
-}
+if(o.idx===q.c){ pts++; document.getElementById("ok").play(); fire(); b.classList.add("good"); }
+else{ document.getElementById("bad").play(); b.classList.add("bad"); }
 document.getElementById("pts").textContent=pts;
 setTimeout(()=>{i++;show()},800);
 };
@@ -192,7 +183,6 @@ document.getElementById("a").appendChild(b);
 
 function end(){
 document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
-document.getElementById("ad-end").style.display="block";
 document.getElementById("final").style.display="flex";
 fire();
 }
@@ -203,29 +193,23 @@ c.width=innerWidth;c.height=innerHeight;
 let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
 for(let b=0;b<4;b++){
 let sx=Math.random()*c.width,sy=Math.random()*c.height*0.4;
-for(let i=0;i<40;i++)
-p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+for(let i=0;i<40;i++) p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
 }
 (function a(){
 x.clearRect(0,0,c.width,c.height);
 for(let i=p.length-1;i>=0;i--){
-let o=p[i];
-x.globalAlpha=o.a;x.fillStyle=o.c;
-x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
-o.x+=o.vx;o.y+=o.vy;o.vy+=0.15;o.a-=0.02;
-if(o.a<=0)p.splice(i,1);
+let o=p[i]; x.globalAlpha=o.a; x.fillStyle=o.c;
+x.beginPath(); x.arc(o.x,o.y,2,0,7); x.fill();
+o.x+=o.vx; o.y+=o.vy; o.vy+=0.15; o.a-=0.02;
+if(o.a<=0) p.splice(i,1);
 }
-p.length&&requestAnimationFrame(a);
+if(p.length) requestAnimationFrame(a);
 })();
 }
 
-window.addEventListener("beforeinstallprompt",e=>{
-e.preventDefault();pwaPrompt=e;
-});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwaPrompt=e;});
 function addHome(){pwaPrompt?pwaPrompt.prompt():alert("Niedostępne")}
-function share(){
-navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href);
-}
+function share(){navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href);}
 </script>
 
 </body>
