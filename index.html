@@ -14,14 +14,10 @@
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{padding-top:60px}
 
+/* GÓRNY BANER */
 #ad-top{
-position:fixed;
-top:0;left:0;
-width:100%;
-height:60px;
-z-index:30;
-background:#000;
-text-align:center;
+position:fixed;top:0;left:0;width:100%;height:60px;
+background:#000;z-index:50;text-align:center;
 }
 
 .page{display:flex;justify-content:center;padding:12px}
@@ -57,12 +53,17 @@ width:100%;padding:14px;border-radius:12px;
 border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;font-size:1rem;text-align:center
 }
+
+canvas{position:fixed;inset:0;pointer-events:none;z-index:30}
 </style>
 </head>
 
 <body>
 
-<!-- GÓRNY BANER -->
+<!-- CANVAS FAJERWERKI -->
+<canvas id="fx"></canvas>
+
+<!-- BANER GÓRA -->
 <div id="ad-top">
 <script>
 (function(s){
@@ -129,6 +130,10 @@ document.body.appendChild(s);
   </div>
 </div>
 
+<!-- AUDIO -->
+<audio id="ok" src="sounds/ding.mp3"></audio>
+<audio id="bad" src="sounds/buzzer.mp3"></audio>
+
 <script>
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
@@ -161,7 +166,6 @@ const q=Q[i];
 document.getElementById("q").textContent=q.q;
 document.getElementById("a").innerHTML="";
 document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
-
 if(i===7) document.getElementById("ad-mid").style.display="block";
 
 q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
@@ -169,8 +173,14 @@ const b=document.createElement("div");
 b.className="btn";b.textContent=o.t;
 b.onclick=()=>{
 document.querySelectorAll(".btn").forEach(x=>x.onclick=null);
-if(o.idx===q.c){pts++;b.classList.add("good")}
-else b.classList.add("bad");
+if(o.idx===q.c){
+pts++;b.classList.add("good");
+ok.currentTime=0;ok.play();
+fire();
+}else{
+b.classList.add("bad");
+bad.currentTime=0;bad.play();
+}
 document.getElementById("pts").textContent=pts;
 setTimeout(()=>{i++;show()},800);
 };
@@ -182,6 +192,30 @@ function end(){
 document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
 document.getElementById("ad-end").style.display="block";
 document.getElementById("final").style.display="flex";
+fire();
+}
+
+/* FAJERWERKI */
+function fire(){
+const c=document.getElementById("fx"),x=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
+let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+for(let b=0;b<4;b++){
+let sx=Math.random()*c.width,sy=Math.random()*c.height*0.4;
+for(let i=0;i<40;i++)
+p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+}
+(function a(){
+x.clearRect(0,0,c.width,c.height);
+for(let i=p.length-1;i>=0;i--){
+let o=p[i];
+x.globalAlpha=o.a;x.fillStyle=o.c;
+x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
+o.x+=o.vx;o.y+=o.vy;o.vy+=0.15;o.a-=0.02;
+if(o.a<=0)p.splice(i,1);
+}
+p.length&&requestAnimationFrame(a);
+})();
 }
 </script>
 
