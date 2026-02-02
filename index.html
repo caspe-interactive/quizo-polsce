@@ -88,16 +88,10 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 
 <!-- AUDIO -->
 <audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="ok" src="sounds/ding.mp3" preload="auto"></audio>
-<audio id="bad" src="sounds/buzzer.mp3" preload="auto"></audio>
+<audio id="ok" src="sounds/ding.mp3"></audio>
+<audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <script>
-// 🔴 VIGNETTE – START
-(function(s){
-  s.dataset.zone='10552577';
-  s.src='https://gizokraijaw.net/vignette.min.js';
-})(document.body.appendChild(document.createElement('script')));
-
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -115,27 +109,22 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="Gracz",v7=false;
+let i=0,pts=0,started=false,nick="Gracz";
 
 function startGame(){
   nick=document.getElementById("nick").value||"Gracz";
+
   const bg=document.getElementById("bg");
-  bg.volume=0.6;
+  bg.volume=0.7; // podgłośniona muzyka
   bg.play().catch(()=>{});
+  started=true;
+
   document.getElementById("start").style.display="none";
   show();
 }
 
 function show(){
   if(i>=Q.length){end();return;}
-  if(i===7 && !v7){
-    v7=true;
-    (function(s){
-      s.dataset.zone='10552582';
-      s.src='https://gizokraijaw.net/vignette.min.js';
-    })(document.body.appendChild(document.createElement('script')));
-  }
-
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
@@ -145,11 +134,23 @@ function show(){
     const b=document.createElement("div");
     b.className="btn";b.textContent=o.t;
     b.onclick=()=>{
+      if(!started){ // na wszelki wypadek
+        const bg=document.getElementById("bg");
+        bg.volume=0.7;
+        bg.play().catch(()=>{});
+        started=true;
+      } else {
+        document.getElementById("bg").play().catch(()=>{}); // wymuszenie kontynuacji na telefonie
+      }
+
       document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
-      const snd=o.idx===q.c?document.getElementById("ok"):document.getElementById("bad");
-      snd.currentTime=0;snd.play();
-      if(o.idx===q.c){pts++;b.classList.add("good");fire();}
-      else b.classList.add("bad");
+      if(o.idx===q.c){
+        pts++;b.classList.add("good");
+        document.getElementById("ok").play();fire();
+      }else{
+        b.classList.add("bad");
+        document.getElementById("bad").play();
+      }
       document.getElementById("pts").textContent=pts;
       setTimeout(()=>{i++;show()},900);
     };
@@ -193,5 +194,6 @@ function fire(){
   })();
 }
 </script>
+
 </body>
 </html>
