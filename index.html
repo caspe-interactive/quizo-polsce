@@ -6,113 +6,30 @@
 <title>QuizoPolsce</title>
 
 <style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#071025;
-  color:#fff;
-  padding-top:70px;
-}
-#ad-top{
-  position:fixed;
-  top:0; left:0;
-  width:100%;
-  height:70px;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:100;
-}
-.ad-box{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  margin:20px 0;
-}
-.page{
-  max-width:520px;
-  margin:auto;
-  padding:12px;
-}
-.card{
-  background:#0b1220;
-  border-radius:14px;
-  padding:30px;
-}
-.answers{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  margin-top:20px;
-}
+body{margin:0;font-family:system-ui;background:#071025;color:#fff;padding-top:70px;}
+#ad-top{position:fixed;top:0;left:0;width:100%;height:70px;background:#000;display:flex;align-items:center;justify-content:center;z-index:100;}
+.ad-box{width:100%;display:flex;justify-content:center;margin:20px 0;}
+.page{max-width:520px;margin:auto;padding:12px;}
+.card{background:#0b1220;border-radius:14px;padding:30px;}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px;}
 @media(max-width:500px){.answers{grid-template-columns:1fr}}
-.btn{
-  padding:18px;
-  border-radius:12px;
-  background:linear-gradient(90deg,#00f0ff,#ff3fc4);
-  font-weight:700;
-  text-align:center;
-  font-size:1.1rem;
-  cursor:pointer;
-  user-select:none;
-}
+.btn{padding:18px;border-radius:12px;background:linear-gradient(90deg,#00f0ff,#ff3fc4);font-weight:700;text-align:center;font-size:1.1rem;cursor:pointer;user-select:none;}
 .btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
-#start,#final{
-  position:fixed; inset:0;
-  background:#020814ee;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:200;
-}
+#start,#final{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:200;}
 #final{display:none}
-.box{
-  background:#081322;
-  padding:40px;
-  border-radius:14px;
-  width:90%;
-  max-width:400px;
-  text-align:center;
-}
-.box h2{
-  font-size:2rem;
-  margin-bottom:20px;
-}
-input{
-  width:100%;
-  padding:16px;
-  border-radius:12px;
-  border:2px solid #00f0ff;
-  background:#000;
-  color:#fff;
-  margin-bottom:16px;
-  font-size:1rem;
-}
-#q{
-  font-size:1.3rem;
-  font-weight:600;
-  margin-bottom:10px;
-}
-#prog{
-  margin-top:10px;
-  color:#9fb6d6;
-  font-size:0.9rem;
-}
-#finalScore{
-  font-size:2rem;
-  color:#ffd27a;
-  margin:20px 0;
-}
+.box{background:#081322;padding:40px;border-radius:14px;width:90%;max-width:400px;text-align:center;}
+.box h2{font-size:2rem;margin-bottom:20px;}
+input{width:100%;padding:16px;border-radius:12px;border:2px solid #00f0ff;background:#000;color:#fff;margin-bottom:16px;font-size:1rem;}
+#q{font-size:1.3rem;font-weight:600;margin-bottom:10px;}
+#prog{margin-top:10px;color:#9fb6d6;font-size:0.9rem;}
+#finalScore{font-size:2rem;color:#ffd27a;margin:20px 0;}
 </style>
 </head>
 <body>
 
-<!-- 🔝 BANER GÓRA -->
 <div id="ad-top"></div>
 
-<!-- START -->
 <div id="start">
   <div class="box">
     <h2>QuizoPolsce</h2>
@@ -121,52 +38,48 @@ input{
   </div>
 </div>
 
-<!-- QUIZ -->
 <div class="page">
   <div class="card">
     <div id="q"></div>
     <div id="a" class="answers"></div>
     <div id="prog"></div>
-
-    <!-- 📢 PO 7 PYTANIU -->
     <div id="ad-mid" class="ad-box" style="display:none"></div>
   </div>
 </div>
 
-<!-- KONIEC -->
 <div id="final">
   <div class="box">
     <h2>KONIEC</h2>
     <div id="finalScore"></div>
-
-    <!-- 📢 PRZED WYNIKIEM -->
     <div id="ad-end" class="ad-box"></div>
-
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
     <div class="btn" onclick="share()">Poleć znajomemu</div><br>
     <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
   </div>
 </div>
 
-<!-- AUDIO -->
 <audio id="bg" src="sounds/background.mp3" loop></audio>
 <audio id="ok" src="sounds/ding.mp3"></audio>
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <script>
-// konfiguracja reklam Render + Gizokraijaw
-function loadAds(){
-  const top=document.getElementById('ad-top');
-  const mid=document.getElementById('ad-mid');
-  const end=document.getElementById('ad-end');
-
-  top.innerHTML='<script src="https://gizokraijaw.net/banner.js" data-zone="10552577"><\/script>';
-  mid.innerHTML='<script src="https://gizokraijaw.net/banner.js" data-zone="10552582"><\/script>';
-  end.innerHTML='<script src="https://gizokraijaw.net/banner.js" data-zone="10552577"><\/script>';
+// funkcja do wstawiania reklam na Render
+function insertAd(containerId, zoneId){
+  const container=document.getElementById(containerId);
+  container.innerHTML=''; // wyczyść zawartość
+  const s=document.createElement('script');
+  s.src='https://gizokraijaw.net/banner.js';
+  s.setAttribute('data-zone', zoneId);
+  s.async=true;
+  container.appendChild(s);
 }
-loadAds();
 
-// pytania quizu
+// wstaw wszystkie reklamy
+insertAd('ad-top','10552577');
+insertAd('ad-mid','10552582');
+insertAd('ad-end','10552577');
+
+// pytania
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
