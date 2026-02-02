@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
-
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -12,7 +11,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;align-items:center;padding:12px;position:relative;}
+body{display:flex;justify-content:center;align-items:flex-start;padding-top:60px;}
 .page{width:100%;max-width:520px;z-index:5}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -25,6 +24,7 @@ body{display:flex;justify-content:center;align-items:center;padding:12px;positio
 padding:14px;border-radius:12px;font-weight:800;color:#fff;
 background:linear-gradient(90deg,var(--n1),var(--n2));
 cursor:pointer;text-align:center;user-select:none;border:none;font-family:inherit;
+font-size:1rem;line-height:1.2;
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
@@ -48,14 +48,15 @@ margin-bottom:18px;font-size:1rem;text-align:center
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 #ad-top,#ad-mid,#ad-end{margin:15px 0;text-align:center;}
 #ad-mid,#ad-end{display:none;} /* ukryte na start */
+#final .btn{margin-bottom:10px;}
 </style>
 </head>
 <body>
 
 <canvas id="fx"></canvas>
 
-<!-- GÓRNY BANER (PRZYKLEJONY DO GÓRY, 60px) -->
-<div id="ad-top" style="position:fixed;top:0;left:0;width:100%;height:60px;text-align:center;z-index:15;display:block;">
+<!-- GÓRNY BANER PRZYKLEJONY DO GÓRY -->
+<div id="ad-top" style="position:fixed;top:0;left:0;width:100%;height:60px;text-align:center;z-index:15;background:#071025;">
   <script src="https://gizokraijaw.net/vignette.min.js" data-zone="10552577"></script>
 </div>
 
@@ -65,7 +66,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <h1 style="color:var(--n2)">QuizoPolsce</h1>
     <p>Sprawdź swoją wiedzę 🇵🇱</p>
     <input id="nick" placeholder="Twój nick" maxlength="15">
-    <button class="btn" onclick="startGame()">START</button>
+    <div class="btn" onclick="startGame()">START</div>
   </div>
 </div>
 
@@ -99,9 +100,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
       <script src="https://gizokraijaw.net/vignette.min.js" data-zone="10552577"></script>
     </div>
 
-    <button class="btn" onclick="location.reload()">Zagraj ponownie</button><br>
-    <button class="btn" onclick="share()">Poleć znajomemu</button><br>
-    <button class="btn" onclick="addHome()">Zapisz na ekranie</button>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
+    <div class="btn" onclick="share()">Poleć znajomemu</div><br>
+    <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
   </div>
 </div>
 
@@ -147,7 +148,6 @@ function show(){
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  // Pokaż środkową reklamę dopiero po 7 pytaniu
   const adMid = document.getElementById("ad-mid");
   if(i===7){
     adMid.style.display = "block";
@@ -156,7 +156,7 @@ function show(){
   }
 
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
-    const b=document.createElement("button");
+    const b=document.createElement("div");
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
       document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
@@ -176,9 +176,7 @@ function show(){
 }
 
 function end(){
-  // Pokaż końcową reklamę przed wynikiem
   document.getElementById("ad-end").style.display = "block";
-
   document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
   document.getElementById("final").style.display="flex";
   fire();
