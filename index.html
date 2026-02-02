@@ -14,7 +14,7 @@
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{padding-top:60px}
 
-/* GÓRNY BANER */
+/* BANER GÓRA */
 #ad-top{
 position:fixed;top:0;left:0;width:100%;height:60px;
 background:#000;z-index:50;text-align:center;
@@ -60,7 +60,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:30}
 
 <body>
 
-<!-- CANVAS FAJERWERKI -->
 <canvas id="fx"></canvas>
 
 <!-- BANER GÓRA -->
@@ -126,11 +125,13 @@ document.body.appendChild(s);
     </div>
 
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
-    <div class="btn" onclick="navigator.share({url:location.href})">Poleć</div>
+    <div class="btn" onclick="share()">Poleć znajomemu</div><br>
+    <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
   </div>
 </div>
 
 <!-- AUDIO -->
+<audio id="bg" src="sounds/background.mp3" loop></audio>
 <audio id="ok" src="sounds/ding.mp3"></audio>
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
@@ -152,18 +153,20 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="Gracz";
+let i=0,pts=0,nick="Gracz",pwaPrompt=null;
 
 function startGame(){
 nick=document.getElementById("nick").value||"Gracz";
 document.getElementById("start").style.display="none";
+const bg=document.getElementById("bg");
+bg.volume=0.5;bg.currentTime=0;bg.play().catch(()=>{});
 show();
 }
 
 function show(){
 if(i>=Q.length){end();return;}
 const q=Q[i];
-document.getElementById("q").textContent=q.q;
+q && (document.getElementById("q").textContent=q.q);
 document.getElementById("a").innerHTML="";
 document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 if(i===7) document.getElementById("ad-mid").style.display="block";
@@ -175,8 +178,7 @@ b.onclick=()=>{
 document.querySelectorAll(".btn").forEach(x=>x.onclick=null);
 if(o.idx===q.c){
 pts++;b.classList.add("good");
-ok.currentTime=0;ok.play();
-fire();
+ok.currentTime=0;ok.play();fire();
 }else{
 b.classList.add("bad");
 bad.currentTime=0;bad.play();
@@ -195,7 +197,6 @@ document.getElementById("final").style.display="flex";
 fire();
 }
 
-/* FAJERWERKI */
 function fire(){
 const c=document.getElementById("fx"),x=c.getContext("2d");
 c.width=innerWidth;c.height=innerHeight;
@@ -216,6 +217,14 @@ if(o.a<=0)p.splice(i,1);
 }
 p.length&&requestAnimationFrame(a);
 })();
+}
+
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();pwaPrompt=e;
+});
+function addHome(){pwaPrompt?pwaPrompt.prompt():alert("Niedostępne")}
+function share(){
+navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href);
 }
 </script>
 
