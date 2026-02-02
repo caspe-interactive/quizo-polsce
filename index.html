@@ -4,33 +4,96 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
+
 <style>
-body{margin:0;font-family:system-ui;background:#071025;color:#fff;padding-top:70px;text-align:center;}
-#ad-top{position:fixed;top:0;left:0;width:100%;height:70px;background:#000;display:flex;align-items:center;justify-content:center;z-index:100;}
-.ad-box{width:100%;display:flex;justify-content:center;margin:20px 0;}
-.page{max-width:520px;margin:auto;padding:12px;}
-.card{background:#0b1220;border-radius:14px;padding:30px;}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px;justify-items:center;}
-@media(max-width:500px){.answers{grid-template-columns:1fr}}
-.btn{padding:18px;border-radius:12px;background:linear-gradient(90deg,#00f0ff,#ff3fc4);font-weight:700;text-align:center;font-size:1.1rem;cursor:pointer;user-select:none;min-width:120px;}
+body{
+margin:0;font-family:system-ui;background:#071025;color:#fff;
+padding-top:70px;
+}
+#ad-top{
+position:fixed;
+top:0;left:0;
+width:100%;
+height:70px;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:100;
+}
+.ad-box{
+width:100%;
+display:flex;
+justify-content:center;
+margin:20px 0;
+}
+.page{
+max-width:520px;
+margin:auto;
+padding:12px;
+}
+.card{
+background:#0b1220;
+border-radius:14px;
+padding:24px;
+}
+#q{
+text-align:center;
+font-size:1.5rem;
+font-weight:700;
+margin-bottom:18px;
+}
+.answers{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+@media(max-width:500px){
+.answers{grid-template-columns:1fr}
+}
+.btn{
+padding:16px;
+border-radius:12px;
+background:linear-gradient(90deg,#00f0ff,#ff3fc4);
+font-weight:700;
+text-align:center;
+cursor:pointer;
+}
 .btn.good{background:linear-gradient(90deg,#16d36a,#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,#ff5c6c,#ff8a94)}
-#start,#final{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:200;}
+#start,#final{
+position:fixed;inset:0;
+background:#020814ee;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:200
+}
 #final{display:none}
-.box{background:#081322;padding:40px;border-radius:14px;width:90%;max-width:400px;text-align:center;}
-.box h2{font-size:2rem;margin-bottom:20px;}
-input{width:100%;padding:16px;border-radius:12px;border:2px solid #00f0ff;background:#000;color:#fff;margin-bottom:16px;font-size:1rem;}
-#q{font-size:1.5rem;font-weight:700;margin-bottom:20px;}
-#prog{margin-top:10px;color:#9fb6d6;font-size:0.9rem;}
-#finalScore{font-size:2rem;color:#ffd27a;margin:20px 0;}
-iframe{border:0;overflow:hidden;}
+.box{
+background:#081322;
+padding:30px;
+border-radius:14px;
+width:90%;
+max-width:360px;
+text-align:center;
+}
+input{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:2px solid #00f0ff;
+background:#000;
+color:#fff;
+margin-bottom:16px;
+}
 </style>
 </head>
 <body>
 
-<!-- BANER GÓRA -->
-<div id="ad-top" class="ad-box">
-  <script src="https://monetag.com/banner.js" data-zone="10552577"></script>
+<!-- 🔝 BANER GÓRA -->
+<div id="ad-top">
+<script src="https://monetag.com/banner.js" data-zone="10552577"></script>
 </div>
 
 <!-- START -->
@@ -47,9 +110,9 @@ iframe{border:0;overflow:hidden;}
   <div class="card">
     <div id="q"></div>
     <div id="a" class="answers"></div>
-    <div id="prog"></div>
+    <div id="prog" style="margin-top:10px;color:#9fb6d6;font-size:.85rem"></div>
 
-    <!-- PO 7 PYTANIU -->
+    <!-- 📢 PO 7 PYTANIU -->
     <div id="ad-mid" class="ad-box" style="display:none">
       <script src="https://monetag.com/banner.js" data-zone="10552582"></script>
     </div>
@@ -60,10 +123,10 @@ iframe{border:0;overflow:hidden;}
 <div id="final">
   <div class="box">
     <h2>KONIEC</h2>
-    <div id="finalScore"></div>
+    <div id="finalScore" style="font-size:2rem;color:#ffd27a;margin:20px 0"></div>
 
-    <!-- PRZED WYNIKIEM -->
-    <div id="ad-end" class="ad-box">
+    <!-- 📢 PRZED WYNIKIEM -->
+    <div class="ad-box">
       <script src="https://monetag.com/banner.js" data-zone="10552577"></script>
     </div>
 
@@ -99,36 +162,38 @@ const Q=[
 let i=0,pts=0,nick="Gracz",pwaPrompt=null;
 
 function startGame(){
-  nick=document.getElementById("nick").value||"Gracz";
-  document.getElementById("start").style.display="none";
-  const bg=document.getElementById("bg"); bg.volume=0.5; bg.play().catch(()=>{});
-  show();
+nick=document.getElementById("nick").value||"Gracz";
+document.getElementById("start").style.display="none";
+const bg=document.getElementById("bg"); bg.volume=0.5; bg.play().catch(()=>{});
+show();
 }
 
 function show(){
-  if(i>=Q.length){end();return;}
-  const q=Q[i];
-  document.getElementById("q").textContent=q.q;
-  document.getElementById("a").innerHTML="";
-  document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
-  if(i===6) document.getElementById("ad-mid").style.display="flex";
+if(i>=Q.length){end();return;}
+const q=Q[i];
+document.getElementById("q").textContent=q.q;
+document.getElementById("a").innerHTML="";
+document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
+if(i===6) document.getElementById("ad-mid").style.display="flex";
 
-  q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
-    const b=document.createElement("div");
-    b.className="btn"; b.textContent=o.t;
-    b.onclick=()=>{
-      document.querySelectorAll(".btn").forEach(x=>x.onclick=null);
-      if(o.idx===q.c){ pts++; document.getElementById("ok").play(); b.classList.add("good"); }
-      else{ document.getElementById("bad").play(); b.classList.add("bad"); }
-      setTimeout(()=>{i++;show()},800);
-    };
-    document.getElementById("a").appendChild(b);
-  });
+q.a.map((t,idx)=>({t,idx}))
+.sort(()=>Math.random()-0.5)
+.forEach(o=>{
+const b=document.createElement("div");
+b.className="btn"; b.textContent=o.t;
+b.onclick=()=>{
+document.querySelectorAll("#a .btn").forEach(x=>x.onclick=null);
+if(o.idx===q.c){ pts++; document.getElementById("ok").play(); b.classList.add("good"); }
+else{ document.getElementById("bad").play(); b.classList.add("bad"); }
+setTimeout(()=>{i++;show()},800);
+};
+document.getElementById("a").appendChild(b);
+});
 }
 
 function end(){
-  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
-  document.getElementById("final").style.display="flex";
+document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+document.getElementById("final").style.display="flex";
 }
 
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwaPrompt=e;});
