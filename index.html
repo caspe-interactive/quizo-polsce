@@ -75,12 +75,10 @@ background:#000;
 color:#fff;
 margin-bottom:16px;
 }
-canvas{position:fixed;inset:0;pointer-events:none;z-index:50}
+#pts{margin-top:10px;color:#ffd27a;font-weight:700;font-size:1.2rem}
 </style>
 </head>
 <body>
-
-<canvas id="fx"></canvas>
 
 <!-- 🔝 BANER GÓRA -->
 <div id="ad-top">
@@ -102,6 +100,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:50}
     <div id="q"></div>
     <div id="a" class="answers"></div>
     <div id="prog" style="margin-top:10px;color:#9fb6d6;font-size:.85rem"></div>
+    <div id="pts">0 pkt</div>
 
     <!-- 📢 PO 7 PYTANIU -->
     <div id="ad-mid" class="ad-box" style="display:none">
@@ -133,6 +132,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:50}
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <script>
+// pytania quizu
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -152,6 +152,7 @@ const Q=[
 
 let i=0,pts=0,nick="Gracz",pwaPrompt=null;
 
+// start gry
 function startGame(){
 nick=document.getElementById("nick").value||"Gracz";
 document.getElementById("start").style.display="none";
@@ -159,54 +160,37 @@ const bg=document.getElementById("bg"); bg.volume=0.5; bg.play().catch(()=>{});
 show();
 }
 
+// pokazanie pytania
 function show(){
 if(i>=Q.length){end();return;}
 const q=Q[i];
 document.getElementById("q").textContent=q.q;
 document.getElementById("a").innerHTML="";
 document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
-if(i===7) document.getElementById("ad-mid").style.display="flex";
+document.getElementById("pts").textContent=`${pts} pkt`;
+if(i===6) document.getElementById("ad-mid").style.display="flex";
 
 q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
 const b=document.createElement("div");
 b.className="btn"; b.textContent=o.t;
 b.onclick=()=>{
 document.querySelectorAll(".btn").forEach(x=>x.onclick=null);
-if(o.idx===q.c){ pts++; document.getElementById("ok").play(); fire(); b.classList.add("good"); }
+if(o.idx===q.c){ pts++; document.getElementById("ok").play(); b.classList.add("good"); }
 else{ document.getElementById("bad").play(); b.classList.add("bad"); }
-document.getElementById("pts").textContent=pts;
+document.getElementById("pts").textContent=`${pts} pkt`;
 setTimeout(()=>{i++;show()},800);
 };
 document.getElementById("a").appendChild(b);
 });
 }
 
+// koniec quizu
 function end(){
 document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
 document.getElementById("final").style.display="flex";
-fire();
 }
 
-function fire(){
-const c=document.getElementById("fx"),x=c.getContext("2d");
-c.width=innerWidth;c.height=innerHeight;
-let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
-for(let b=0;b<4;b++){
-let sx=Math.random()*c.width,sy=Math.random()*c.height*0.4;
-for(let i=0;i<40;i++) p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
-}
-(function a(){
-x.clearRect(0,0,c.width,c.height);
-for(let i=p.length-1;i>=0;i--){
-let o=p[i]; x.globalAlpha=o.a; x.fillStyle=o.c;
-x.beginPath(); x.arc(o.x,o.y,2,0,7); x.fill();
-o.x+=o.vx; o.y+=o.vy; o.vy+=0.15; o.a-=0.02;
-if(o.a<=0) p.splice(i,1);
-}
-if(p.length) requestAnimationFrame(a);
-})();
-}
-
+// PWA i udostępnianie
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwaPrompt=e;});
 function addHome(){pwaPrompt?pwaPrompt.prompt():alert("Niedostępne")}
 function share(){navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href);}
