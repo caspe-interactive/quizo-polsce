@@ -45,12 +45,24 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;font-size:1rem;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
+
+#ad-top{width:100%;text-align:center;margin-bottom:10px}
 </style>
 </head>
 
 <body>
 
 <canvas id="fx"></canvas>
+
+<!-- REKLAMA GÓRNA -->
+<div id="ad-top">
+  <script>
+  (function(s){
+    s.dataset.zone='10552577';
+    s.src='https://gizokraijaw.net/vignette.min.js';
+  })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+  </script>
+</div>
 
 <!-- START -->
 <div id="start">
@@ -72,6 +84,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
+
+    <!-- REKLAMA PO 7 PYTANIU -->
+    <div id="ad-mid"></div>
   </div>
 </div>
 
@@ -83,6 +98,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
     <div class="btn" onclick="share()">Poleć znajomemu</div><br>
     <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
+
+    <!-- REKLAMA PRZED KOŃCEM -->
+    <div id="ad-end" style="margin-top:15px;text-align:center"></div>
   </div>
 </div>
 
@@ -92,6 +110,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <script>
+// PYTANIA
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -110,52 +129,49 @@ const Q=[
 ];
 
 let i=0,pts=0,started=false,nick="Gracz";
+let adMidShown=false;
 
+// START QUIZU
 function startGame(){
   nick=document.getElementById("nick").value||"Gracz";
-
-  const bg=document.getElementById("bg");
-  bg.volume=0.7; // podgłośniona muzyka
-  bg.play().catch(()=>{});
+  const bg=document.getElementById("bg"); bg.volume=0.5; bg.play().catch(()=>{});
   started=true;
-
   document.getElementById("start").style.display="none";
   show();
 }
 
+// WYŚWIETLANIE PYTAŃ
 function show(){
-  if(i>=Q.length){end();return;}
+  if(i>=Q.length){showEndAd(); return;}
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
+  // REKLAMA PO 7 PYTANIU
+  if(i===7 && !adMidShown){
+    adMidShown=true;
+    document.getElementById("ad-mid").innerHTML='<script>(function(s){s.dataset.zone="10552582";s.src="https://gizokraijaw.net/vignette.min.js";})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement("script")))</script>';
+  }
+
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
     const b=document.createElement("div");
-    b.className="btn";b.textContent=o.t;
+    b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
-      if(!started){ // na wszelki wypadek
-        const bg=document.getElementById("bg");
-        bg.volume=0.7;
-        bg.play().catch(()=>{});
-        started=true;
-      } else {
-        document.getElementById("bg").play().catch(()=>{}); // wymuszenie kontynuacji na telefonie
-      }
-
       document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
-      if(o.idx===q.c){
-        pts++;b.classList.add("good");
-        document.getElementById("ok").play();fire();
-      }else{
-        b.classList.add("bad");
-        document.getElementById("bad").play();
-      }
+      if(o.idx===q.c){ pts++; b.classList.add("good"); document.getElementById("ok").play(); fire();}
+      else{ b.classList.add("bad"); document.getElementById("bad").play();}
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},900);
+      setTimeout(()=>{i++; show()},900);
     };
     document.getElementById("a").appendChild(b);
   });
+}
+
+// KONIEC I REKLAMA PRZED KOŃCEM
+function showEndAd(){
+  document.getElementById("ad-end").innerHTML='<script>(function(s){s.dataset.zone="10552582";s.src="https://gizokraijaw.net/vignette.min.js";})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement("script")))</script>';
+  setTimeout(end,500); // mała przerwa, żeby reklama załadowała się
 }
 
 function end(){
@@ -164,35 +180,24 @@ function end(){
   fire();
 }
 
-function share(){
-  navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href);
-}
-
-let pwa;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwa=e});
-function addHome(){pwa?pwa.prompt():alert("Niedostępne")}
+// FUNKCJE POMOCNICZE
+function share(){ navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href); }
+let pwa; window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwa=e});
+function addHome(){ pwa?pwa.prompt():alert("Niedostępne"); }
 
 function fire(){
   const c=document.getElementById("fx"),x=c.getContext("2d");
   c.width=innerWidth;c.height=innerHeight;
   let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
-  for(let b=0;b<3;b++){
-    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
-    for(let i=0;i<40;i++)
-      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+  for(let b=0;b<3;b++){ let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+    for(let i=0;i<40;i++) p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
   }
-  (function a(){
-    x.fillStyle="rgba(7,16,37,.2)";
-    x.fillRect(0,0,c.width,c.height);
-    for(let i=p.length-1;i>=0;i--){
-      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
-      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
-      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
-      if(o.a<=0)p.splice(i,1);
-    }
+  (function a(){ x.fillStyle="rgba(7,16,37,.2)"; x.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){ let o=p[i]; x.globalAlpha=o.a;x.fillStyle=o.c;x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill(); o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;if(o.a<=0)p.splice(i,1);}
     p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
   })();
 }
+
 </script>
 
 </body>
