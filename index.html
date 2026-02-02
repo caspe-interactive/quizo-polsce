@@ -47,6 +47,7 @@ margin-bottom:18px;font-size:1rem;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 #ad-top,#ad-mid,#ad-end{margin:15px 0;text-align:center;}
+#ad-mid,#ad-end{display:none;} /* ukryte na start */
 </style>
 </head>
 <body>
@@ -146,26 +147,38 @@ function show(){
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
+  // Pokaż środkową reklamę dopiero po 7 pytaniu
+  const adMid = document.getElementById("ad-mid");
+  if(i===7){
+    adMid.style.display = "block";
+  } else {
+    adMid.style.display = "none";
+  }
+
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
     const b=document.createElement("button");
-    b.className="btn";b.textContent=o.t;
+    b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
       document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
       if(o.idx===q.c){
-        pts++;b.classList.add("good");
-        document.getElementById("ok").play();fire();
-      }else{
+        pts++; b.classList.add("good");
+        document.getElementById("ok").play(); fire();
+      } else {
         b.classList.add("bad");
         document.getElementById("bad").play();
       }
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},900);
+      i++;
+      show();
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
 function end(){
+  // Pokaż końcową reklamę przed wynikiem
+  document.getElementById("ad-end").style.display = "block";
+
   document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
   document.getElementById("final").style.display="flex";
   fire();
