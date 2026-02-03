@@ -45,7 +45,11 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;font-size:1rem;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
-#ad-top,#ad-mid,#ad-end{margin:15px 0;text-align:center}
+
+/* REKLAMY */
+#ad-top{position:fixed;top:0;width:100%;text-align:center;z-index:15;margin-bottom:10px;}
+#ad-mid{text-align:center;margin:15px 0;}
+#ad-end{text-align:center;margin:15px 20px 0 20px;}
 </style>
 </head>
 <body>
@@ -100,8 +104,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 <div id="final">
   <div class="box">
     <h1 style="color:var(--n2)">KONIEC</h1>
-    <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
 
+    <!-- reklama przed wynikiem -->
     <div id="ad-end">
       <script>
       (function(s){
@@ -110,6 +114,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
       })(document.body.appendChild(document.createElement('script')));
       </script>
     </div>
+
+    <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
 
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
     <div class="btn" onclick="share()">Poleć znajomemu</div><br>
