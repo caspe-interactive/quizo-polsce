@@ -100,31 +100,16 @@ function start(){
 
 // wyświetlanie pytań
 function show(){
-  // po 7 pytaniu - reklama
+  // po 7 pytaniu - reklama automatyczna
   if(i===7 && !ad7Shown){
     ad7Shown=true;
-    const btn = document.createElement("div");
-    btn.className="btn"; btn.textContent="Zobacz reklamę";
-    btn.onclick = ()=>{
-      monetag("3", ()=>{ i++; show(); });
-      btn.remove();
-    };
-    document.getElementById("a").innerHTML=""; 
-    document.getElementById("a").appendChild(btn);
+    monetag("3", ()=>{ show(); });
     return;
   }
-  // przed wynikiem - reklama
+  // przed wynikiem - reklama automatyczna
   if(i>=Q.length && !adEndShown){
     adEndShown=true;
-    const btn = document.createElement("div");
-    btn.className="btn"; btn.textContent="Zobacz reklamę";
-    btn.onclick = ()=>{
-      monetag("5", end);
-      btn.remove();
-    };
-    document.getElementById("quiz").style.display="none";
-    document.getElementById("final").style.display="flex";
-    document.getElementById("final").appendChild(btn);
+    monetag("5", end);
     return;
   }
 
@@ -150,6 +135,8 @@ function show(){
 
 // koniec
 function end(){
+  document.getElementById("quiz").style.display="none";
+  document.getElementById("final").style.display="flex";
   document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
   fire();
 }
