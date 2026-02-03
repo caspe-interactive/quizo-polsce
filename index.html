@@ -12,121 +12,90 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;align-items:center;padding:12px;flex-direction:column}
-.page{width:100%;max-width:520px;z-index:5}
+body{display:flex;justify-content:center;align-items:center;padding:12px}
+.page{width:100%;max-width:520px}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{color:var(--n1);font-weight:800}
 .score{color:var(--accent);font-weight:700}
-.question{min-height:4.5rem;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.3rem}
+.question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{
-padding:14px;border-radius:12px;font-weight:800;color:#fff;
+.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;
 background:linear-gradient(90deg,var(--n1),var(--n2));
-cursor:pointer;text-align:center;user-select:none
-}
+cursor:pointer;text-align:center}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
 
-#start,#final{
+.full{
 position:fixed;inset:0;background:#020814ee;
 display:flex;align-items:center;justify-content:center;z-index:20
 }
-#final{display:none}
-
-.box{
-background:#081322;padding:40px;border-radius:14px;
-max-width:360px;width:90%;text-align:center
-}
-input{
-width:100%;padding:14px;border-radius:12px;
-border:2px solid var(--n1);background:#050c18;color:#fff;
-margin-bottom:18px;font-size:1rem;text-align:center
-}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
-
-/* REKLAMY */
-#ad-top{position:fixed;top:0;width:100%;text-align:center;z-index:15;margin-bottom:10px;}
-#ad-mid{text-align:center;margin:15px 0;}
-#ad-end{text-align:center;margin:15px 20px 0 20px;}
+.box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
+input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);
+background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
+#ad7,#adEnd{display:none}
 </style>
 </head>
 <body>
 
-<!-- GÓRNY BANER -->
-<div id="ad-top">
-<script>
-(function(s){
-  s.dataset.zone='10552577';
-  s.src='https://gizokraijaw.net/vignette.min.js';
-})(document.body.appendChild(document.createElement('script')));
-</script>
-</div>
-
-<canvas id="fx"></canvas>
-
 <!-- START -->
-<div id="start">
+<div id="start" class="full">
   <div class="box">
     <h1 style="color:var(--n2)">QuizoPolsce</h1>
-    <p>Sprawdź swoją wiedzę 🇵🇱</p>
-    <input id="nick" placeholder="Twój nick" maxlength="15">
-    <div class="btn" onclick="startGame()">START</div>
+    <input id="nick" placeholder="Twój nick">
+    <div class="btn" onclick="start()">START</div>
   </div>
 </div>
 
 <!-- QUIZ -->
-<div class="page">
+<div id="quiz" class="page" style="display:none">
   <div class="card">
     <div class="top">
       <div class="title">QuizoPolsce</div>
       <div class="score">PKT: <span id="pts">0</span></div>
     </div>
-
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-
-    <!-- reklama po 7 pytaniu -->
-    <div id="ad-mid">
-      <script>
-      (function(s){
-        s.dataset.zone='10552582';
-        s.src='https://gizokraijaw.net/vignette.min.js';
-      })(document.body.appendChild(document.createElement('script')));
-      </script>
-    </div>
   </div>
 </div>
 
-<!-- KONIEC -->
-<div id="final">
+<!-- REKLAMA PO 7 -->
+<div id="ad7" class="full">
+  <div class="box">
+    <!-- MONETAG -->
+    <script>
+      (function(s){s.dataset.zone='10552582',s.src='https://gizokraijaw.net/vignette.min.js'})
+      ([document.body].pop().appendChild(document.createElement('script')))
+    </script>
+    <br>
+    <div class="btn" onclick="continueQuiz()">Dalej</div>
+  </div>
+</div>
+
+<!-- REKLAMA PRZED WYNIKIEM -->
+<div id="adEnd" class="full">
+  <div class="box">
+    <!-- MONETAG -->
+    <script>
+      (function(s){s.dataset.zone='10552577',s.src='https://gizokraijaw.net/vignette.min.js'})
+      ([document.body].pop().appendChild(document.createElement('script')))
+    </script>
+    <br>
+    <div class="btn" onclick="showResult()">Pokaż wynik</div>
+  </div>
+</div>
+
+<!-- WYNIK -->
+<div id="final" class="full" style="display:none">
   <div class="box">
     <h1 style="color:var(--n2)">KONIEC</h1>
-
-    <!-- reklama przed wynikiem -->
-    <div id="ad-end">
-      <script>
-      (function(s){
-        s.dataset.zone='10552577';
-        s.src='https://gizokraijaw.net/vignette.min.js';
-      })(document.body.appendChild(document.createElement('script')));
-      </script>
-    </div>
-
-    <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
-
-    <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
-    <div class="btn" onclick="share()">Poleć znajomemu</div><br>
-    <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
+    <div id="finalScore" style="font-size:2rem;color:var(--accent)"></div>
+    <br>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
-
-<!-- AUDIO -->
-<audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="ok" src="sounds/ding.mp3"></audio>
-<audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <script>
 const Q=[
@@ -146,18 +115,31 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="Gracz";
+let i=0,pts=0,nick="";
+let ad7Shown=false,adEndShown=false;
 
-function startGame(){
+function start(){
   nick=document.getElementById("nick").value||"Gracz";
-  document.getElementById("bg").volume=0.6; 
-  document.getElementById("bg").play().catch(()=>{});
   document.getElementById("start").style.display="none";
+  document.getElementById("quiz").style.display="block";
   show();
 }
 
 function show(){
-  if(i>=Q.length){end();return;}
+  if(i===7 && !ad7Shown){
+    ad7Shown=true;
+    document.getElementById("quiz").style.display="none";
+    document.getElementById("ad7").style.display="flex";
+    return;
+  }
+  if(i>=Q.length){
+    if(!adEndShown){
+      adEndShown=true;
+      document.getElementById("quiz").style.display="none";
+      document.getElementById("adEnd").style.display="flex";
+      return;
+    }
+  }
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
@@ -167,50 +149,25 @@ function show(){
     const b=document.createElement("div");
     b.className="btn";b.textContent=o.t;
     b.onclick=()=>{
-      document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
-      if(o.idx===q.c){pts++;b.classList.add("good");document.getElementById("ok").play();fire();}
-      else{b.classList.add("bad");document.getElementById("bad").play();}
+      if(o.idx===q.c){pts++;b.classList.add("good")}
+      else b.classList.add("bad");
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},900);
+      setTimeout(()=>{i++;show()},600);
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
-function end(){
-  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+function continueQuiz(){
+  document.getElementById("ad7").style.display="none";
+  document.getElementById("quiz").style.display="block";
+  show();
+}
+
+function showResult(){
+  document.getElementById("adEnd").style.display="none";
   document.getElementById("final").style.display="flex";
-  fire();
-}
-
-function share(){
-  navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href);
-}
-
-let pwa;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwa=e});
-function addHome(){pwa?pwa.prompt():alert("Niedostępne")}
-
-function fire(){
-  const c=document.getElementById("fx"),x=c.getContext("2d");
-  c.width=innerWidth;c.height=innerHeight;
-  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
-  for(let b=0;b<3;b++){
-    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
-    for(let i=0;i<40;i++)
-      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
-  }
-  (function a(){
-    x.fillStyle="rgba(7,16,37,.2)";
-    x.fillRect(0,0,c.width,c.height);
-    for(let i=p.length-1;i>=0;i--){
-      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
-      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
-      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
-      if(o.a<=0)p.splice(i,1);
-    }
-    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
-  })();
+  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
 }
 </script>
 
