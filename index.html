@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
-
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -26,18 +25,17 @@ background:linear-gradient(90deg,var(--n1),var(--n2));
 cursor:pointer;text-align:center}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-
-.full{
-position:fixed;inset:0;background:#020814ee;
-display:flex;align-items:center;justify-content:center;z-index:20
-}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:20}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);
 background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
-#ad7,#adEnd{display:none}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:9999}
 </style>
 </head>
 <body>
+
+<!-- CANVAS FAJERWERKI -->
+<canvas id="fx"></canvas>
 
 <!-- START -->
 <div id="start" class="full">
@@ -61,32 +59,6 @@ background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
   </div>
 </div>
 
-<!-- REKLAMA PO 7 -->
-<div id="ad7" class="full">
-  <div class="box">
-    <!-- MONETAG -->
-    <script>
-      (function(s){s.dataset.zone='10552582',s.src='https://gizokraijaw.net/vignette.min.js'})
-      ([document.body].pop().appendChild(document.createElement('script')))
-    </script>
-    <br>
-    <div class="btn" onclick="continueQuiz()">Dalej</div>
-  </div>
-</div>
-
-<!-- REKLAMA PRZED WYNIKIEM -->
-<div id="adEnd" class="full">
-  <div class="box">
-    <!-- MONETAG -->
-    <script>
-      (function(s){s.dataset.zone='10552577',s.src='https://gizokraijaw.net/vignette.min.js'})
-      ([document.body].pop().appendChild(document.createElement('script')))
-    </script>
-    <br>
-    <div class="btn" onclick="showResult()">Pokaż wynik</div>
-  </div>
-</div>
-
 <!-- WYNIK -->
 <div id="final" class="full" style="display:none">
   <div class="box">
@@ -98,6 +70,7 @@ background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
 </div>
 
 <script>
+// Pytania
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -115,9 +88,11 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="";
-let ad7Shown=false,adEndShown=false;
+// zmienne
+let i=0, pts=0, nick="";
+let ad7Shown=false, adEndShown=false;
 
+// START
 function start(){
   nick=document.getElementById("nick").value||"Gracz";
   document.getElementById("start").style.display="none";
@@ -125,21 +100,22 @@ function start(){
   show();
 }
 
+// FUNKCJA WYŚWIETLANIA PYTAŃ
 function show(){
-  if(i===7 && !ad7Shown){
+  // po 7 pytaniu - reklama zone 3
+  if(i === 7 && !ad7Shown){
     ad7Shown=true;
-    document.getElementById("quiz").style.display="none";
-    document.getElementById("ad7").style.display="flex";
+    monetag("3", () => { show(); });
     return;
   }
-  if(i>=Q.length){
-    if(!adEndShown){
-      adEndShown=true;
-      document.getElementById("quiz").style.display="none";
-      document.getElementById("adEnd").style.display="flex";
-      return;
-    }
+  // przed wynikiem - reklama zone 5
+  if(i >= Q.length && !adEndShown){
+    adEndShown=true;
+    monetag("5", end);
+    return;
   }
+  if(i>=Q.length) return;
+
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
@@ -147,29 +123,58 @@ function show(){
 
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
     const b=document.createElement("div");
-    b.className="btn";b.textContent=o.t;
+    b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
-      if(o.idx===q.c){pts++;b.classList.add("good")}
-      else b.classList.add("bad");
+      if(o.idx===q.c){ pts++; b.classList.add("good"); fire(); }
+      else { b.classList.add("bad"); }
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},600);
+      setTimeout(()=>{ i++; show(); },600);
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
-function continueQuiz(){
-  document.getElementById("ad7").style.display="none";
-  document.getElementById("quiz").style.display="block";
-  show();
-}
-
-function showResult(){
-  document.getElementById("adEnd").style.display="none";
+// KONIEC
+function end(){
+  document.getElementById("quiz").style.display="none";
   document.getElementById("final").style.display="flex";
   document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+  fire();
+}
+
+// MONETAG - dynamiczne ładowanie
+function monetag(zoneId, callback){
+  const s = document.createElement("script");
+  s.src = "https://gizokraijaw.net/vignette.min.js";
+  s.dataset.zone = zoneId;
+  s.onload = () => { if(callback) setTimeout(callback,1200); };
+  document.body.appendChild(s);
+}
+
+// FAJERWERKI
+function fire(){
+  const c=document.getElementById("fx");
+  const x=c.getContext("2d");
+  c.width=innerWidth;
+  c.height=innerHeight;
+  let p=[], col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+  for(let b=0;b<3;b++){
+    let sx=Math.random()*c.width, sy=Math.random()*c.height*.4;
+    for(let i=0;i<40;i++) p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+  }
+  (function a(){
+    x.fillStyle="rgba(7,16,37,.2)";
+    x.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){
+      let o=p[i];
+      x.globalAlpha=o.a; x.fillStyle=o.c;
+      x.beginPath(); x.arc(o.x,o.y,2,0,7); x.fill();
+      o.x+=o.vx; o.y+=o.vy; o.vy+=.1; o.a-=.02;
+      if(o.a<=0) p.splice(i,1);
+    }
+    if(p.length) requestAnimationFrame(a); else x.clearRect(0,0,c.width,c.height);
+  })();
 }
 </script>
-
 </body>
 </html>
