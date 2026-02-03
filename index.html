@@ -85,7 +85,14 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
 
     <!-- reklama po 7 pytaniu -->
-    <div id="ad-mid"></div>
+    <div id="ad-mid">
+      <script>
+      (function(s){
+        s.dataset.zone='10552582';
+        s.src='https://gizokraijaw.net/vignette.min.js';
+      })(document.body.appendChild(document.createElement('script')));
+      </script>
+    </div>
   </div>
 </div>
 
@@ -150,12 +157,6 @@ function show(){
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  // reklama po 7 pytaniu
-  if(i===7){
-    document.getElementById("ad-mid").innerHTML=
-      `<script>(function(s){s.dataset.zone='10552582';s.src='https://gizokraijaw.net/vignette.min.js'})(document.body.appendChild(document.createElement('script')))</script>`;
-  }
-
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
     const b=document.createElement("div");
     b.className="btn";b.textContent=o.t;
@@ -206,5 +207,6 @@ function fire(){
   })();
 }
 </script>
+
 </body>
 </html>
