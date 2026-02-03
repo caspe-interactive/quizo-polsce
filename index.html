@@ -12,8 +12,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;flex-direction:column;align-items:center;padding:12px}
-#ad-top{margin-bottom:10px;text-align:center}
+body{display:flex;justify-content:center;align-items:center;padding:12px;flex-direction:column}
 .page{width:100%;max-width:520px;z-index:5}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -46,7 +45,7 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;font-size:1rem;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
-#ad-mid,#ad-end{margin:15px 0;text-align:center;display:none}
+#ad-top,#ad-mid,#ad-end{margin:15px 0;text-align:center}
 </style>
 </head>
 <body>
@@ -138,7 +137,8 @@ let i=0,pts=0,nick="Gracz";
 
 function startGame(){
   nick=document.getElementById("nick").value||"Gracz";
-  bg.volume=0.6; bg.play().catch(()=>{});
+  document.getElementById("bg").volume=0.6; 
+  document.getElementById("bg").play().catch(()=>{});
   document.getElementById("start").style.display="none";
   show();
 }
@@ -146,13 +146,14 @@ function startGame(){
 function show(){
   if(i>=Q.length){end();return;}
   const q=Q[i];
-  qEl.textContent=q.q;
-  aEl.innerHTML="";
-  prog.textContent=`Pytanie ${i+1}/${Q.length}`;
+  document.getElementById("q").textContent=q.q;
+  document.getElementById("a").innerHTML="";
+  document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
+  // reklama po 7 pytaniu
   if(i===7){
-    adMid.style.display="block";
-    adMid.innerHTML=`<script>(function(s){s.dataset.zone='10552582';s.src='https://gizokraijaw.net/vignette.min.js'})(document.body.appendChild(document.createElement('script')))</script>`;
+    document.getElementById("ad-mid").innerHTML=
+      `<script>(function(s){s.dataset.zone='10552582';s.src='https://gizokraijaw.net/vignette.min.js'})(document.body.appendChild(document.createElement('script')))</script>`;
   }
 
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
@@ -160,18 +161,18 @@ function show(){
     b.className="btn";b.textContent=o.t;
     b.onclick=()=>{
       document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
-      if(o.idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
-      else{b.classList.add("bad");bad.play();}
-      ptsEl.textContent=pts;
+      if(o.idx===q.c){pts++;b.classList.add("good");document.getElementById("ok").play();fire();}
+      else{b.classList.add("bad");document.getElementById("bad").play();}
+      document.getElementById("pts").textContent=pts;
       setTimeout(()=>{i++;show()},900);
     };
-    aEl.appendChild(b);
+    document.getElementById("a").appendChild(b);
   });
 }
 
 function end(){
-  finalScore.textContent=`${nick} — ${pts} pkt`;
-  final.style.display="flex";
+  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+  document.getElementById("final").style.display="flex";
   fire();
 }
 
@@ -180,15 +181,11 @@ function share(){
 }
 
 let pwa;
-addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwa=e});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwa=e});
 function addHome(){pwa?pwa.prompt():alert("Niedostępne")}
 
-const qEl=q, aEl=a, ptsEl=pts, prog=document.getElementById("prog"),
-bg=document.getElementById("bg"), ok=document.getElementById("ok"),
-bad=document.getElementById("bad"), adMid=document.getElementById("ad-mid");
-
 function fire(){
-  const c=fx,x=c.getContext("2d");
+  const c=document.getElementById("fx"),x=c.getContext("2d");
   c.width=innerWidth;c.height=innerHeight;
   let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
   for(let b=0;b<3;b++){
