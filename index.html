@@ -34,7 +34,6 @@ background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
 </head>
 <body>
 
-<!-- CANVAS FAJERWERKI -->
 <canvas id="fx"></canvas>
 
 <!-- START -->
@@ -70,7 +69,7 @@ background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
 </div>
 
 <script>
-// Pytania
+// pytania
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -88,11 +87,10 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-// zmienne
 let i=0, pts=0, nick="";
 let ad7Shown=false, adEndShown=false;
 
-// START
+// start
 function start(){
   nick=document.getElementById("nick").value||"Gracz";
   document.getElementById("start").style.display="none";
@@ -100,20 +98,36 @@ function start(){
   show();
 }
 
-// FUNKCJA WYŚWIETLANIA PYTAŃ
+// wyświetlanie pytań
 function show(){
-  // po 7 pytaniu - reklama zone 3
-  if(i === 7 && !ad7Shown){
+  // po 7 pytaniu - reklama
+  if(i===7 && !ad7Shown){
     ad7Shown=true;
-    monetag("3", () => { show(); });
+    const btn = document.createElement("div");
+    btn.className="btn"; btn.textContent="Zobacz reklamę";
+    btn.onclick = ()=>{
+      monetag("3", ()=>{ i++; show(); });
+      btn.remove();
+    };
+    document.getElementById("a").innerHTML=""; 
+    document.getElementById("a").appendChild(btn);
     return;
   }
-  // przed wynikiem - reklama zone 5
-  if(i >= Q.length && !adEndShown){
+  // przed wynikiem - reklama
+  if(i>=Q.length && !adEndShown){
     adEndShown=true;
-    monetag("5", end);
+    const btn = document.createElement("div");
+    btn.className="btn"; btn.textContent="Zobacz reklamę";
+    btn.onclick = ()=>{
+      monetag("5", end);
+      btn.remove();
+    };
+    document.getElementById("quiz").style.display="none";
+    document.getElementById("final").style.display="flex";
+    document.getElementById("final").appendChild(btn);
     return;
   }
+
   if(i>=Q.length) return;
 
   const q=Q[i];
@@ -126,7 +140,7 @@ function show(){
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
       if(o.idx===q.c){ pts++; b.classList.add("good"); fire(); }
-      else { b.classList.add("bad"); }
+      else b.classList.add("bad");
       document.getElementById("pts").textContent=pts;
       setTimeout(()=>{ i++; show(); },600);
     };
@@ -134,24 +148,22 @@ function show(){
   });
 }
 
-// KONIEC
+// koniec
 function end(){
-  document.getElementById("quiz").style.display="none";
-  document.getElementById("final").style.display="flex";
   document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
   fire();
 }
 
-// MONETAG - dynamiczne ładowanie
+// monetag dynamicznie
 function monetag(zoneId, callback){
-  const s = document.createElement("script");
-  s.src = "https://gizokraijaw.net/vignette.min.js";
-  s.dataset.zone = zoneId;
-  s.onload = () => { if(callback) setTimeout(callback,1200); };
+  const s=document.createElement("script");
+  s.src="https://gizokraijaw.net/vignette.min.js";
+  s.dataset.zone=zoneId;
+  s.onload = ()=>{ if(callback) setTimeout(callback,1200); };
   document.body.appendChild(s);
 }
 
-// FAJERWERKI
+// fajerwerki
 function fire(){
   const c=document.getElementById("fx");
   const x=c.getContext("2d");
