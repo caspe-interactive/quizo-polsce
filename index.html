@@ -13,7 +13,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{display:flex;justify-content:center;align-items:center;padding:12px}
-.page{width:100%;max-width:520px;position:relative;z-index:1}
+.page{width:100%;max-width:520px}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{color:var(--n1);font-weight:800}
@@ -28,7 +28,7 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:100}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:20}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{
 width:100%;padding:14px;border-radius:12px;
@@ -36,7 +36,7 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
-#ad-banner{margin-bottom:15px;text-align:center;}
+#ad-banner{text-align:center;margin-bottom:10px;}
 </style>
 </head>
 <body>
@@ -59,9 +59,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 
 <!-- QUIZ -->
 <div id="quiz" class="page" style="display:none">
-  <div id="ad-banner">
-    <script src="https://quge5.com/88/tag.min.js" data-zone="205951" async data-cfasync="false"></script>
-  </div>
+  <!-- Banner cały czas -->
+  <div id="ad-banner"></div>
   <div class="card">
     <div class="top">
       <div class="title">QuizoPolsce</div>
@@ -70,22 +69,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-  </div>
-</div>
-
-<!-- FULL SCREEN REKLAMA PO 7 PYTANIU -->
-<div id="ad7-modal" class="full" style="display:none">
-  <div class="box">
-    <h2>Reklama – Kontynuuj quiz</h2>
-    <div class="btn" onclick="closeAd7()">Kontynuuj</div>
-  </div>
-</div>
-
-<!-- FULL SCREEN REKLAMA PRZED KOŃCEM -->
-<div id="ad-end-modal" class="full" style="display:none">
-  <div class="box">
-    <h2>Reklama – Pokaż wynik</h2>
-    <div class="btn" onclick="closeAdEnd()">Pokaż wynik</div>
   </div>
 </div>
 
@@ -117,28 +100,45 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="";
+let i=0, pts=0, nick="";
 let ad7Shown=false, adEndShown=false;
 
+// START QUIZU
 function start(){
   nick=document.getElementById("nick").value||"Gracz";
   document.getElementById("start").style.display="none";
   document.getElementById("quiz").style.display="block";
+
+  // Banner cały czas nad pytaniami – MULTITAG
+  const banner=document.createElement("script");
+  banner.src="https://quge5.com/88/tag.min.js";
+  banner.dataset.zone="205951";
+  banner.async=true;
+  banner.dataset.cfasync="false";
+  document.getElementById("ad-banner").appendChild(banner);
+
   const bg=document.getElementById("bg");
   bg.volume=0.6;
   bg.play().catch(()=>{});
   show();
 }
 
+// WYŚWIETLANIE PYTAŃ
 function show(){
+  // Pełnoekranowa reklama po 7 pytaniu
   if(i===7 && !ad7Shown){
-    document.getElementById("ad7-modal").style.display="flex";
+    ad7Shown=true;
+    showFullScreenAd(show);
     return;
   }
+
+  // Pełnoekranowa reklama przed końcem
   if(i>=Q.length && !adEndShown){
-    document.getElementById("ad-end-modal").style.display="flex";
+    adEndShown=true;
+    showFullScreenAd(end);
     return;
   }
+
   if(i>=Q.length) return;
 
   const q=Q[i];
@@ -150,6 +150,7 @@ function show(){
     const b=document.createElement("div");
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
+      document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
       if(o.idx===q.c){
         pts++; b.classList.add("good");
         document.getElementById("ok").play(); fire();
@@ -158,34 +159,33 @@ function show(){
         document.getElementById("bad").play();
       }
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++; show()},700);
+      setTimeout(()=>{i++;show()},700);
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
-function closeAd7(){
-  monetag();
-  ad7Shown=true;
-  document.getElementById("ad7-modal").style.display="none";
-  show();
+// PEŁNOEKRANOWA REKLAMA
+function showFullScreenAd(callback){
+  const adDiv=document.createElement("div");
+  adDiv.className="full";
+  adDiv.innerHTML=`<div class="box"><div class="btn" id="adBtn">Reklama – kliknij, aby kontynuować</div></div>`;
+  document.body.appendChild(adDiv);
+
+  document.getElementById("adBtn").onclick=()=>{
+    const s=document.createElement("script");
+    s.src="https://quge5.com/88/tag.min.js";
+    s.dataset.zone="205951";
+    s.async=true;
+    s.dataset.cfasync="false";
+    document.body.appendChild(s);
+
+    adDiv.remove();
+    callback();
+  };
 }
 
-function closeAdEnd(){
-  monetag();
-  adEndShown=true;
-  document.getElementById("ad-end-modal").style.display="none";
-  end();
-}
-
-function monetag(){
-  const s=document.createElement("script");
-  s.src="https://quge5.com/88/tag.min.js";
-  s.dataset.zone="205951";
-  s.async=true;
-  document.body.appendChild(s);
-}
-
+// KONIEC QUIZU
 function end(){
   document.getElementById("quiz").style.display="none";
   document.getElementById("final").style.display="flex";
@@ -196,7 +196,7 @@ function end(){
 // FAJERWERKI
 function fire(){
   const c=document.getElementById("fx"),x=c.getContext("2d");
-  c.width=innerWidth;c.height=innerHeight;
+  c.width=innerWidth; c.height=innerHeight;
   let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
   for(let b=0;b<3;b++){
     let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
@@ -207,9 +207,9 @@ function fire(){
     x.fillStyle="rgba(7,16,37,.2)";
     x.fillRect(0,0,c.width,c.height);
     for(let i=p.length-1;i>=0;i--){
-      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
-      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
-      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+      let o=p[i]; x.globalAlpha=o.a; x.fillStyle=o.c;
+      x.beginPath(); x.arc(o.x,o.y,2,0,7); x.fill();
+      o.x+=o.vx; o.y+=o.vy;o.vy+=.1;o.a-=.02;
       if(o.a<=0)p.splice(i,1);
     }
     p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
