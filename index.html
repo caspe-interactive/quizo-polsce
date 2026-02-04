@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
-
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -36,8 +35,6 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
-
-/* Banner nad pytaniami */
 #ad-top{margin-bottom:15px;text-align:center;}
 </style>
 </head>
@@ -66,7 +63,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
       <!-- Banner nad pytaniami -->
       <script src="https://quge5.com/88/tag.min.js" data-zone="10523608" async data-cfasync="false"></script>
     </div>
-
     <div class="top">
       <div class="title">QuizoPolsce</div>
       <div class="score">PKT: <span id="pts">0</span></div>
@@ -87,7 +83,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 </div>
 
 <script>
-// PYTANIA
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -105,33 +100,21 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="",ad7=false,adEnd=false;
+let i=0,pts=0,nick="";
 
-function start(){
+async function start(){
   nick=document.getElementById("nick").value||"Gracz";
   document.getElementById("start").style.display="none";
   document.getElementById("quiz").style.display="block";
-  const bg=document.getElementById("bg");
-  bg.volume=0.6;
-  bg.play().catch(()=>{});
-  show();
+  const bg=document.getElementById("bg"); bg.volume=0.6; bg.play().catch(()=>{});
+  await show();
 }
 
-function show(){
-  // Reklama po 7 pytaniu
-  if(i===7 && !ad7){
-    ad7=true;
-    showFullScreenAd("10552582", show);
-    return;
-  }
-  // Przed wynikiem
-  if(i>=Q.length && !adEnd){
-    adEnd=true;
-    showFullScreenAd("10552577", end);
-    return;
-  }
-  if(i>=Q.length) return;
+async function show(){
+  if(i===7){ await awaitAd("10552582"); } // reklama po 7 pytaniu
+  if(i>=Q.length){ await awaitAd("10552577"); return end(); }
 
+  if(i>=Q.length) return;
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
@@ -142,26 +125,25 @@ function show(){
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
       if(o.idx===q.c){
-        pts++; b.classList.add("good");
-        document.getElementById("ok").play(); fire();
-      }else{
-        b.classList.add("bad");
-        document.getElementById("bad").play();
-      }
+        pts++; b.classList.add("good"); document.getElementById("ok").play(); fire();
+      }else{ b.classList.add("bad"); document.getElementById("bad").play(); }
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},700);
+      setTimeout(()=>{i++; show()},700);
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
-// Funkcja wyświetlająca pełnoekranową reklamę Vignette
-function showFullScreenAd(zoneId, cb){
-  const s=document.createElement("script");
-  s.src="https://gizokraijaw.net/vignette.min.js";
-  s.dataset.zone=zoneId;
-  document.body.appendChild(s);
-  setTimeout(cb,1500); // poczekaj chwilę i kontynuuj quiz
+function awaitAd(zoneId){
+  return new Promise(resolve=>{
+    const s=document.createElement("script");
+    s.src="https://gizokraijaw.net/vignette.min.js";
+    s.dataset.zone=zoneId;
+    s.onload=()=>{};
+    document.body.appendChild(s);
+    // czekamy 1.5s żeby użytkownik mógł kliknąć reklamę
+    setTimeout(resolve,1500);
+  });
 }
 
 function end(){
