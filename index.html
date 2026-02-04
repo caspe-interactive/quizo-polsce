@@ -27,7 +27,7 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:20}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{
 width:100%;padding:14px;border-radius:12px;
@@ -59,8 +59,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 <!-- QUIZ -->
 <div id="quiz" class="page" style="display:none">
   <div class="card">
+    <!-- Banner nad pytaniami -->
     <div id="ad-top">
-      <!-- Banner nad pytaniami -->
       <script src="https://quge5.com/88/tag.min.js" data-zone="10523608" async data-cfasync="false"></script>
     </div>
     <div class="top">
@@ -134,14 +134,14 @@ async function show(){
   });
 }
 
+// Obsługa pełnoekranowych reklam
 function awaitAd(zoneId){
   return new Promise(resolve=>{
     const s=document.createElement("script");
     s.src="https://gizokraijaw.net/vignette.min.js";
     s.dataset.zone=zoneId;
-    s.onload=()=>{};
     document.body.appendChild(s);
-    // czekamy 1.5s żeby użytkownik mógł kliknąć reklamę
+    // czekamy 1.5s na kliknięcie użytkownika
     setTimeout(resolve,1500);
   });
 }
