@@ -59,9 +59,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 <!-- QUIZ -->
 <div id="quiz" class="page" style="display:none">
   <div class="card">
-    <!-- Banner nad pytaniami -->
+    <!-- Banner nad pytaniami (Monetag) -->
     <div id="ad-top">
-      <script src="https://quge5.com/88/tag.min.js" data-zone="10523608" async data-cfasync="false"></script>
+      <script src="https://cdn.monetag.com/tag.js" data-zoneid="TWÓJ_BANNER_ZONEID" async></script>
     </div>
     <div class="top">
       <div class="title">QuizoPolsce</div>
@@ -110,11 +110,21 @@ async function start(){
   await show();
 }
 
-async function show(){
-  if(i===7){ await awaitAd("10552582"); } // reklama po 7 pytaniu
-  if(i>=Q.length){ await awaitAd("10552577"); return end(); }
+// FUNKCJA PEŁNOEKRANOWEJ REKLAMY (Monetag)
+function showAd(zoneId){
+  return new Promise(resolve=>{
+    const script=document.createElement('script');
+    script.src="https://cdn.monetag.com/vignette.js";
+    script.dataset.zoneid = zoneId;
+    script.onload = resolve;
+    document.body.appendChild(script);
+  });
+}
 
-  if(i>=Q.length) return;
+async function show(){
+  if(i===7){ await showAd("ZONEID_PEŁNOEKRAN_PO_7"); } // reklama po 7 pytaniu
+  if(i>=Q.length){ await showAd("ZONEID_PEŁNOEKRAN_PRZED_WYNIKIEM"); return end(); }
+
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
@@ -131,18 +141,6 @@ async function show(){
       setTimeout(()=>{i++; show()},700);
     };
     document.getElementById("a").appendChild(b);
-  });
-}
-
-// Obsługa pełnoekranowych reklam
-function awaitAd(zoneId){
-  return new Promise(resolve=>{
-    const s=document.createElement("script");
-    s.src="https://gizokraijaw.net/vignette.min.js";
-    s.dataset.zone=zoneId;
-    document.body.appendChild(s);
-    // czekamy 1.5s na kliknięcie użytkownika
-    setTimeout(resolve,1500);
   });
 }
 
