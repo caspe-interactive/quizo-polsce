@@ -13,7 +13,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{display:flex;justify-content:center;align-items:center;padding:12px}
-.page{width:100%;max-width:520px}
+.page{width:100%;max-width:520px;position:relative;z-index:1}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{color:var(--n1);font-weight:800}
@@ -28,7 +28,7 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:20}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:100}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{
 width:100%;padding:14px;border-radius:12px;
@@ -59,17 +59,10 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 
 <!-- QUIZ -->
 <div id="quiz" class="page" style="display:none">
+  <div id="ad-banner">
+    <script src="https://quge5.com/88/tag.min.js" data-zone="205951" async data-cfasync="false"></script>
+  </div>
   <div class="card">
-    <div id="ad-banner">
-      <script>
-        const banner=document.createElement('script');
-        banner.src="https://quge5.com/88/tag.min.js";
-        banner.dataset.zone="205951";
-        banner.async=true;
-        banner.dataset.cfasync="false";
-        document.getElementById('ad-banner').appendChild(banner);
-      </script>
-    </div>
     <div class="top">
       <div class="title">QuizoPolsce</div>
       <div class="score">PKT: <span id="pts">0</span></div>
@@ -77,6 +70,22 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
+  </div>
+</div>
+
+<!-- FULL SCREEN REKLAMA PO 7 PYTANIU -->
+<div id="ad7-modal" class="full" style="display:none">
+  <div class="box">
+    <h2>Reklama – Kontynuuj quiz</h2>
+    <div class="btn" onclick="closeAd7()">Kontynuuj</div>
+  </div>
+</div>
+
+<!-- FULL SCREEN REKLAMA PRZED KOŃCEM -->
+<div id="ad-end-modal" class="full" style="display:none">
+  <div class="box">
+    <h2>Reklama – Pokaż wynik</h2>
+    <div class="btn" onclick="closeAdEnd()">Pokaż wynik</div>
   </div>
 </div>
 
@@ -109,7 +118,7 @@ const Q=[
 ];
 
 let i=0,pts=0,nick="";
-let ad7=false, adEnd=false;
+let ad7Shown=false, adEndShown=false;
 
 function start(){
   nick=document.getElementById("nick").value||"Gracz";
@@ -122,16 +131,12 @@ function start(){
 }
 
 function show(){
-  // Reklama po 7 pytaniu
-  if(i===7 && !ad7){
-    ad7=true;
-    showAd("Kontynuuj (reklama)",()=>show());
+  if(i===7 && !ad7Shown){
+    document.getElementById("ad7-modal").style.display="flex";
     return;
   }
-  // Reklama przed końcem
-  if(i>=Q.length && !adEnd){
-    adEnd=true;
-    showAd("Pokaż wynik (reklama)",end);
+  if(i>=Q.length && !adEndShown){
+    document.getElementById("ad-end-modal").style.display="flex";
     return;
   }
   if(i>=Q.length) return;
@@ -153,25 +158,31 @@ function show(){
         document.getElementById("bad").play();
       }
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},700);
+      setTimeout(()=>{i++; show()},700);
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
-function showAd(label,cb){
-  document.getElementById("a").innerHTML=
-    `<div class="btn" id="adBtn">${label}</div>`;
-  document.getElementById("adBtn").onclick=()=>{
-    monetag();
-    setTimeout(cb,1300);
-  };
+function closeAd7(){
+  monetag();
+  ad7Shown=true;
+  document.getElementById("ad7-modal").style.display="none";
+  show();
+}
+
+function closeAdEnd(){
+  monetag();
+  adEndShown=true;
+  document.getElementById("ad-end-modal").style.display="none";
+  end();
 }
 
 function monetag(){
   const s=document.createElement("script");
-  s.src="https://gizokraijaw.net/vignette.min.js";
-  s.dataset.zone="10552577";
+  s.src="https://quge5.com/88/tag.min.js";
+  s.dataset.zone="205951";
+  s.async=true;
   document.body.appendChild(s);
 }
 
@@ -205,6 +216,5 @@ function fire(){
   })();
 }
 </script>
-
 </body>
 </html>
