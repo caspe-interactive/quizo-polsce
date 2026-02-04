@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="pl">
 <head>
@@ -13,55 +14,51 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{display:flex;justify-content:center;align-items:center;padding:12px}
-.page{width:100%;max-width:520px;z-index:5}
+.page{width:100%;max-width:520px}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{color:var(--n1);font-weight:800}
 .score{color:var(--accent);font-weight:700}
-.question{min-height:4.5rem;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.3rem}
+.question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
 .btn{
 padding:14px;border-radius:12px;font-weight:800;color:#fff;
 background:linear-gradient(90deg,var(--n1),var(--n2));
-cursor:pointer;text-align:center;user-select:none
+cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-
-#start,#final{
-position:fixed;inset:0;background:#020814ee;
-display:flex;align-items:center;justify-content:center;z-index:20
-}
-#final{display:none}
-
-.box{
-background:#081322;padding:40px;border-radius:14px;
-max-width:360px;width:90%;text-align:center
-}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:20}
+.box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{
 width:100%;padding:14px;border-radius:12px;
 border:2px solid var(--n1);background:#050c18;color:#fff;
-margin-bottom:18px;font-size:1rem;text-align:center
+margin-bottom:18px;text-align:center
 }
-canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 </style>
 </head>
-
 <body>
 
 <canvas id="fx"></canvas>
 
-<div id="start">
+<!-- AUDIO -->
+<audio id="bg" loop src="sounds/background.mp3"></audio>
+<audio id="ok" src="sounds/ding.mp3"></audio>
+<audio id="bad" src="sounds/buzzer.mp3"></audio>
+
+<!-- START -->
+<div id="start" class="full">
   <div class="box">
     <h1 style="color:var(--n2)">QuizoPolsce</h1>
-    <p>Sprawdź swoją wiedzę 🇵🇱</p>
     <input id="nick" placeholder="Twój nick" maxlength="15">
-    <div class="btn" onclick="startGame()">START</div>
+    <div class="btn" onclick="start()">START</div>
   </div>
 </div>
 
-<div class="page">
+<!-- QUIZ -->
+<div id="quiz" class="page" style="display:none">
   <div class="card">
     <div class="top">
       <div class="title">QuizoPolsce</div>
@@ -73,66 +70,129 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
   </div>
 </div>
 
-<div id="final">
+<!-- KONIEC -->
+<div id="final" class="full" style="display:none">
   <div class="box">
     <h1 style="color:var(--n2)">KONIEC</h1>
-    <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
+    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
 
-<audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="ok" src="sounds/ding.mp3"></audio>
-<audio id="bad" src="sounds/buzzer.mp3"></audio>
-
 <script>
-const fx = document.getElementById("fx");
-const bg = document.getElementById("bg");
-const ok = document.getElementById("ok");
-const bad = document.getElementById("bad");
-
+// PYTANIA – PEŁNE
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
 {q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
-{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0}
+{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0},
+{q:"Polski skoczek narciarski z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},
+{q:"Największe miasto mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
+{q:"Noblistka w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},
+{q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},
+{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
+{q:"Rok odzyskania niepodległości?",a:["1918","1945","1914","1939"],c:0},
+{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu"],c:0},
+{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},
+{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"],c:0},
+{q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="Gracz";
+let i=0,pts=0,nick="";
+let ad7=false, adEnd=false;
 
-function startGame(){
+function start(){
   nick=document.getElementById("nick").value||"Gracz";
-  bg.play().catch(()=>{});
   document.getElementById("start").style.display="none";
+  document.getElementById("quiz").style.display="block";
+  const bg=document.getElementById("bg");
+  bg.volume=0.6;
+  bg.play().catch(()=>{});
   show();
 }
 
 function show(){
-  if(i>=Q.length){end();return;}
+  if(i===7 && !ad7){
+    ad7=true;
+    showAd("Kontynuuj (reklama)",()=>show());
+    return;
+  }
+  if(i>=Q.length && !adEnd){
+    adEnd=true;
+    showAd("Pokaż wynik (reklama)",end);
+    return;
+  }
+  if(i>=Q.length) return;
+
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  q.a.forEach((t,idx)=>{
+  q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
     const b=document.createElement("div");
-    b.className="btn";
-    b.textContent=t;
+    b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
-      if(idx===q.c){pts++;ok.play();}
-      else bad.play();
+      if(o.idx===q.c){
+        pts++; b.classList.add("good");
+        document.getElementById("ok").play(); fire();
+      }else{
+        b.classList.add("bad");
+        document.getElementById("bad").play();
+      }
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},500);
+      setTimeout(()=>{i++;show()},700);
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
+function showAd(label,cb){
+  document.getElementById("a").innerHTML=
+    `<div class="btn" id="adBtn">${label}</div>`;
+  document.getElementById("adBtn").onclick=()=>{
+    monetag();
+    setTimeout(cb,1300);
+  };
+}
+
+function monetag(){
+  const s=document.createElement("script");
+  s.src="https://gizokraijaw.net/vignette.min.js";
+  s.dataset.zone="10552577";
+  document.body.appendChild(s);
+}
+
 function end(){
-  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+  document.getElementById("quiz").style.display="none";
   document.getElementById("final").style.display="flex";
+  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+  fire();
+}
+
+// FAJERWERKI
+function fire(){
+  const c=document.getElementById("fx"),x=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+  for(let b=0;b<3;b++){
+    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+    for(let i=0;i<40;i++)
+      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+  }
+  (function a(){
+    x.fillStyle="rgba(7,16,37,.2)";
+    x.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){
+      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
+      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
+      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+      if(o.a<=0)p.splice(i,1);
+    }
+    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
+  })();
 }
 </script>
-
 </body>
 </html>
+
