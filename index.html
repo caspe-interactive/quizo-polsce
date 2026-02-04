@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
-
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -12,11 +11,13 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;align-items:flex-start;padding:10px}
+body{display:flex;justify-content:center;align-items:flex-start;padding:12px}
 .page{width:100%;max-width:520px}
 .card{background:var(--card);border-radius:14px;padding:22px}
 #ad-top{margin:10px 0;text-align:center}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
+.title{font-weight:800;color:var(--n1)}
+.score{font-weight:700;color:var(--accent)}
 .question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
@@ -34,10 +35,18 @@ width:100%;padding:14px;border-radius:12px;
 border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
+canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 </style>
 
 </head>
 <body>
+
+<canvas id="fx"></canvas>
+
+<!-- AUDIO -->
+<audio id="bg" loop src="sounds/background.mp3"></audio>
+<audio id="ok" src="sounds/ding.mp3"></audio>
+<audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <div class="page">
 
@@ -49,7 +58,7 @@ margin-bottom:18px;text-align:center
   <div id="start" class="full">
     <div class="box">
       <h1 style="color:var(--n2)">QuizoPolsce</h1>
-      <input id="nick" placeholder="Twój nick">
+      <input id="nick" placeholder="Twój nick" maxlength="15">
       <div class="btn" onclick="start()">START</div>
     </div>
   </div>
@@ -58,11 +67,12 @@ margin-bottom:18px;text-align:center
   <div id="quiz" class="page" style="display:none">
     <div class="card">
       <div class="top">
-        <div>QuizoPolsce</div>
-        <div>PKT: <span id="pts">0</span></div>
+        <div class="title">QuizoPolsce</div>
+        <div class="score">PKT: <span id="pts">0</span></div>
       </div>
       <div id="q" class="question"></div>
       <div id="a" class="answers"></div>
+      <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
     </div>
   </div>
 
@@ -77,10 +87,90 @@ margin-bottom:18px;text-align:center
 
 </div>
 
-<!-- 🎯 TU NIC NIE RUSZAMY – MECHANIKA QUIZU ZOSTAJE -->
-<script src="quiz.js"></script> <!-- Twój oryginalny plik JS quizu -->
+<script>
+const Q=[
+{q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
+{q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
+{q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
+{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0},
+{q:"Polski skoczek narciarski z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},
+{q:"Największe miasto mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
+{q:"Noblistka w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},
+{q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},
+{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
+{q:"Rok odzyskania niepodległości?",a:["1918","1945","1914","1939"],c:0},
+{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu"],c:0},
+{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},
+{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"],c:0},
+{q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
+];
 
-<!-- 🔥 POPUNDER MONETAG (po 7 pytaniu i przed wynikiem) -->
+let i=0,pts=0,nick="";
+
+async function start(){
+  nick=document.getElementById("nick").value||"Gracz";
+  document.getElementById("start").style.display="none";
+  document.getElementById("quiz").style.display="block";
+  const bg=document.getElementById("bg"); bg.volume=0.6; bg.play().catch(()=>{});
+  await show();
+}
+
+async function show(){
+  if(i===7){ /* Monetag po 7 pytaniu */ document.getElementById('ad-top').click(); } 
+  if(i>=Q.length){ /* Monetag przed wynikiem */ document.getElementById('ad-top').click(); return end(); }
+
+  if(i>=Q.length) return;
+  const q=Q[i];
+  document.getElementById("q").textContent=q.q;
+  document.getElementById("a").innerHTML="";
+  document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
+
+  q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
+    const b=document.createElement("div");
+    b.className="btn"; b.textContent=o.t;
+    b.onclick=()=>{
+      if(o.idx===q.c){
+        pts++; b.classList.add("good"); document.getElementById("ok").play(); fire();
+      }else{ b.classList.add("bad"); document.getElementById("bad").play(); }
+      document.getElementById("pts").textContent=pts;
+      setTimeout(()=>{i++; show()},700);
+    };
+    document.getElementById("a").appendChild(b);
+  });
+}
+
+function end(){
+  document.getElementById("quiz").style.display="none";
+  document.getElementById("final").style.display="flex";
+  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+  fire();
+}
+
+// FAJERWERKI
+function fire(){
+  const c=document.getElementById("fx"),x=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+  for(let b=0;b<3;b++){
+    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+    for(let i=0;i<40;i++)
+      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+  }
+  (function a(){
+    x.fillStyle="rgba(7,16,37,.2)";
+    x.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){
+      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
+      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
+      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+      if(o.a<=0)p.splice(i,1);
+    }
+    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
+  })();
+}
+</script>
+
+<!-- 🔥 POPUNDER MONETAG -->
 <script src="https://quge5.com/88/tag.min.js" data-zone="10526456" async data-cfasync="false"></script>
 
 </body>
