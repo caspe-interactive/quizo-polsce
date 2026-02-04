@@ -50,15 +50,15 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 <div class="page">
 
   <!-- BANNER U GÓRY -->
-  <div id="ad-top"></div>
-  <script src="https://quge5.com/88/banner.js" data-zone="10552582" async></script>
+  <div id="ad-top" style="width:100%;height:90px;"></div>
+  <script src="https://quge5.com/88/banner.js" data-zone="10552582"></script>
 
   <!-- START -->
   <div id="start" class="full">
     <div class="box">
       <h1 style="color:var(--n2)">QuizoPolsce</h1>
       <input id="nick" placeholder="Twój nick" maxlength="15">
-      <div class="btn" onclick="start()">START</div>
+      <div id="start-btn" class="btn">START</div>
     </div>
   </div>
 
@@ -106,24 +106,22 @@ const Q=[
 
 let i=0,pts=0,nick="";
 
-async function start(){
+// START po kliknięciu przycisku
+document.getElementById("start-btn").onclick = async function(){
   nick=document.getElementById("nick").value||"Gracz";
+
+  // Popunder Monetag po kliknięciu START
+  if(window.MT) MT.open();
+
   document.getElementById("start").style.display="none";
   document.getElementById("quiz").style.display="block";
   const bg=document.getElementById("bg"); bg.volume=0.6; bg.play().catch(()=>{});
   await show();
 }
 
-// Funkcja uruchamiająca popunder Monetag
-function showPopunder(){
-  if(window.MT) MT.open();
-}
-
 async function show(){
-  if(i===7){ showPopunder(); }  // popunder po 7 pytaniu
-  if(i>=Q.length){ showPopunder(); return end(); } // popunder przed wynikiem
+  if(i>=Q.length) return end();
 
-  if(i>=Q.length) return;
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
@@ -175,7 +173,7 @@ function fire(){
 </script>
 
 <!-- POPUNDER MONETAG -->
-<script src="https://quge5.com/88/tag.min.js" data-zone="10526456" async data-cfasync="false"></script>
+<script src="https://quge5.com/88/tag.min.js" data-zone="10526456"></script>
 
 </body>
 </html>
