@@ -1,62 +1,108 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiz o Polsce</title>
-
-<!-- MONETAG MULTITAG -->
-<script src="https://quge5.com/88/tag.min.js"
-        data-zone="205951"
-        async
-        data-cfasync="false"></script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QuizoPolsce</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #050b1e;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+:root{
+--bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
+--n1:#00f0ff;--n2:#ff3fc4;--good:#16d36a;--bad:#ff5c6c;--accent:#ffd27a;
 }
-#quiz {
-  width: 100%;
-  max-width: 500px;
-  padding: 20px;
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
+body{display:flex;justify-content:center;align-items:center;padding:12px}
+.page{width:100%;max-width:520px;z-index:5}
+.card{background:var(--card);border-radius:14px;padding:22px}
+.top{display:flex;justify-content:space-between;margin-bottom:10px}
+.title{color:var(--n1);font-weight:800}
+.score{color:var(--accent);font-weight:700}
+.question{min-height:4.5rem;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.3rem}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:450px){.answers{grid-template-columns:1fr}}
+.btn{
+padding:14px;border-radius:12px;font-weight:800;color:#fff;
+background:linear-gradient(90deg,var(--n1),var(--n2));
+cursor:pointer;text-align:center;user-select:none
 }
-.question {
-  font-size: 20px;
-  margin-bottom: 15px;
+.btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
+.btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
+
+#start,#final{
+position:fixed;inset:0;background:#020814ee;
+display:flex;align-items:center;justify-content:center;z-index:20
 }
-.answers button {
-  width: 100%;
-  margin: 6px 0;
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+#final{display:none}
+
+.box{
+background:#081322;padding:40px;border-radius:14px;
+max-width:360px;width:90%;text-align:center
 }
-.answers button:hover {
-  opacity: 0.9;
+input{
+width:100%;padding:14px;border-radius:12px;
+border:2px solid var(--n1);background:#050c18;color:#fff;
+margin-bottom:18px;font-size:1rem;text-align:center
 }
-.correct { background: #1fa64a; color:#fff; }
-.wrong { background: #c62828; color:#fff; }
+canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 </style>
 </head>
-
 <body>
-<div id="quiz">
-  <div class="question" id="question"></div>
-  <div class="answers" id="answers"></div>
+
+<canvas id="fx"></canvas>
+
+<!-- START -->
+<div id="start">
+  <div class="box">
+    <h1 style="color:var(--n2)">QuizoPolsce</h1>
+    <p>Sprawdź swoją wiedzę 🇵🇱</p>
+    <input id="nick" placeholder="Twój nick" maxlength="15">
+    <div class="btn" onclick="startGame()">START</div>
+  </div>
 </div>
 
+<!-- QUIZ -->
+<div class="page">
+  <div class="card">
+    <div class="top">
+      <div class="title">QuizoPolsce</div>
+      <div class="score">PKT: <span id="pts">0</span></div>
+    </div>
+
+    <div id="q" class="question"></div>
+    <div id="a" class="answers"></div>
+    <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
+  </div>
+</div>
+
+<!-- KONIEC -->
+<div id="final">
+  <div class="box">
+    <h1 style="color:var(--n2)">KONIEC</h1>
+    <div id="finalScore" style="font-size:2.4rem;color:var(--accent);margin:20px 0"></div>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div><br>
+    <div class="btn" onclick="share()">Poleć znajomemu</div><br>
+    <div class="btn" onclick="addHome()">Zapisz na ekranie</div>
+  </div>
+</div>
+
+<!-- OVERLAY REKLAMY -->
+<div id="ad-layer" style="
+position:fixed;inset:0;
+background:rgba(0,0,0,.85);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;">
+</div>
+
+<!-- AUDIO -->
+<audio id="bg" loop src="sounds/background.mp3"></audio>
+<audio id="ok" src="sounds/ding.mp3"></audio>
+<audio id="bad" src="sounds/buzzer.mp3"></audio>
+
 <script>
-/* ===== PYTANIA – NIE RUSZANE ===== */
-const questions = [
+const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
 {q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
@@ -73,64 +119,85 @@ const questions = [
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let current = 0;
-let score = 0;
+let i=0,pts=0,nick="Gracz";
+let ad7=false, adEnd=false;
 
-/* ===== WYWOŁANIE REKLAMY ===== */
-function showAd() {
-  const a = document.createElement("a");
-  a.href = "https://example.com";
-  a.style.display = "none";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+function showAd(){
+  const l=document.getElementById("ad-layer");
+  l.innerHTML=`<script src="https://quge5.com/88/tag.min.js" data-zone="205951" async data-cfasync="false"></script>`;
+  l.style.display="flex";
+  setTimeout(()=>{l.style.display="none";l.innerHTML="";},6000);
 }
 
-/* ===== QUIZ ===== */
-function loadQuestion() {
-  const q = questions[current];
-  document.getElementById("question").textContent =
-    `Pytanie ${current+1}/${questions.length}: ${q.q}`;
+function startGame(){
+  nick=document.getElementById("nick").value||"Gracz";
+  document.getElementById("bg").play().catch(()=>{});
+  document.getElementById("start").style.display="none";
+  show();
+}
 
-  const answersDiv = document.getElementById("answers");
-  answersDiv.innerHTML = "";
+function show(){
+  if(i===7 && !ad7){ad7=true;showAd();}
+  if(i>=Q.length){end();return;}
 
-  q.a.forEach((ans, i) => {
-    const btn = document.createElement("button");
-    btn.textContent = ans;
-    btn.onclick = () => answer(i);
-    answersDiv.appendChild(btn);
+  const q=Q[i];
+  q.a=q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-.5);
+  document.getElementById("q").textContent=q.q;
+  document.getElementById("a").innerHTML="";
+  document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
+
+  q.a.forEach(o=>{
+    const b=document.createElement("div");
+    b.className="btn";
+    b.textContent=o.t;
+    b.onclick=()=>{
+      document.querySelectorAll(".btn").forEach(x=>x.style.pointerEvents="none");
+      if(o.idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
+      else{b.classList.add("bad");bad.play();}
+      document.getElementById("pts").textContent=pts;
+      setTimeout(()=>{i++;show()},900);
+    };
+    document.getElementById("a").appendChild(b);
   });
 }
 
-function answer(i) {
-  if (i === questions[current].c) score++;
-
-  current++;
-
-  /* === REKLAMA PO 7 PYTANIU === */
-  if (current === 7) {
-    showAd();
-  }
-
-  if (current < questions.length) {
-    loadQuestion();
-  } else {
-    /* === REKLAMA PRZED WYNIKIEM === */
-    showAd();
-    showResult();
-  }
+function end(){
+  if(!adEnd){adEnd=true;showAd();}
+  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+  document.getElementById("final").style.display="flex";
+  fire();
 }
 
-function showResult() {
-  document.getElementById("quiz").innerHTML = `
-    <h2>Wynik</h2>
-    <p>${score} / ${questions.length} poprawnych odpowiedzi</p>
-    <button onclick="location.reload()">Zagraj ponownie</button>
-  `;
+function share(){
+  navigator.share?navigator.share({title:"QuizoPolsce",url:location.href}):alert(location.href);
 }
 
-loadQuestion();
+let pwa;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwa=e});
+function addHome(){pwa?pwa.prompt():alert("Niedostępne")}
+
+function fire(){
+  const c=fx,x=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+  for(let b=0;b<3;b++){
+    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+    for(let i=0;i<40;i++)
+      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+  }
+  (function a(){
+    x.fillStyle="rgba(7,16,37,.2)";
+    x.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){
+      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
+      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
+      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+      if(o.a<=0)p.splice(i,1);
+    }
+    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
+  })();
+}
 </script>
+
 </body>
 </html>
