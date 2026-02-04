@@ -47,6 +47,7 @@ margin-bottom:18px;font-size:1rem;text-align:center
 canvas{position:fixed;inset:0;pointer-events:none;z-index:10}
 </style>
 </head>
+
 <body>
 
 <canvas id="fx"></canvas>
@@ -102,6 +103,7 @@ z-index:9999;">
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <script>
+/* ===== PYTANIA ===== */
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -122,6 +124,12 @@ const Q=[
 let i=0,pts=0,nick="Gracz";
 let ad7=false, adEnd=false;
 
+/* ===== AUDIO FIX ===== */
+const bg=document.getElementById("bg");
+const ok=document.getElementById("ok");
+const bad=document.getElementById("bad");
+
+/* ===== REKLAMA ===== */
 function showAd(){
   const l=document.getElementById("ad-layer");
   l.innerHTML=`<script src="https://quge5.com/88/tag.min.js" data-zone="205951" async data-cfasync="false"></script>`;
@@ -129,24 +137,28 @@ function showAd(){
   setTimeout(()=>{l.style.display="none";l.innerHTML="";},6000);
 }
 
+/* ===== START ===== */
 function startGame(){
   nick=document.getElementById("nick").value||"Gracz";
-  document.getElementById("bg").play().catch(()=>{});
+  bg.volume=0.6;
+  bg.play().catch(()=>{});
   document.getElementById("start").style.display="none";
   show();
 }
 
+/* ===== QUIZ ===== */
 function show(){
   if(i===7 && !ad7){ad7=true;showAd();}
   if(i>=Q.length){end();return;}
 
   const q=Q[i];
-  q.a=q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-.5);
+  const mix=q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-.5);
+
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  q.a.forEach(o=>{
+  mix.forEach(o=>{
     const b=document.createElement("div");
     b.className="btn";
     b.textContent=o.t;
@@ -161,6 +173,7 @@ function show(){
   });
 }
 
+/* ===== KONIEC ===== */
 function end(){
   if(!adEnd){adEnd=true;showAd();}
   document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
@@ -176,6 +189,7 @@ let pwa;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pwa=e});
 function addHome(){pwa?pwa.prompt():alert("Niedostępne")}
 
+/* ===== FAJERWERKI ===== */
 function fire(){
   const c=fx,x=c.getContext("2d");
   c.width=innerWidth;c.height=innerHeight;
