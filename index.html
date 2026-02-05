@@ -64,9 +64,10 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
       <div id="a" class="answers"></div>
       <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
 
-      <!-- REKLAMA BANNER -->
-      <div id="ad-bottom" data-zone="10552582"></div>
-      <script src="https://quge5.com/88/banner.js" async></script>
+      <!-- BANNER MONETAG -->
+      <div id="ad-bottom" style="text-align:center; margin-top:15px; height:100px;">
+        <script src="https://quge5.com/88/banner.js" data-zone="10552582" async></script>
+      </div>
     </div>
   </div>
 
@@ -81,7 +82,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 
 </div>
 
-<!-- REKLAMA VIGNETTE -->
+<!-- VIGNETTE MONETAG -->
 <script src="https://quge5.com/88/vignette.js" data-zone="10552577" async></script>
 
 <script>
@@ -100,7 +101,7 @@ const startDiv = document.getElementById("start"),
       ok = document.getElementById("ok"),
       bad = document.getElementById("bad");
 
-// PYTANIA (nie ruszamy)
+// PYTANIA
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -161,7 +162,7 @@ function showFinal(){
   fire();
 }
 
-// FAJERWERKI (nie ruszamy)
+// FAJERWERKI
 function fire(){
   const c = document.getElementById("fx"), x = c.getContext("2d");
   c.width = innerWidth; c.height = innerHeight;
