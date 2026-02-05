@@ -38,7 +38,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 
 <canvas id="fx"></canvas>
 
-<!-- AUDIO -->
 <audio id="bg" loop src="sounds/background.mp3"></audio>
 <audio id="ok" src="sounds/ding.mp3"></audio>
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
@@ -46,11 +45,11 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 <div class="page">
 
   <!-- START -->
-  <div id="start" class="full" style="display:flex">
+  <div id="start" class="full">
     <div class="box">
       <h1 style="color:var(--n2)">QuizoPolsce</h1>
       <input id="nick" placeholder="Twój nick" maxlength="15">
-      <div class="btn" onclick="start()">START</div>
+      <div class="btn" id="startBtn">START</div>
     </div>
   </div>
 
@@ -61,12 +60,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
         <div class="title">QuizoPolsce</div>
         <div class="score">PKT: <span id="pts">0</span></div>
       </div>
-
       <div id="q" class="question"></div>
       <div id="a" class="answers"></div>
       <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-
-      <!-- BANNER NA DOLE -->
       <div id="ad-bottom">
         <script src="https://quge5.com/88/banner.js" data-zone="10552582" async></script>
       </div>
@@ -78,13 +74,29 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
     <div class="box">
       <h1 style="color:var(--n2)">KONIEC</h1>
       <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
-      <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+      <div class="btn" id="restartBtn">Zagraj ponownie</div>
     </div>
   </div>
 
 </div>
 
 <script>
+// ELEMENTY DOM
+const startDiv = document.getElementById("start"),
+      quizDiv = document.getElementById("quiz"),
+      finalDiv = document.getElementById("final"),
+      startBtn = document.getElementById("startBtn"),
+      restartBtn = document.getElementById("restartBtn"),
+      ptsEl = document.getElementById("pts"),
+      qEl = document.getElementById("q"),
+      aEl = document.getElementById("a"),
+      progEl = document.getElementById("prog"),
+      finalScore = document.getElementById("finalScore"),
+      bg = document.getElementById("bg"),
+      ok = document.getElementById("ok"),
+      bad = document.getElementById("bad");
+
+// PYTANIA
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -102,97 +114,92 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="";
+let i=0, pts=0, nick="";
 
-function start(){
-  nick=document.getElementById("nick").value||"Gracz";
-  start.style.display="none";
-  quiz.style.display="block";
+// START QUIZU
+startBtn.addEventListener("click", ()=>{
+  nick = document.getElementById("nick").value || "Gracz";
+  startDiv.style.display="none";
+  quizDiv.style.display="block";
   bg.volume=0.6; bg.play().catch(()=>{});
-  show();
-}
+  showQuestion();
+});
 
-function show(){
+// RESTART
+restartBtn.addEventListener("click", ()=>{
+  location.reload();
+});
+
+// POKAZANIE PYTANIA
+function showQuestion(){
   if(i===7){
     // Fullscreen po 7 pytaniu
-    let s=document.createElement("script");
-    s.src="https://quge5.com/88/vignette.js";
-    s.dataset.zone="10552577";
-    s.async=true;
+    let s = document.createElement("script");
+    s.src = "https://quge5.com/88/vignette.js";
+    s.dataset.zone = "10552577";
+    s.async = true;
     document.body.appendChild(s);
   }
 
   if(i>=Q.length){
     // Fullscreen przed wynikiem
-    let s=document.createElement("script");
-    s.src="https://quge5.com/88/vignette.js";
-    s.dataset.zone="10552577";
-    s.async=true;
+    let s = document.createElement("script");
+    s.src = "https://quge5.com/88/vignette.js";
+    s.dataset.zone = "10552577";
+    s.async = true;
     document.body.appendChild(s);
-    return end();
+    return showFinal();
   }
 
-  const q=Q[i];
-  qEl.textContent=q.q;
-  aEl.innerHTML="";
-  progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
+  const q = Q[i];
+  qEl.textContent = q.q;
+  aEl.innerHTML = "";
+  progEl.textContent = `Pytanie ${i+1}/${Q.length}`;
 
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
-    const b=document.createElement("div");
-    b.className="btn"; b.textContent=o.t;
-    b.onclick=()=>{
-      if(o.idx===q.c){ pts++; ok.play(); fire(); b.classList.add("good"); }
-      else{ bad.play(); b.classList.add("bad"); }
-      ptsEl.textContent=pts;
-      setTimeout(()=>{i++; show()},700);
+    const btn = document.createElement("div");
+    btn.className = "btn";
+    btn.textContent = o.t;
+    btn.onclick = ()=>{
+      if(o.idx===q.c){ pts++; ok.play(); fire(); btn.classList.add("good"); }
+      else{ bad.play(); btn.classList.add("bad"); }
+      ptsEl.textContent = pts;
+      setTimeout(()=>{ i++; showQuestion(); }, 700);
     };
-    aEl.appendChild(b);
+    aEl.appendChild(btn);
   });
 }
 
-// KONIEC
-function end(){
-  quiz.style.display="none";
-  final.style.display="flex";
-  finalScore.textContent=`${nick} — ${pts} pkt`;
+// KONIEC QUIZU
+function showFinal(){
+  quizDiv.style.display="none";
+  finalDiv.style.display="flex";
+  finalScore.textContent = `${nick} — ${pts} pkt`;
   fire();
 }
 
 // FAJERWERKI
 function fire(){
-  const c=document.getElementById("fx"),x=c.getContext("2d");
-  c.width=innerWidth;c.height=innerHeight;
-  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+  const c = document.getElementById("fx"), x = c.getContext("2d");
+  c.width = innerWidth; c.height = innerHeight;
+  let p=[], col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
   for(let b=0;b<3;b++){
-    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+    let sx=Math.random()*c.width, sy=Math.random()*c.height*.4;
     for(let i=0;i<40;i++)
       p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
   }
-  (function a(){
+  (function anim(){
     x.fillStyle="rgba(7,16,37,.2)";
     x.fillRect(0,0,c.width,c.height);
     for(let i=p.length-1;i>=0;i--){
-      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
-      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
-      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+      let o=p[i]; x.globalAlpha=o.a; x.fillStyle=o.c;
+      x.beginPath(); x.arc(o.x,o.y,2,0,7); x.fill();
+      o.x+=o.vx; o.y+=o.vy; o.vy+=.1; o.a-=.02;
       if(o.a<=0)p.splice(i,1);
     }
-    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
+    p.length?requestAnimationFrame(anim):x.clearRect(0,0,c.width,c.height);
   })();
 }
-
-// ELEMENTY DOM
-const quiz=document.getElementById("quiz"),
-      start=document.getElementById("start"),
-      final=document.getElementById("final"),
-      ptsEl=document.getElementById("pts"),
-      qEl=document.getElementById("q"),
-      aEl=document.getElementById("a"),
-      progEl=document.getElementById("prog"),
-      finalScore=document.getElementById("finalScore"),
-      bg=document.getElementById("bg"),
-      ok=document.getElementById("ok"),
-      bad=document.getElementById("bad");
 </script>
 </body>
 </html>
