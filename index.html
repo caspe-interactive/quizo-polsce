@@ -27,7 +27,7 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-#ad-bottom{text-align:center;margin-top:15px}
+#ad-bottom{text-align:center;margin-top:15px;height:100px}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
@@ -63,7 +63,10 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
       <div id="q" class="question"></div>
       <div id="a" class="answers"></div>
       <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-      <div id="ad-bottom"></div> <!-- Banner Monetag -->
+
+      <!-- REKLAMA BANNER -->
+      <div id="ad-bottom" data-zone="10552582"></div>
+      <script src="https://quge5.com/88/banner.js" async></script>
     </div>
   </div>
 
@@ -78,6 +81,9 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 
 </div>
 
+<!-- REKLAMA VIGNETTE -->
+<script src="https://quge5.com/88/vignette.js" data-zone="10552577" async></script>
+
 <script>
 // ELEMENTY DOM
 const startDiv = document.getElementById("start"),
@@ -90,12 +96,11 @@ const startDiv = document.getElementById("start"),
       aEl = document.getElementById("a"),
       progEl = document.getElementById("prog"),
       finalScore = document.getElementById("finalScore"),
-      adBottom = document.getElementById("ad-bottom"),
       bg = document.getElementById("bg"),
       ok = document.getElementById("ok"),
       bad = document.getElementById("bad");
 
-// PYTANIA
+// PYTANIA (nie ruszamy)
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -121,14 +126,6 @@ startBtn.addEventListener("click", ()=>{
   startDiv.style.display="none";
   quizDiv.style.display="block";
   bg.volume=0.6; bg.play().catch(()=>{});
-
-  // BANNER Monetag wklejany po kliknięciu START
-  var s = document.createElement("script");
-  s.src = "https://quge5.com/88/banner.js";
-  s.dataset.zone = "10552582"; // Twój tag
-  s.async = true;
-  adBottom.appendChild(s);
-
   showQuestion();
 });
 
@@ -137,25 +134,7 @@ restartBtn.addEventListener("click", ()=>location.reload());
 
 // FUNKCJA WYŚWIETLANIA PYTANIA
 function showQuestion(){
-  // VIGNETTE po 7 pytaniu
-  if(i===6){ // indeks 6 = 7 pytanie
-    var s = document.createElement("script");
-    s.src = "https://quge5.com/88/vignette.js";
-    s.dataset.zone = "10552577"; // Twój tag Vignette
-    s.async = true;
-    document.body.appendChild(s);
-  }
-
-  // przed końcem quizu
-  if(i>=Q.length){
-    var s = document.createElement("script");
-    s.src = "https://quge5.com/88/vignette.js";
-    s.dataset.zone = "10552577"; // Twój tag Vignette
-    s.async = true;
-    document.body.appendChild(s);
-    return showFinal();
-  }
-
+  if(i>=Q.length) return showFinal();
   const q = Q[i];
   qEl.textContent = q.q;
   aEl.innerHTML = "";
@@ -182,7 +161,7 @@ function showFinal(){
   fire();
 }
 
-// FAJERWERKI
+// FAJERWERKI (nie ruszamy)
 function fire(){
   const c = document.getElementById("fx"), x = c.getContext("2d");
   c.width = innerWidth; c.height = innerHeight;
