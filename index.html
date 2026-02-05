@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
+
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -11,10 +12,9 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;align-items:flex-start;padding:12px}
+body{display:flex;justify-content:center;padding:12px}
 .page{width:100%;max-width:520px}
 .card{background:var(--card);border-radius:14px;padding:22px}
-#ad-top{margin:10px 0;text-align:center;width:100%;height:90px;}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{font-weight:800;color:var(--n1)}
 .score{font-weight:700;color:var(--accent)}
@@ -28,16 +28,17 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{
 width:100%;padding:14px;border-radius:12px;
 border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 </style>
 </head>
+
 <body>
 
 <canvas id="fx"></canvas>
@@ -49,97 +50,86 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
 
 <div class="page">
 
-  <!-- BANNER MONETAG U GÓRY -->
-  <div id="ad-top"></div>
-  <script src="https://quge5.com/88/banner.js" data-zone="10552582"></script>
-
-  <!-- START -->
-  <div id="start" class="full">
-    <div class="box">
-      <h1 style="color:var(--n2)">QuizoPolsce</h1>
-      <input id="nick" placeholder="Twój nick" maxlength="15">
-      <div id="start-btn" class="btn">START</div>
-    </div>
+<!-- START -->
+<div id="start" class="full">
+  <div class="box">
+    <h1 style="color:var(--n2)">QuizoPolsce</h1>
+    <input id="nick" placeholder="Twój nick" maxlength="15">
+    <div class="btn" onclick="start()">START</div>
   </div>
+</div>
 
-  <!-- QUIZ -->
-  <div id="quiz" class="page" style="display:none">
-    <div class="card">
-      <div class="top">
-        <div class="title">QuizoPolsce</div>
-        <div class="score">PKT: <span id="pts">0</span></div>
-      </div>
-      <div id="q" class="question"></div>
-      <div id="a" class="answers"></div>
-      <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
+<!-- QUIZ -->
+<div id="quiz" style="display:none">
+  <div class="card">
+    <div class="top">
+      <div class="title">QuizoPolsce</div>
+      <div class="score">PKT: <span id="pts">0</span></div>
     </div>
+    <div id="q" class="question"></div>
+    <div id="a" class="answers"></div>
+    <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
+</div>
 
-  <!-- KONIEC -->
-  <div id="final" class="full" style="display:none">
-    <div class="box">
-      <h1 style="color:var(--n2)">KONIEC</h1>
-      <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
-      <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
-    </div>
+<!-- KONIEC -->
+<div id="final" class="full" style="display:none">
+  <div class="box">
+    <h1 style="color:var(--n2)">KONIEC</h1>
+    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
+</div>
 
 </div>
 
 <script>
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
-{q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
-{q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
-{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0},
-{q:"Polski skoczek narciarski z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},
-{q:"Największe miasto mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
-{q:"Noblistka w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},
 {q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},
-{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
-{q:"Rok odzyskania niepodległości?",a:["1918","1945","1914","1939"],c:0},
-{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu"],c:0},
-{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},
-{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"],c:0},
-{q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
+{q:"Rok odzyskania niepodległości?",a:["1918","1945","1939","1914"],c:0},
+{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Giewont","Śnieżka","Babia Góra"],c:0},
+{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Rota","Bogurodzica","Oda do radości"],c:0},
+{q:"Największy port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
+{q:"Polska w NATO od?",a:["1999","2004","2001","1995"],c:0}
 ];
 
 let i=0,pts=0,nick="";
 
-// START po kliknięciu przycisku
-document.getElementById("start-btn").onclick = async function(){
+function start(){
   nick=document.getElementById("nick").value||"Gracz";
-
-  // Popunder Monetag po kliknięciu START
-  if(window.MT) MT.open();
-
-  document.getElementById("start").style.display="none";
-  document.getElementById("quiz").style.display="block";
+  startScreen(false);
   const bg=document.getElementById("bg"); bg.volume=0.6; bg.play().catch(()=>{});
-  await show();
+  show();
 }
 
-async function show(){
-  if(i>=Q.length) return end();
+function startScreen(v){
+  document.getElementById("start").style.display=v?"flex":"none";
+  document.getElementById("quiz").style.display=v?"none":"block";
+}
 
+function show(){
+  if(i>=Q.length) return end();
   const q=Q[i];
+  q.a=q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5);
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
+  q.a.forEach(o=>{
     const b=document.createElement("div");
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
-      if(o.idx===q.c){
-        pts++; b.classList.add("good"); document.getElementById("ok").play(); fire();
-      }else{ b.classList.add("bad"); document.getElementById("bad").play(); }
-      document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++; show()},700);
+      if(o.idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
+      else{b.classList.add("bad");bad.play();}
+      ptsSpan();
+      setTimeout(()=>{i++;show()},700);
     };
     document.getElementById("a").appendChild(b);
   });
 }
+
+function ptsSpan(){document.getElementById("pts").textContent=pts;}
 
 function end(){
   document.getElementById("quiz").style.display="none";
@@ -148,9 +138,8 @@ function end(){
   fire();
 }
 
-// FAJERWERKI
 function fire(){
-  const c=document.getElementById("fx"),x=c.getContext("2d");
+  const c=fx,x=c.getContext("2d");
   c.width=innerWidth;c.height=innerHeight;
   let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
   for(let b=0;b<3;b++){
@@ -172,8 +161,22 @@ function fire(){
 }
 </script>
 
-<!-- POPUNDER MONETAG -->
-<script src="https://quge5.com/88/tag.min.js" data-zone="10526456"></script>
+<!-- 🔥 MONETAG – VIGNETTE -->
+<script>
+(function(s){
+  s.dataset.zone='10552577';
+  s.src='https://gizokraijaw.net/vignette.min.js';
+})([document.documentElement, document.body].filter(Boolean)
+  .pop()
+  .appendChild(document.createElement('script')));
+</script>
+
+<!-- 🔥 MONETAG – POPUNDER -->
+<script src="https://quge5.com/88/tag.min.js"
+        data-zone="10526456"
+        async
+        data-cfasync="false">
+</script>
 
 </body>
 </html>
