@@ -29,17 +29,15 @@ cursor:pointer;text-align:center
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
 
-#ad-top{
+#ad-bottom{
 display:block;
 width:100%;
 text-align:center;
-margin-bottom:10px;
-position:sticky;
-top:0;
-z-index:10;
+margin-top:15px;
 }
+
 .fullscreen-ad{
-position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#020814ee;z-index:9999}
+position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#020814ee;z-index:9999;display:none}
 .fullscreen-ad iframe{width:90%;max-width:480px;height:80%;border:none;border-radius:12px;}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
@@ -63,21 +61,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 
 <div class="page">
 
-  <!-- BANNER U GÓRY -->
-  <div id="ad-top">
-    <script src="https://quge5.com/88/banner.js" data-zone="10552582" async></script>
-  </div>
-
-  <!-- FULLSCREEN PO 7 PYTANIU -->
-  <div id="ad-full-7" class="fullscreen-ad" onclick="this.style.display='none'">
-    <iframe src="https://quge5.com/88/banner.js?data-zone=10552582"></iframe>
-  </div>
-
-  <!-- FULLSCREEN PRZED WYNIKIEM -->
-  <div id="ad-full-end" class="fullscreen-ad" onclick="this.style.display='none'">
-    <iframe src="https://quge5.com/88/banner.js?data-zone=10552582"></iframe>
-  </div>
-
   <!-- START -->
   <div id="start" class="full">
     <div class="box">
@@ -94,9 +77,15 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
         <div class="title">QuizoPolsce</div>
         <div class="score">PKT: <span id="pts">0</span></div>
       </div>
+
       <div id="q" class="question"></div>
       <div id="a" class="answers"></div>
       <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
+
+      <!-- BANNER NA DOLE -->
+      <div id="ad-bottom">
+        <script src="https://quge5.com/88/banner.js" data-zone="10552582" async></script>
+      </div>
     </div>
   </div>
 
@@ -141,10 +130,20 @@ function start(){
 
 function show(){
   if(i===7){ 
-    document.getElementById('ad-full-7').style.display='flex'; 
+    // Fullscreen po 7 pytaniu - dynamicznie
+    let s=document.createElement("script");
+    s.src="https://quge5.com/88/vignette.js";
+    s.dataset.zone="10552577";
+    s.async=true;
+    document.body.appendChild(s);
   }
   if(i>=Q.length){ 
-    document.getElementById('ad-full-end').style.display='flex'; 
+    // Fullscreen przed wynikiem - dynamicznie
+    let s=document.createElement("script");
+    s.src="https://quge5.com/88/vignette.js";
+    s.dataset.zone="10552577";
+    s.async=true;
+    document.body.appendChild(s);
     return end(); 
   }
 
@@ -197,9 +196,6 @@ function fire(){
   })();
 }
 </script>
-
-<!-- POPUNDER -->
-<script src="https://quge5.com/88/tag.min.js" data-zone="10526456" async data-cfasync="false"></script>
 
 </body>
 </html>
