@@ -63,7 +63,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
       <div id="q" class="question"></div>
       <div id="a" class="answers"></div>
       <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-      <div id="ad-bottom"></div>
+      <div id="ad-bottom"></div> <!-- Banner Monetag -->
     </div>
   </div>
 
@@ -122,10 +122,10 @@ startBtn.addEventListener("click", ()=>{
   quizDiv.style.display="block";
   bg.volume=0.6; bg.play().catch(()=>{});
 
-  // Wstrzyknięcie banneru Monetag w akcji użytkownika
-  const s = document.createElement("script");
+  // BANNER Monetag wklejany po kliknięciu START
+  var s = document.createElement("script");
   s.src = "https://quge5.com/88/banner.js";
-  s.dataset.zone = "10552582";
+  s.dataset.zone = "10552582"; // Twój tag
   s.async = true;
   adBottom.appendChild(s);
 
@@ -135,22 +135,22 @@ startBtn.addEventListener("click", ()=>{
 // RESTART
 restartBtn.addEventListener("click", ()=>location.reload());
 
-// POKAZANIE PYTANIA
+// FUNKCJA WYŚWIETLANIA PYTANIA
 function showQuestion(){
-  // Vignette po 7 pytaniu
-  if(i===7){
-    const s = document.createElement("script");
+  // VIGNETTE po 7 pytaniu
+  if(i===6){ // indeks 6 = 7 pytanie
+    var s = document.createElement("script");
     s.src = "https://quge5.com/88/vignette.js";
-    s.dataset.zone = "10552577";
+    s.dataset.zone = "10552577"; // Twój tag Vignette
     s.async = true;
     document.body.appendChild(s);
   }
 
-  // Vignette przed końcem
+  // przed końcem quizu
   if(i>=Q.length){
-    const s = document.createElement("script");
+    var s = document.createElement("script");
     s.src = "https://quge5.com/88/vignette.js";
-    s.dataset.zone = "10552577";
+    s.dataset.zone = "10552577"; // Twój tag Vignette
     s.async = true;
     document.body.appendChild(s);
     return showFinal();
