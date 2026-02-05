@@ -14,7 +14,7 @@
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{display:flex;justify-content:center;padding:12px}
 .page{width:100%;max-width:520px}
-.card{background:var(--card);border-radius:14px;padding:22px}
+.card{background:var(--card);border-radius:14px;padding:22px;position:relative}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{font-weight:800;color:var(--n1)}
 .score{font-weight:700;color:var(--accent)}
@@ -28,7 +28,20 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
+
+#ad-top{
+display:block;
+width:100%;
+text-align:center;
+margin-bottom:10px;
+position:sticky;
+top:0;
+z-index:10;
+}
+.fullscreen-ad{
+position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#020814ee;z-index:9999}
+.fullscreen-ad iframe{width:90%;max-width:480px;height:80%;border:none;border-radius:12px;}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{
 width:100%;padding:14px;border-radius:12px;
@@ -50,36 +63,51 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 
 <div class="page">
 
-<!-- START -->
-<div id="start" class="full">
-  <div class="box">
-    <h1 style="color:var(--n2)">QuizoPolsce</h1>
-    <input id="nick" placeholder="Twój nick" maxlength="15">
-    <div class="btn" onclick="start()">START</div>
+  <!-- BANNER U GÓRY -->
+  <div id="ad-top">
+    <script src="https://quge5.com/88/banner.js" data-zone="10552582" async></script>
   </div>
-</div>
 
-<!-- QUIZ -->
-<div id="quiz" style="display:none">
-  <div class="card">
-    <div class="top">
-      <div class="title">QuizoPolsce</div>
-      <div class="score">PKT: <span id="pts">0</span></div>
+  <!-- FULLSCREEN PO 7 PYTANIU -->
+  <div id="ad-full-7" class="fullscreen-ad" onclick="this.style.display='none'">
+    <iframe src="https://quge5.com/88/banner.js?data-zone=10552582"></iframe>
+  </div>
+
+  <!-- FULLSCREEN PRZED WYNIKIEM -->
+  <div id="ad-full-end" class="fullscreen-ad" onclick="this.style.display='none'">
+    <iframe src="https://quge5.com/88/banner.js?data-zone=10552582"></iframe>
+  </div>
+
+  <!-- START -->
+  <div id="start" class="full">
+    <div class="box">
+      <h1 style="color:var(--n2)">QuizoPolsce</h1>
+      <input id="nick" placeholder="Twój nick" maxlength="15">
+      <div class="btn" onclick="start()">START</div>
     </div>
-    <div id="q" class="question"></div>
-    <div id="a" class="answers"></div>
-    <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
-</div>
 
-<!-- KONIEC -->
-<div id="final" class="full" style="display:none">
-  <div class="box">
-    <h1 style="color:var(--n2)">KONIEC</h1>
-    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
-    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+  <!-- QUIZ -->
+  <div id="quiz" style="display:none">
+    <div class="card">
+      <div class="top">
+        <div class="title">QuizoPolsce</div>
+        <div class="score">PKT: <span id="pts">0</span></div>
+      </div>
+      <div id="q" class="question"></div>
+      <div id="a" class="answers"></div>
+      <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
+    </div>
   </div>
-</div>
+
+  <!-- KONIEC -->
+  <div id="final" class="full" style="display:none">
+    <div class="box">
+      <h1 style="color:var(--n2)">KONIEC</h1>
+      <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
+      <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
+    </div>
+  </div>
 
 </div>
 
@@ -112,7 +140,15 @@ function start(){
 }
 
 function show(){
-  if(i>=Q.length) return end();
+  if(i===7){ 
+    document.getElementById('ad-full-7').style.display='flex'; 
+  }
+  if(i>=Q.length){ 
+    document.getElementById('ad-full-end').style.display='flex'; 
+    return end(); 
+  }
+
+  if(i>=Q.length) return;
   const q=Q[i];
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
@@ -122,10 +158,10 @@ function show(){
     const b=document.createElement("div");
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
-      if(o.idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
-      else{b.classList.add("bad");bad.play();}
+      if(o.idx===q.c){ pts++; ok.play(); fire(); b.classList.add("good"); }
+      else{ bad.play(); b.classList.add("bad"); }
       document.getElementById("pts").textContent=pts;
-      setTimeout(()=>{i++;show()},700);
+      setTimeout(()=>{i++; show()},700);
     };
     document.getElementById("a").appendChild(b);
   });
@@ -138,8 +174,9 @@ function end(){
   fire();
 }
 
+// FAJERWERKI
 function fire(){
-  const c=fx,x=c.getContext("2d");
+  const c=document.getElementById("fx"),x=c.getContext("2d");
   c.width=innerWidth;c.height=innerHeight;
   let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
   for(let b=0;b<3;b++){
@@ -161,22 +198,8 @@ function fire(){
 }
 </script>
 
-<!-- MONETAG – VIGNETTE -->
-<script>
-(function(s){
-  s.dataset.zone='10552577';
-  s.src='https://gizokraijaw.net/vignette.min.js';
-})([document.documentElement, document.body].filter(Boolean)
-  .pop()
-  .appendChild(document.createElement('script')));
-</script>
-
-<!-- MONETAG – POPUNDER -->
-<script src="https://quge5.com/88/tag.min.js"
-        data-zone="10526456"
-        async
-        data-cfasync="false">
-</script>
+<!-- POPUNDER -->
+<script src="https://quge5.com/88/tag.min.js" data-zone="10526456" async data-cfasync="false"></script>
 
 </body>
 </html>
