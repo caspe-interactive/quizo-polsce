@@ -86,55 +86,55 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 <script>
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
+{q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
+{q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
+{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0},
+{q:"Polski skoczek narciarski z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},
+{q:"Największe miasto mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
+{q:"Noblistka w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},
 {q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},
-{q:"Rok odzyskania niepodległości?",a:["1918","1945","1939","1914"],c:0},
-{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Giewont","Śnieżka","Babia Góra"],c:0},
-{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Rota","Bogurodzica","Oda do radości"],c:0},
-{q:"Największy port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
-{q:"Polska w NATO od?",a:["1999","2004","2001","1995"],c:0}
+{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
+{q:"Rok odzyskania niepodległości?",a:["1918","1945","1914","1939"],c:0},
+{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu"],c:0},
+{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},
+{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"],c:0},
+{q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
 let i=0,pts=0,nick="";
 
 function start(){
   nick=document.getElementById("nick").value||"Gracz";
-  startScreen(false);
-  const bg=document.getElementById("bg"); bg.volume=0.6; bg.play().catch(()=>{});
+  document.getElementById("start").style.display="none";
+  document.getElementById("quiz").style.display="block";
+  bg.volume=0.6; bg.play().catch(()=>{});
   show();
-}
-
-function startScreen(v){
-  document.getElementById("start").style.display=v?"flex":"none";
-  document.getElementById("quiz").style.display=v?"none":"block";
 }
 
 function show(){
   if(i>=Q.length) return end();
   const q=Q[i];
-  q.a=q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5);
   document.getElementById("q").textContent=q.q;
   document.getElementById("a").innerHTML="";
   document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  q.a.forEach(o=>{
+  q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
     const b=document.createElement("div");
     b.className="btn"; b.textContent=o.t;
     b.onclick=()=>{
       if(o.idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
       else{b.classList.add("bad");bad.play();}
-      ptsSpan();
+      document.getElementById("pts").textContent=pts;
       setTimeout(()=>{i++;show()},700);
     };
     document.getElementById("a").appendChild(b);
   });
 }
 
-function ptsSpan(){document.getElementById("pts").textContent=pts;}
-
 function end(){
-  document.getElementById("quiz").style.display="none";
-  document.getElementById("final").style.display="flex";
-  document.getElementById("finalScore").textContent=`${nick} — ${pts} pkt`;
+  quiz.style.display="none";
+  final.style.display="flex";
+  finalScore.textContent=`${nick} — ${pts} pkt`;
   fire();
 }
 
@@ -161,7 +161,7 @@ function fire(){
 }
 </script>
 
-<!-- 🔥 MONETAG – VIGNETTE -->
+<!-- MONETAG – VIGNETTE -->
 <script>
 (function(s){
   s.dataset.zone='10552577';
@@ -171,7 +171,7 @@ function fire(){
   .appendChild(document.createElement('script')));
 </script>
 
-<!-- 🔥 MONETAG – POPUNDER -->
+<!-- MONETAG – POPUNDER -->
 <script src="https://quge5.com/88/tag.min.js"
         data-zone="10526456"
         async
