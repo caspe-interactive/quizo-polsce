@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
-
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -28,25 +27,13 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-
-#ad-bottom{
-display:block;
-width:100%;
-text-align:center;
-margin-top:15px;
-}
-
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999;display:none}
+#ad-bottom{text-align:center;margin-top:15px}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
-input{
-width:100%;padding:14px;border-radius:12px;
-border:2px solid var(--n1);background:#050c18;color:#fff;
-margin-bottom:18px;text-align:center
-}
+input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 </style>
 </head>
-
 <body>
 
 <canvas id="fx"></canvas>
@@ -59,7 +46,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 <div class="page">
 
   <!-- START -->
-  <div id="start" class="full">
+  <div id="start" class="full" style="display:flex">
     <div class="box">
       <h1 style="color:var(--n2)">QuizoPolsce</h1>
       <input id="nick" placeholder="Twój nick" maxlength="15">
@@ -119,36 +106,36 @@ let i=0,pts=0,nick="";
 
 function start(){
   nick=document.getElementById("nick").value||"Gracz";
-  document.getElementById("start").style.display="none";
-  document.getElementById("quiz").style.display="block";
+  start.style.display="none";
+  quiz.style.display="block";
   bg.volume=0.6; bg.play().catch(()=>{});
   show();
 }
 
 function show(){
-  if(i===7){ 
-    // Fullscreen po 7 pytaniu - dynamicznie
+  if(i===7){
+    // Fullscreen po 7 pytaniu
     let s=document.createElement("script");
     s.src="https://quge5.com/88/vignette.js";
     s.dataset.zone="10552577";
     s.async=true;
     document.body.appendChild(s);
-  }
-  if(i>=Q.length){ 
-    // Fullscreen przed wynikiem - dynamicznie
-    let s=document.createElement("script");
-    s.src="https://quge5.com/88/vignette.js";
-    s.dataset.zone="10552577";
-    s.async=true;
-    document.body.appendChild(s);
-    return end(); 
   }
 
-  if(i>=Q.length) return;
+  if(i>=Q.length){
+    // Fullscreen przed wynikiem
+    let s=document.createElement("script");
+    s.src="https://quge5.com/88/vignette.js";
+    s.dataset.zone="10552577";
+    s.async=true;
+    document.body.appendChild(s);
+    return end();
+  }
+
   const q=Q[i];
-  document.getElementById("q").textContent=q.q;
-  document.getElementById("a").innerHTML="";
-  document.getElementById("prog").textContent=`Pytanie ${i+1}/${Q.length}`;
+  qEl.textContent=q.q;
+  aEl.innerHTML="";
+  progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
 
   q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
     const b=document.createElement("div");
@@ -156,13 +143,14 @@ function show(){
     b.onclick=()=>{
       if(o.idx===q.c){ pts++; ok.play(); fire(); b.classList.add("good"); }
       else{ bad.play(); b.classList.add("bad"); }
-      document.getElementById("pts").textContent=pts;
+      ptsEl.textContent=pts;
       setTimeout(()=>{i++; show()},700);
     };
-    document.getElementById("a").appendChild(b);
+    aEl.appendChild(b);
   });
 }
 
+// KONIEC
 function end(){
   quiz.style.display="none";
   final.style.display="flex";
@@ -192,7 +180,19 @@ function fire(){
     p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
   })();
 }
-</script>
 
+// ELEMENTY DOM
+const quiz=document.getElementById("quiz"),
+      start=document.getElementById("start"),
+      final=document.getElementById("final"),
+      ptsEl=document.getElementById("pts"),
+      qEl=document.getElementById("q"),
+      aEl=document.getElementById("a"),
+      progEl=document.getElementById("prog"),
+      finalScore=document.getElementById("finalScore"),
+      bg=document.getElementById("bg"),
+      ok=document.getElementById("ok"),
+      bad=document.getElementById("bad");
+</script>
 </body>
 </html>
