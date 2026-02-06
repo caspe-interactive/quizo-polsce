@@ -49,7 +49,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
     <div class="box">
       <h1 style="color:var(--n2)">QuizoPolsce</h1>
       <input id="nick" placeholder="Twój nick" maxlength="15">
-      <div class="btn" id="startBtn">START</div>
+      <div class="btn" id="startBtn" tabindex="0">START</div>
     </div>
   </div>
 
@@ -116,16 +116,20 @@ const Q=[
 let i=0, pts=0, nick="";
 
 // START QUIZU
-startBtn.addEventListener("click", ()=>{
+startBtn.addEventListener("pointerdown", ()=>{
   nick = document.getElementById("nick").value || "Gracz";
   startDiv.style.display="none";
   quizDiv.style.display="block";
-  bg.volume=0.6; bg.play().catch(()=>{});
 
-  // BANNER Monetag wklejany po kliknięciu START
+  // Muzyka w tle startuje od razu
+  bg.volume = 0.6;
+  bg.loop = true;
+  bg.play().catch(()=>{}); // przeglądarka wymaga interakcji START
+
+  // BANNER Monetag
   var s = document.createElement("script");
   s.src = "https://quge5.com/88/banner.js";
-  s.dataset.zone = "10552582"; // Twój tag
+  s.dataset.zone = "10552582";
   s.async = true;
   adBottom.appendChild(s);
 
@@ -138,10 +142,10 @@ restartBtn.addEventListener("click", ()=>location.reload());
 // FUNKCJA WYŚWIETLANIA PYTANIA
 function showQuestion(){
   // ONCLICK po 7 pytaniu
-  if(i===6){ // indeks 6 = 7 pytanie
+  if(i===6){
     var s = document.createElement("script");
     s.src = "https://quge5.com/88/popunder.js";
-    s.dataset.zone = "10526456"; // Twój OnClick tag
+    s.dataset.zone = "10526456";
     s.async = true;
     document.body.appendChild(s);
   }
@@ -151,7 +155,7 @@ function showQuestion(){
     // ONCLICK przed wynikiem
     var s = document.createElement("script");
     s.src = "https://quge5.com/88/popunder.js";
-    s.dataset.zone = "10526456"; // Twój OnClick tag
+    s.dataset.zone = "10526456";
     s.async = true;
     document.body.appendChild(s);
 
