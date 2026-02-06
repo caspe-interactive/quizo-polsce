@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
+
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -13,7 +14,7 @@
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{display:flex;justify-content:center;padding:12px}
 .page{width:100%;max-width:520px}
-.card{background:var(--card);border-radius:14px;padding:22px;position:relative}
+.card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{font-weight:800;color:var(--n1)}
 .score{font-weight:700;color:var(--accent)}
@@ -27,13 +28,14 @@ cursor:pointer;text-align:center
 }
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-#ad-bottom{text-align:center;margin-top:15px;height:100px}
+#ad-bottom{text-align:center;margin-top:15px;min-height:90px}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:9999}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 </style>
 </head>
+
 <body>
 
 <canvas id="fx"></canvas>
@@ -44,62 +46,62 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 
 <div class="page">
 
-  <!-- START -->
-  <div id="start" class="full">
-    <div class="box">
-      <h1 style="color:var(--n2)">QuizoPolsce</h1>
-      <input id="nick" placeholder="Twój nick" maxlength="15">
-      <div class="btn" id="startBtn">START</div>
+<!-- START -->
+<div id="start" class="full">
+  <div class="box">
+    <h1 style="color:var(--n2)">QuizoPolsce</h1>
+    <input id="nick" placeholder="Twój nick" maxlength="15">
+    <div class="btn" id="startBtn">START</div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" style="display:none">
+  <div class="card">
+    <div class="top">
+      <div class="title">QuizoPolsce</div>
+      <div class="score">PKT: <span id="pts">0</span></div>
+    </div>
+
+    <div id="q" class="question"></div>
+    <div id="a" class="answers"></div>
+    <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
+
+    <!-- MONETAG BANNER -->
+    <div id="ad-bottom">
+      <script async src="https://quge5.com/88/banner.js" data-zone="10552582"></script>
     </div>
   </div>
+</div>
 
-  <!-- QUIZ -->
-  <div id="quiz" style="display:none">
-    <div class="card">
-      <div class="top">
-        <div class="title">QuizoPolsce</div>
-        <div class="score">PKT: <span id="pts">0</span></div>
-      </div>
-      <div id="q" class="question"></div>
-      <div id="a" class="answers"></div>
-      <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-
-      <!-- BANNER MONETAG -->
-      <div id="ad-bottom" style="width:100%;min-height:90px;text-align:center;margin-top:15px">
-        <script async src="https://quge5.com/88/banner.js" data-zone="10552582"></script>
-      </div>
-    </div>
+<!-- KONIEC -->
+<div id="final" class="full" style="display:none">
+  <div class="box">
+    <h1 style="color:var(--n2)">KONIEC</h1>
+    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
-
-  <!-- KONIEC -->
-  <div id="final" class="full" style="display:none">
-    <div class="box">
-      <h1 style="color:var(--n2)">KONIEC</h1>
-      <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
-      <div class="btn" id="restartBtn">Zagraj ponownie</div>
-    </div>
-  </div>
+</div>
 
 </div>
 
-<!-- VIGNETTE MONETAG -->
+<!-- MONETAG VIGNETTE FULLSCREEN -->
 <script async src="https://quge5.com/88/vignette.js" data-zone="10552577"></script>
 
 <script>
-// ELEMENTY DOM
+// ELEMENTY
 const startDiv = document.getElementById("start"),
-      quizDiv = document.getElementById("quiz"),
-      finalDiv = document.getElementById("final"),
-      startBtn = document.getElementById("startBtn"),
-      restartBtn = document.getElementById("restartBtn"),
-      ptsEl = document.getElementById("pts"),
-      qEl = document.getElementById("q"),
-      aEl = document.getElementById("a"),
-      progEl = document.getElementById("prog"),
-      finalScore = document.getElementById("finalScore"),
-      bg = document.getElementById("bg"),
-      ok = document.getElementById("ok"),
-      bad = document.getElementById("bad");
+quizDiv = document.getElementById("quiz"),
+finalDiv = document.getElementById("final"),
+startBtn = document.getElementById("startBtn"),
+ptsEl = document.getElementById("pts"),
+qEl = document.getElementById("q"),
+aEl = document.getElementById("a"),
+progEl = document.getElementById("prog"),
+finalScore = document.getElementById("finalScore"),
+bg = document.getElementById("bg"),
+ok = document.getElementById("ok"),
+bad = document.getElementById("bad");
 
 // PYTANIA
 const Q=[
@@ -121,69 +123,66 @@ const Q=[
 
 let i=0, pts=0, nick="";
 
-// START QUIZU
-startBtn.addEventListener("click", ()=>{
-  nick = document.getElementById("nick").value || "Gracz";
-  startDiv.style.display="none";
-  quizDiv.style.display="block";
-  bg.volume=0.6; bg.play().catch(()=>{});
-  showQuestion();
-});
+// START
+startBtn.onclick=()=>{
+nick=document.getElementById("nick").value||"Gracz";
+startDiv.style.display="none";
+quizDiv.style.display="block";
+bg.volume=0.6; bg.play().catch(()=>{});
+showQuestion();
+};
 
-// RESTART
-restartBtn.addEventListener("click", ()=>location.reload());
-
-// FUNKCJA WYŚWIETLANIA PYTANIA
 function showQuestion(){
-  if(i>=Q.length) return showFinal();
-  const q = Q[i];
-  qEl.textContent = q.q;
-  aEl.innerHTML = "";
-  progEl.textContent = `Pytanie ${i+1}/${Q.length}`;
+if(i>=Q.length){showFinal();return;}
+const q=Q[i];
+qEl.textContent=q.q;
+aEl.innerHTML="";
+progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
-    const btn = document.createElement("div");
-    btn.className="btn"; btn.textContent=o.t;
-    btn.onclick = ()=>{
-      if(o.idx===q.c){ pts++; ok.play(); fire(); btn.classList.add("good"); }
-      else{ bad.play(); btn.classList.add("bad"); }
-      ptsEl.textContent = pts;
-      setTimeout(()=>{ i++; showQuestion(); }, 700);
-    };
-    aEl.appendChild(btn);
-  });
+q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
+const b=document.createElement("div");
+b.className="btn"; b.textContent=o.t;
+b.onclick=()=>{
+if(o.idx===q.c){pts++;ok.play();fire();b.classList.add("good");}
+else{bad.play();b.classList.add("bad");}
+ptsEl.textContent=pts;
+setTimeout(()=>{i++;showQuestion();},700);
+};
+aEl.appendChild(b);
+});
 }
 
-// KONIEC
 function showFinal(){
-  quizDiv.style.display="none";
-  finalDiv.style.display="flex";
-  finalScore.textContent = `${nick} — ${pts} pkt`;
-  fire();
+quizDiv.style.display="none";
+finalDiv.style.display="flex";
+finalScore.textContent=`${nick} — ${pts} pkt`;
+fire();
 }
 
 // FAJERWERKI
 function fire(){
-  const c = document.getElementById("fx"), x = c.getContext("2d");
-  c.width = innerWidth; c.height = innerHeight;
-  let p=[], col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
-  for(let b=0;b<3;b++){
-    let sx=Math.random()*c.width, sy=Math.random()*c.height*.4;
-    for(let i=0;i<40;i++)
-      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.floor(Math.random()*4)]});
-  }
-  (function anim(){
-    x.fillStyle="rgba(7,16,37,.2)";
-    x.fillRect(0,0,c.width,c.height);
-    for(let i=p.length-1;i>=0;i--){
-      let o=p[i]; x.globalAlpha=o.a; x.fillStyle=o.c;
-      x.beginPath(); x.arc(o.x,o.y,2,0,7); x.fill();
-      o.x+=o.vx; o.y+=o.vy; o.vy+=.1; o.a-=.02;
-      if(o.a<=0)p.splice(i,1);
-    }
-    p.length?requestAnimationFrame(anim):x.clearRect(0,0,c.width,c.height);
-  })();
+const c=document.getElementById("fx"),x=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
+let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+for(let b=0;b<3;b++){
+let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+for(let i=0;i<40;i++)
+p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.floor(Math.random()*4)]});
+}
+(function anim(){
+x.fillStyle="rgba(7,16,37,.2)";
+x.fillRect(0,0,c.width,c.height);
+for(let i=p.length-1;i>=0;i--){
+let o=p[i];
+x.globalAlpha=o.a;x.fillStyle=o.c;
+x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
+o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+if(o.a<=0)p.splice(i,1);
+}
+p.length?requestAnimationFrame(anim):x.clearRect(0,0,c.width,c.height);
+})();
 }
 </script>
+
 </body>
 </html>
