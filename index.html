@@ -16,7 +16,7 @@ body{display:flex;justify-content:center;padding:12px}
 .page{
   width:100%;
   max-width:520px;
-  margin-top:120px; /* quiz obniżony pod reklamy */
+  margin-top:120px; /* quiz obniżony pod górną reklamę */
 }
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -120,15 +120,6 @@ const aEl=document.getElementById("a");
 const progEl=document.getElementById("prog");
 const ptsEl=document.getElementById("pts");
 
-// Funkcja, która pewnie wywołuje Monetag
-function showAd(format, zoneId){
-  if(window.monetag && window.monetag.queue){
-    monetag.queue.push({format:format, zoneId:zoneId});
-  } else {
-    setTimeout(()=>showAd(format, zoneId),300);
-  }
-}
-
 startBtn.onclick=()=>{
   nick=document.getElementById("nick").value||"Gracz";
   start.style.display="none";
@@ -159,21 +150,26 @@ function show(){
     b.textContent=t;
     b.onclick=()=>{
 
-      // Vignette po 7 pytaniu
+      if(idx===q.c){pts++; b.classList.add("good"); ok.play(); fire();}
+      else{b.classList.add("bad"); bad.play();}
+      ptsEl.textContent=pts;
+
+      // Vignette po 7 pytaniu – bezpośrednio w onclick
       if(i+1 === 7 && !ad7){
         ad7 = true;
-        showAd("vignette", 10523625);
+        if(window.monetag && window.monetag.queue){
+          monetag.queue.push({format:"vignette", zoneId:10523625});
+        }
       }
 
-      // Popunder po 14 pytaniu
+      // Popunder po 14 pytaniu – bezpośrednio w onclick
       if(i+1 === 14 && !ad14){
         ad14 = true;
-        showAd("popunder", 10580761);
+        if(window.monetag && window.monetag.queue){
+          monetag.queue.push({format:"popunder", zoneId:10580761});
+        }
       }
 
-      if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
-      else{b.classList.add("bad");bad.play();}
-      ptsEl.textContent=pts;
       i++;
       setTimeout(show,700);
     };
