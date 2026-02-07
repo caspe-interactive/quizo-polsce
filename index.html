@@ -16,7 +16,7 @@ body{display:flex;justify-content:center;padding:12px}
 .page{
   width:100%;
   max-width:520px;
-  margin-top:120px; /* przesunięcie quizu w dół pod reklamy */
+  margin-top:120px; /* quiz obniżony pod reklamy */
 }
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -40,7 +40,7 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
-#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem, nie będzie zasłaniała pytań */
+#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem */
 </style>
 
 <script>
@@ -120,6 +120,15 @@ const aEl=document.getElementById("a");
 const progEl=document.getElementById("prog");
 const ptsEl=document.getElementById("pts");
 
+// Funkcja, która pewnie wywołuje Monetag
+function showAd(format, zoneId){
+  if(window.monetag && window.monetag.queue){
+    monetag.queue.push({format:format, zoneId:zoneId});
+  } else {
+    setTimeout(()=>showAd(format, zoneId),300);
+  }
+}
+
 startBtn.onclick=()=>{
   nick=document.getElementById("nick").value||"Gracz";
   start.style.display="none";
@@ -129,7 +138,7 @@ startBtn.onclick=()=>{
   // In-Page Push pod quizem
   const adContainer = document.getElementById("ad");
   const s = document.createElement("script");
-  s.dataset.zone='10526457'; // Twój In-Page Push
+  s.dataset.zone='10526457';
   s.src='https://nap5k.com/tag.min.js';
   adContainer.appendChild(s);
 
@@ -153,13 +162,13 @@ function show(){
       // Vignette po 7 pytaniu
       if(i+1 === 7 && !ad7){
         ad7 = true;
-        monetag.queue.push({format:"vignette", zoneId:10523625});
+        showAd("vignette", 10523625);
       }
 
       // Popunder po 14 pytaniu
       if(i+1 === 14 && !ad14){
         ad14 = true;
-        monetag.queue.push({format:"popunder", zoneId:10580761});
+        showAd("popunder", 10580761);
       }
 
       if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
