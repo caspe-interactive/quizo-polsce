@@ -36,6 +36,7 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
+#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem */
 </style>
 
 <script>
@@ -72,8 +73,8 @@ window.monetag = window.monetag || { queue: [] };
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
 
-    <!-- KONTEJNER NA IN-PAGE PUSH POD PYTANIAMI -->
-    <div id="ad" style="margin-top:15px;text-align:center;position:relative;"></div>
+    <!-- KONTEJNER NA REKLAMĘ POD QUIZEM -->
+    <div id="ad"></div>
 
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
@@ -121,10 +122,10 @@ startBtn.onclick=()=>{
   quiz.style.display="block";
   bg.play().catch(()=>{});
 
-  // IN-PAGE PUSH POD PYTANIAMI od razu
+  // NOWY In-Page Push pod quizem
   const adContainer = document.getElementById("ad");
   const s = document.createElement("script");
-  s.dataset.zone='10523608';
+  s.dataset.zone='10526457'; // Twój nowy In-Page Push
   s.src='https://nap5k.com/tag.min.js';
   adContainer.appendChild(s);
 
