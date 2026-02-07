@@ -69,8 +69,14 @@ window.monetag = window.monetag || { queue: [] };
       <div class="title">QuizoPolsce</div>
       <div class="score">PKT: <span id="pts">0</span></div>
     </div>
+
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
+
+    <!-- REKLAMY POD ODPOWIEDZIAMI -->
+    <div id="ad7" style="margin-top:15px;text-align:center"></div>
+    <div id="ad14" style="margin-top:15px;text-align:center"></div>
+
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
 </div>
@@ -116,14 +122,15 @@ startBtn.onclick=()=>{
   start.style.display="none";
   quiz.style.display="block";
   bg.play().catch(()=>{});
-
-  // START – VIGNETTE
-  monetag.queue.push({format:"vignette",zoneId:10552577});
   show();
 };
 
 function show(){
   if(i>=Q.length) return end();
+
+  document.getElementById("ad7").innerHTML="";
+  document.getElementById("ad14").innerHTML="";
+
   const q=Q[i];
   qEl.textContent=q.q;
   aEl.innerHTML="";
@@ -141,11 +148,20 @@ function show(){
 
       if(i===7 && !ad7){
         ad7=true;
-        monetag.queue.push({format:"inpage_push",zoneId:10523608});
+        monetag.queue.push({
+          format:"inpage_push",
+          zoneId:10523608,
+          container:"ad7"
+        });
       }
+
       if(i===14 && !ad14){
         ad14=true;
-        monetag.queue.push({format:"popunder",zoneId:10526456});
+        monetag.queue.push({
+          format:"inpage_push",
+          zoneId:10552577,
+          container:"ad14"
+        });
       }
 
       setTimeout(show,700);
