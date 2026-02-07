@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QuizoPolsce – reklamy</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QuizoPolsce</title>
 
 <style>
 :root{
@@ -21,68 +21,69 @@ body{display:flex;justify-content:center;padding:12px}
 .question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer;text-align:center}
+.btn{
+padding:14px;border-radius:12px;font-weight:800;color:#fff;
+background:linear-gradient(90deg,var(--n1),var(--n2));
+cursor:pointer;text-align:center
+}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
-input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
+input{
+width:100%;padding:14px;border-radius:12px;
+border:2px solid var(--n1);background:#050c18;color:#fff;
+margin-bottom:18px;text-align:center
+}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
-#ad-bottom{margin-top:10px;text-align:center;}
 </style>
 
-<!-- Monetag Base Loader -->
+<!-- MONETAG BASE -->
 <script async src="https://btloader.com/tag?o=5688917489764352&upapi=true"></script>
-
 </head>
+
 <body>
 
 <canvas id="fx"></canvas>
 
-<!-- AUDIO -->
 <audio id="bg" loop src="sounds/background.mp3"></audio>
 <audio id="ok" src="sounds/ding.mp3"></audio>
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <div class="page">
 
-  <!-- START -->
-  <div id="start" class="full">
-    <div class="box">
-      <h1 style="color:var(--n2)">QuizoPolsce</h1>
-      <input id="nick" placeholder="Twój nick" maxlength="15">
-      <div class="btn" id="startBtn">START</div>
-    </div>
+<div id="start" class="full">
+  <div class="box">
+    <h1 style="color:var(--n2)">QuizoPolsce</h1>
+    <input id="nick" placeholder="Twój nick" maxlength="15">
+    <div class="btn" id="startBtn">START</div>
   </div>
+</div>
 
-  <!-- QUIZ -->
-  <div id="quiz" style="display:none">
-    <div class="card">
-      <div class="top">
-        <div class="title">QuizoPolsce</div>
-        <div class="score">PKT: <span id="pts">0</span></div>
-      </div>
-      <div id="q" class="question"></div>
-      <div id="a" class="answers"></div>
-      <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
-      <div id="ad-bottom"></div>
+<div id="quiz" style="display:none">
+  <div class="card">
+    <div class="top">
+      <div class="title">QuizoPolsce</div>
+      <div class="score">PKT: <span id="pts">0</span></div>
     </div>
+    <div id="q" class="question"></div>
+    <div id="a" class="answers"></div>
+    <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
+</div>
 
-  <!-- KONIEC -->
-  <div id="final" class="full" style="display:none">
-    <div class="box">
-      <h1 style="color:var(--n2)">KONIEC</h1>
-      <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
-      <div class="btn" id="restartBtn">Zagraj ponownie</div>
-    </div>
+<div id="final" class="full" style="display:none">
+  <div class="box">
+    <h1 style="color:var(--n2)">KONIEC</h1>
+    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
+    <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
+</div>
 
 </div>
 
 <script>
-// PYTANIA
-const Q=[
+const Q=[/* pytania bez zmian */ 
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
 {q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
@@ -99,96 +100,58 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0, pts=0, nick="";
-let ad7Shown=false, ad14Shown=false;
+let i=0,pts=0,nick="";
+let ad7=false, ad14=false;
 
-// START QUIZU
-document.getElementById("startBtn").addEventListener("click",()=>{
+const qEl=document.getElementById("q");
+const aEl=document.getElementById("a");
+const progEl=document.getElementById("prog");
+const ptsEl=document.getElementById("pts");
+
+document.getElementById("startBtn").onclick=()=>{
   nick=document.getElementById("nick").value||"Gracz";
-  document.getElementById("start").style.display="none";
-  document.getElementById("quiz").style.display="block";
-  bg.volume=0.6; bg.play().catch(()=>{});
+  start.style.display="none";
+  quiz.style.display="block";
+  bg.play().catch(()=>{});
+  show();
+};
 
-  // ===== STICKY / BANNER NA START =====
-  window.addEventListener('load', function(){
-    if(window.monetag && monetag.queue){
-      monetag.queue.push({format:"vignette",zoneId:10552582});
-    }
-  });
-
-  showQuestion();
-});
-
-// FUNKCJA WYŚWIETLANIA PYTAŃ
-function showQuestion(){
-  if(i>=Q.length) return showFinal();
-
+function show(){
+  if(i>=Q.length) return end();
   const q=Q[i];
   qEl.textContent=q.q;
   aEl.innerHTML="";
   progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  q.a.map((t,idx)=>({t,idx})).sort(()=>Math.random()-0.5).forEach(o=>{
-    const btn=document.createElement("div");
-    btn.className="btn"; btn.textContent=o.t;
-    btn.onclick=()=>{
-      if(o.idx===q.c){ pts++; btn.classList.add("good"); ok.play(); fire(); }
-      else{ btn.classList.add("bad"); bad.play(); }
-
+  q.a.forEach((t,idx)=>{
+    const b=document.createElement("div");
+    b.className="btn";
+    b.textContent=t;
+    b.onclick=()=>{
+      if(idx===q.c){pts++;ok.play();}
+      else bad.play();
       ptsEl.textContent=pts;
       i++;
 
-      // ===== PO 7 PYTANIU – IN-PAGE PUSH =====
-      if(i===7 && !ad7Shown){
-        ad7Shown=true;
-        if(window.monetag && monetag.queue){
-          monetag.queue.push({format:"inpage_push",zoneId:10523608});
-        }
+      if(i===7 && !ad7){
+        ad7=true;
+        monetag.queue.push({format:"inpage_push",zoneId:10523608});
+      }
+      if(i===14 && !ad14){
+        ad14=true;
+        monetag.queue.push({format:"vignette",zoneId:10552577});
       }
 
-      // ===== PO 14 PYTANIU – VIGNETTE =====
-      if(i===14 && !ad14Shown){
-        ad14Shown=true;
-        if(window.monetag && monetag.queue){
-          monetag.queue.push({format:"vignette",zoneId:10552577});
-        }
-      }
-
-      setTimeout(showQuestion,700);
+      setTimeout(show,600);
     };
-    aEl.appendChild(btn);
+    aEl.appendChild(b);
   });
 }
 
-// KONIEC QUIZU
-function showFinal(){
+function end(){
   quiz.style.display="none";
   final.style.display="flex";
   finalScore.textContent=`${nick} — ${pts} pkt`;
-  fire();
-}
-
-// FAJERWERKI
-function fire(){
-  const c=fx,x=c.getContext("2d");
-  c.width=innerWidth;c.height=innerHeight;
-  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
-  for(let b=0;b<3;b++){
-    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
-    for(let i=0;i<40;i++)
-      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.floor(Math.random()*4)]});
-  }
-  (function anim(){
-    x.fillStyle="rgba(7,16,37,.2)";
-    x.fillRect(0,0,c.width,c.height);
-    for(let i=p.length-1;i>=0;i--){
-      let o=p[i]; x.globalAlpha=o.a; x.fillStyle=o.c;
-      x.beginPath(); x.arc(o.x,o.y,2,0,7); x.fill();
-      o.x+=o.vx; o.y+=o.vy; o.vy+=.1; o.a-=.02;
-      if(o.a<=0)p.splice(i,1);
-    }
-    if(p.length) requestAnimationFrame(anim); else x.clearRect(0,0,c.width,c.height);
-  })();
 }
 </script>
 
