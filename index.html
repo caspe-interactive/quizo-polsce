@@ -72,7 +72,7 @@ window.monetag = window.monetag || { queue: [] };
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
 
-    <!-- KONTEJNER NA REKLAMĘ POD PYTANIAMI -->
+    <!-- KONTEJNER NA IN-PAGE PUSH POD PYTANIAMI -->
     <div id="ad" style="margin-top:15px;text-align:center;position:relative;"></div>
 
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
@@ -108,6 +108,7 @@ const Q=[
 ];
 
 let i=0,pts=0,nick="";
+let ad7=false, ad14=false;
 
 const qEl=document.getElementById("q");
 const aEl=document.getElementById("a");
@@ -120,10 +121,10 @@ startBtn.onclick=()=>{
   quiz.style.display="block";
   bg.play().catch(()=>{});
 
-  // Wstawiamy reklamę od razu pod pytaniami
+  // IN-PAGE PUSH POD PYTANIAMI od razu
   const adContainer = document.getElementById("ad");
   const s = document.createElement("script");
-  s.dataset.zone='10523608'; // Wybierz swoją strefę Inpage Push
+  s.dataset.zone='10523608';
   s.src='https://nap5k.com/tag.min.js';
   adContainer.appendChild(s);
 
@@ -143,6 +144,19 @@ function show(){
     b.className="btn";
     b.textContent=t;
     b.onclick=()=>{
+
+      // Vignette po 7 pytaniu
+      if(i+1 === 7 && !ad7){
+        ad7 = true;
+        monetag.queue.push({format:"vignette", zoneId:10523625});
+      }
+
+      // Popunder po 14 pytaniu
+      if(i+1 === 14 && !ad14){
+        ad14 = true;
+        monetag.queue.push({format:"popunder", zoneId:10580761});
+      }
+
       if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
       else{b.classList.add("bad");bad.play();}
       ptsEl.textContent=pts;
