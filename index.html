@@ -38,7 +38,10 @@ margin-bottom:18px;text-align:center
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 </style>
 
-<!-- MONETAG BASE -->
+<!-- MONETAG LOADER -->
+<script>
+window.monetag = window.monetag || { queue: [] };
+</script>
 <script async src="https://btloader.com/tag?o=5688917489764352&upapi=true"></script>
 </head>
 
@@ -83,7 +86,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
 </div>
 
 <script>
-const Q=[/* pytania bez zmian */ 
+const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
 {q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
@@ -103,16 +106,19 @@ const Q=[/* pytania bez zmian */
 let i=0,pts=0,nick="";
 let ad7=false, ad14=false;
 
-const qEl=document.getElementById("q");
+const qEl=q=document.getElementById("q");
 const aEl=document.getElementById("a");
 const progEl=document.getElementById("prog");
 const ptsEl=document.getElementById("pts");
 
-document.getElementById("startBtn").onclick=()=>{
-  nick=document.getElementById("nick").value||"Gracz";
+startBtn.onclick=()=>{
+  nick=nick.value||"Gracz";
   start.style.display="none";
   quiz.style.display="block";
   bg.play().catch(()=>{});
+
+  // reklama na start
+  monetag.queue.push({format:"vignette",zoneId:10552577});
   show();
 };
 
@@ -128,9 +134,10 @@ function show(){
     b.className="btn";
     b.textContent=t;
     b.onclick=()=>{
-      if(idx===q.c){pts++;ok.play();}
-      else bad.play();
+      if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
+      else{b.classList.add("bad");bad.play();}
       ptsEl.textContent=pts;
+
       i++;
 
       if(i===7 && !ad7){
@@ -142,7 +149,7 @@ function show(){
         monetag.queue.push({format:"vignette",zoneId:10552577});
       }
 
-      setTimeout(show,600);
+      setTimeout(show,700);
     };
     aEl.appendChild(b);
   });
@@ -152,6 +159,29 @@ function end(){
   quiz.style.display="none";
   final.style.display="flex";
   finalScore.textContent=`${nick} — ${pts} pkt`;
+  fire();
+}
+
+function fire(){
+  const c=fx,x=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+  for(let b=0;b<3;b++){
+    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+    for(let i=0;i<40;i++)
+      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+  }
+  (function a(){
+    x.fillStyle="rgba(7,16,37,.2)";
+    x.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){
+      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
+      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
+      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+      if(o.a<=0)p.splice(i,1);
+    }
+    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
+  })();
 }
 </script>
 
