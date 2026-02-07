@@ -13,7 +13,11 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{display:flex;justify-content:center;padding:12px}
-.page{width:100%;max-width:520px}
+.page{
+  width:100%;
+  max-width:520px;
+  margin-top:120px; /* przesunięcie quizu w dół pod reklamy */
+}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{font-weight:800;color:var(--n1)}
@@ -36,7 +40,7 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
-#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem */
+#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem, nie będzie zasłaniała pytań */
 </style>
 
 <script>
@@ -122,10 +126,10 @@ startBtn.onclick=()=>{
   quiz.style.display="block";
   bg.play().catch(()=>{});
 
-  // NOWY In-Page Push pod quizem
+  // In-Page Push pod quizem
   const adContainer = document.getElementById("ad");
   const s = document.createElement("script");
-  s.dataset.zone='10526457'; // Twój nowy In-Page Push
+  s.dataset.zone='10526457'; // Twój In-Page Push
   s.src='https://nap5k.com/tag.min.js';
   adContainer.appendChild(s);
 
