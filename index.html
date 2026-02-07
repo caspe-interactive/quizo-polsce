@@ -73,6 +73,10 @@ window.monetag = window.monetag || { queue: [] };
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
 
+    <!-- REKLAMY POD ODPOWIEDZIAMI -->
+    <div id="ad7" style="margin-top:15px;text-align:center;position:relative;"></div>
+    <div id="ad14" style="margin-top:15px;text-align:center;position:relative;"></div>
+
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
 </div>
@@ -142,19 +146,21 @@ function show(){
       // PO 7 PYTANIU
       if(i===7 && !ad7){
         ad7=true;
-        (function(s){
-          s.dataset.zone='10523608',
-          s.src='https://nap5k.com/tag.min.js'
-        })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
+        const adContainer = document.getElementById("ad7");
+        const s = document.createElement("script");
+        s.dataset.zone='10523608';
+        s.src='https://nap5k.com/tag.min.js';
+        adContainer.appendChild(s);
       }
 
       // PO 14 PYTANIU
       if(i===14 && !ad14){
         ad14=true;
-        (function(s){
-          s.dataset.zone='10526456',
-          s.src='https://nap5k.com/tag.min.js'
-        })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
+        const adContainer = document.getElementById("ad14");
+        const s = document.createElement("script");
+        s.dataset.zone='10526456';
+        s.src='https://nap5k.com/tag.min.js';
+        adContainer.appendChild(s);
       }
 
       setTimeout(show,700);
