@@ -11,22 +11,13 @@
 --n1:#00f0ff;--n2:#ff3fc4;--good:#16d36a;--bad:#ff5c6c;--accent:#ffd27a;
 }
 *{box-sizing:border-box}
-html,body{margin:0;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;padding-top:110px}
-
-/* STAŁY BANNER U GÓRY */
-#ad-top{
-position:fixed;
-top:0;left:0;right:0;
-height:100px;
-z-index:5;
-background:#000;
-display:flex;
-justify-content:center;
-align-items:center;
+html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
+body{display:flex;justify-content:center;padding:12px}
+.page{
+  width:100%;
+  max-width:520px;
+  margin-top:120px; /* quiz obniżony pod górną reklamę */
 }
-
-.page{width:100%;max-width:520px}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{font-weight:800;color:var(--n1)}
@@ -43,21 +34,35 @@ cursor:pointer;text-align:center
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
+input{
+width:100%;padding:14px;border-radius:12px;
+border:2px solid var(--n1);background:#050c18;color:#fff;
+margin-bottom:18px;text-align:center
+}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
+#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem */
 </style>
+
+<script>
+window.monetag = window.monetag || { queue: [] };
+</script>
+<script async src="https://btloader.com/tag?o=5688917489764352&upapi=true"></script>
 </head>
 
 <body>
 
-<!-- STAŁY BANNER U GÓRY -->
-<div id="ad-top"></div>
+<canvas id="fx"></canvas>
+
+<audio id="bg" loop src="sounds/background.mp3"></audio>
+<audio id="ok" src="sounds/ding.mp3"></audio>
+<audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <div class="page">
 
 <div id="start" class="full">
   <div class="box">
-    <h1 style="color:#ff3fc4">QuizoPolsce</h1>
-    <input id="nick" placeholder="Twój nick" maxlength="15"
-      style="width:100%;padding:14px;border-radius:12px;margin-bottom:18px">
+    <h1 style="color:var(--n2)">QuizoPolsce</h1>
+    <input id="nick" placeholder="Twój nick" maxlength="15">
     <div class="btn" id="startBtn">START</div>
   </div>
 </div>
@@ -68,16 +73,21 @@ cursor:pointer;text-align:center
       <div class="title">QuizoPolsce</div>
       <div class="score">PKT: <span id="pts">0</span></div>
     </div>
+
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
+
+    <!-- KONTEJNER NA REKLAMĘ POD QUIZEM -->
+    <div id="ad"></div>
+
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
 </div>
 
 <div id="final" class="full" style="display:none">
   <div class="box">
-    <h1 style="color:#ff3fc4">KONIEC</h1>
-    <div id="finalScore" style="font-size:2.2rem;margin:20px 0"></div>
+    <h1 style="color:var(--n2)">KONIEC</h1>
+    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
@@ -102,58 +112,98 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,ad7=false,ad14=false;
+let i=0,pts=0,nick="";
+let ad7=false, ad14=false;
+
+const qEl=document.getElementById("q");
+const aEl=document.getElementById("a");
+const progEl=document.getElementById("prog");
+const ptsEl=document.getElementById("pts");
 
 startBtn.onclick=()=>{
-start.style.display="none";
-quiz.style.display="block";
+  nick=document.getElementById("nick").value||"Gracz";
+  start.style.display="none";
+  quiz.style.display="block";
+  bg.play().catch(()=>{});
 
-/* BANNER U GÓRY */
-(function(s){
-s.dataset.zone='10523608'; 
-s.src='https://nap5k.com/tag.min.js';
-document.getElementById("ad-top").appendChild(s);
-})(document.createElement('script'));
+  // In-Page Push pod quizem
+  const adContainer = document.getElementById("ad");
+  const s = document.createElement("script");
+  s.dataset.zone='10526457';
+  s.src='https://nap5k.com/tag.min.js';
+  adContainer.appendChild(s);
 
-/* URUCHOMIENIE QUIZU */
-show();
+  show();
 };
-
-function popunder(){
-(function(s){
-s.dataset.zone='10580761';
-s.src='https://al5sm.com/tag.min.js';
-document.body.appendChild(s);
-})(document.createElement('script'));
-}
 
 function show(){
-if(i>=Q.length) return end();
-q.textContent=Q[i].q;
-a.innerHTML="";
-prog.textContent=`Pytanie ${i+1}/${Q.length}`;
+  if(i>=Q.length) return end();
 
-Q[i].a.forEach((t,idx)=>{
-const b=document.createElement("div");
-b.className="btn";
-b.textContent=t;
-b.onclick=()=>{
-if(i+1===7 && !ad7){ad7=true;popunder();}
-if(i+1===14 && !ad14){ad14=true;popunder();}
-if(idx===Q[i].c){pts++;b.classList.add("good")}
-else b.classList.add("bad");
-ptsEl.textContent=pts;
-i++;
-setTimeout(show,700);
-};
-a.appendChild(b);
-});
+  const q=Q[i];
+  qEl.textContent=q.q;
+  aEl.innerHTML="";
+  progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
+
+  q.a.forEach((t,idx)=>{
+    const b=document.createElement("div");
+    b.className="btn";
+    b.textContent=t;
+    b.onclick=()=>{
+
+      if(idx===q.c){pts++; b.classList.add("good"); ok.play(); fire();}
+      else{b.classList.add("bad"); bad.play();}
+      ptsEl.textContent=pts;
+
+      // Vignette po 7 pytaniu – bezpośrednio w onclick
+      if(i+1 === 7 && !ad7){
+        ad7 = true;
+        if(window.monetag && window.monetag.queue){
+          monetag.queue.push({format:"vignette", zoneId:10523625});
+        }
+      }
+
+      // Popunder po 14 pytaniu – bezpośrednio w onclick
+      if(i+1 === 14 && !ad14){
+        ad14 = true;
+        if(window.monetag && window.monetag.queue){
+          monetag.queue.push({format:"popunder", zoneId:10580761});
+        }
+      }
+
+      i++;
+      setTimeout(show,700);
+    };
+    aEl.appendChild(b);
+  });
 }
 
 function end(){
-quiz.style.display="none";
-final.style.display="flex";
-finalScore.textContent=`${pts} punktów`;
+  quiz.style.display="none";
+  final.style.display="flex";
+  finalScore.textContent=`${nick} — ${pts} pkt`;
+  fire();
+}
+
+function fire(){
+  const c=fx,x=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
+  for(let b=0;b<3;b++){
+    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
+    for(let i=0;i<40;i++)
+      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
+  }
+  (function a(){
+    x.fillStyle="rgba(7,16,37,.2)";
+    x.fillRect(0,0,c.width,c.height);
+    for(let i=p.length-1;i>=0;i--){
+      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
+      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
+      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
+      if(o.a<=0)p.splice(i,1);
+    }
+    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
+  })();
 }
 </script>
 
