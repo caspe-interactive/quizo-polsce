@@ -83,6 +83,7 @@ window.monetag = window.monetag || { queue: [] };
 </div>
 
 <script>
+// pytania
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -100,8 +101,7 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0,pts=0,nick="";
-let ad7=false, ad14=false;
+let i=0, pts=0, nick="", ad7=false, ad14=false;
 
 const qEl=document.getElementById("q");
 const aEl=document.getElementById("a");
@@ -115,7 +115,18 @@ banner.dataset.zone='10526457';
 banner.src='https://nap5k.com/tag.min.js';
 adContainer.appendChild(banner);
 
-// Wywołanie vignette/popunder – zawsze w onclick
+// funkcja mieszająca odpowiedzi
+function shuffleAnswers(arr, correctIdx){
+  let newArr = arr.map((text,i)=>({text,i}));
+  for(let i=newArr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  const newCorrect = newArr.findIndex(o=>o.i===correctIdx);
+  return {shuffled: newArr.map(o=>o.text), newCorrect};
+}
+
+// funkcja uruchamiająca vignette/popunder
 function triggerAd(format, zoneId){
   if(window.monetag && window.monetag.queue){
     monetag.queue.push({format: format, zoneId: zoneId});
@@ -127,31 +138,31 @@ startBtn.onclick = async () => {
   start.style.display="none";
   quiz.style.display="block";
   try{ await bg.play(); } catch(e){ console.log("Autoplay blocked"); }
-
   show();
 };
 
 function show(){
   if(i>=Q.length) return end();
   const q=Q[i];
-  qEl.textContent=q.q;
-  aEl.innerHTML="";
-  progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
+  const shuffled = shuffleAnswers(q.a, q.c);
+  const answers = shuffled.shuffled;
+  const correct = shuffled.newCorrect;
 
-  q.a.forEach((t,idx)=>{
-    const b=document.createElement("div");
+  qEl.textContent = q.q;
+  aEl.innerHTML = "";
+  progEl.textContent = `Pytanie ${i+1}/${Q.length}`;
+
+  answers.forEach((t, idx)=>{
+    const b = document.createElement("div");
     b.className="btn";
-    b.textContent=t;
-    b.onclick=()=>{
-      if(idx===q.c){pts++; b.classList.add("good"); ok.play(); fire();}
-      else{b.classList.add("bad"); bad.play();}
-      ptsEl.textContent=pts;
+    b.textContent = t;
+    b.onclick = () => {
+      if(idx===correct){ pts++; b.classList.add("good"); ok.play(); fire();}
+      else{ b.classList.add("bad"); bad.play();}
+      ptsEl.textContent = pts;
 
-      // Vignette po 7 pytaniu
-      if(i+1===7 && !ad7){ ad7=true; triggerAd("vignette",10523625); }
-
-      // Popunder po 14 pytaniu
-      if(i+1===14 && !ad14){ ad14=true; triggerAd("popunder",10580761); }
+      if(i+1===7 && !ad7){ ad7=true; triggerAd("vignette",10523625);}
+      if(i+1===14 && !ad14){ ad14=true; triggerAd("popunder",10580761);}
 
       i++; setTimeout(show,700);
     };
