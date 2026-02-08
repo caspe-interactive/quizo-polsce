@@ -3,110 +3,53 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce</title>
+<title>Reklamy Test</title>
 
 <style>
-:root{--bg:#071025;--card:#0b1220;--txt:#e6f7ff;--n1:#00f0ff;--n2:#ff3fc4;--good:#16d36a;--bad:#ff5c6c;}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui;background:var(--bg);color:var(--txt);display:flex;justify-content:center;padding:12px}
-.page{width:100%;max-width:520px;margin-top:120px}
-.card{background:var(--card);border-radius:14px;padding:22px}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer;text-align:center}
-.btn.good{background:linear-gradient(90deg,var(--good),#8df3b0) !important}
-.btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94) !important}
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
-.box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
-#ad{margin-top:20px;text-align:center;min-height:50px}
+body{margin:0;padding:20px;font-family:system-ui;background:#071025;color:#fff;}
+#ad{margin:20px auto;text-align:center;max-width:520px;}
 </style>
 
-<!-- GŁÓWNY SKRYPT MONETAG -->
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
-<script async src="https://btloader.com"></script>
+<script async src="https://btloader.com/tag?o=5688917489764352&upapi=true"></script>
 </head>
 
 <body>
 
-<div class="page">
-  <div id="start" class="full">
-    <div class="box">
-      <h1 style="color:var(--n2)">QuizoPolsce</h1>
-      <div class="btn" id="startBtn">START</div>
-    </div>
-  </div>
+<h1>Test reklam</h1>
 
-  <div id="quiz" style="display:none">
-    <div class="card">
-      <div id="q" style="text-align:center;font-size:1.3rem;margin:20px 0"></div>
-      <div id="a" class="answers"></div>
-      
-      <!-- KONTENER NA REKLAMĘ IN-PAGE PUSH -->
-      <div id="ad"></div>
-      
-      <div id="prog" style="margin-top:10px;font-size:.8rem;opacity:0.6"></div>
-    </div>
-  </div>
-</div>
+<!-- Baner pod stroną -->
+<div id="ad"></div>
 
 <script>
-const Q=[{q:"Stolica?",a:["Warszawa","Kraków"],c:0},{q:"Port?",a:["Gdańsk","Gdynia"],c:0},{q:"Południe?",a:["Kraków","Łódź"],c:0},{q:"NATO?",a:["1999","2004"],c:0},{q:"Skoczek?",a:["Małysz","Stoch"],c:1},{q:"Mazowsze?",a:["Warszawa","Radom"],c:0},{q:"Chemia?",a:["Maria","Jan"],c:0},{q:"Wisła?",a:["Tak","Nie"],c:0},{q:"Rysy?",a:["Tak","Nie"],c:0},{q:"1918?",a:["Tak","Nie"],c:0},{q:"Orzeł?",a:["Tak","Nie"],c:0},{q:"Śląsk?",a:["Katowice","Bytom"],c:0},{q:"Hymn?",a:["Mazurek","Rota"],c:0},{q:"Król?",a:["Jan III","Lech"],c:0}];
+// Wstawienie banera pod stroną
+const adContainer = document.getElementById("ad");
+const s = document.createElement("script");
+s.dataset.zone='10526457'; // Twój baner
+s.src='https://nap5k.com/tag.min.js';
+adContainer.appendChild(s);
 
-let i=0, ad7=false, ad14=false;
-
-startBtn.onclick=()=>{
-  document.getElementById("start").style.display="none";
-  document.getElementById("quiz").style.display="block";
-
-  // INICJALIZACJA REKLAMY POD QUIZEM (In-Page Push)
-  const adBox = document.getElementById("ad");
-  const s = document.createElement("script");
-  s.dataset.zone='10526457';
-  s.src='https://nap5k.com';
-  adBox.appendChild(s);
-
-  show();
-};
-
-function show(){
-  if(i>=Q.length) return;
-  const aEl=document.getElementById("a");
-  aEl.style.pointerEvents = "auto";
-  const q=Q[i];
-  document.getElementById("q").textContent=q.q;
-  aEl.innerHTML="";
-
-  q.a.forEach((t,idx)=>{
-    const b=document.createElement("div");
-    b.className="btn";
-    b.textContent=t;
-    b.onclick=()=>{
-      aEl.style.pointerEvents = "none";
-      if(idx===q.c) b.classList.add("good"); else b.classList.add("bad");
-
-      // LOGIKA REKLAM VIGNETTE I POPUNDER (Z Twojego oryginału)
-      const currentQ = i + 1;
-      if(currentQ === 7 && !ad7){
-        ad7 = true;
-        if(window.monetag && window.monetag.queue) {
-            monetag.queue.push({format:"vignette", zoneId:10523625});
-        }
-      }
-      if(currentQ === 14 && !ad14){
-        ad14 = true;
-        if(window.monetag && window.monetag.queue) {
-            monetag.queue.push({format:"popunder", zoneId:10580761});
-        }
-      }
-
-      i++;
-      setTimeout(show, 700);
-    };
-    aEl.appendChild(b);
-  });
+// Symulacja wywołania vignette i popunder
+function uruchomVignette() {
+  if(window.monetag && window.monetag.queue){
+    monetag.queue.push({format:"vignette", zoneId:10523625});
+    console.log("Vignette uruchomiona");
+  }
 }
+
+function uruchomPopunder() {
+  if(window.monetag && window.monetag.queue){
+    monetag.queue.push({format:"popunder", zoneId:10580761});
+    console.log("Popunder uruchomiony");
+  }
+}
+
+// Test: uruchamiamy vignette po 2 sek., popunder po 4 sek.
+setTimeout(uruchomVignette, 2000);
+setTimeout(uruchomPopunder, 4000);
 </script>
+
 </body>
 </html>
