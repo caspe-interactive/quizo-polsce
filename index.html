@@ -39,8 +39,8 @@ width:100%;padding:14px;border-radius:12px;
 border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
-canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
-#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem */
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1} /* niższy niż reklamy */
+#ad{margin-top:20px;text-align:center;position:relative;z-index:5;} /* wyżej niż canvas */
 </style>
 
 <script>
@@ -120,11 +120,11 @@ const aEl=document.getElementById("a");
 const progEl=document.getElementById("prog");
 const ptsEl=document.getElementById("pts");
 
-startBtn.onclick=()=>{
-  nick=document.getElementById("nick").value||"Gracz";
-  start.style.display="none";
-  quiz.style.display="block";
-  bg.play().catch(()=>{});
+startBtn.onclick = async () => {
+  nick = document.getElementById("nick").value || "Gracz";
+  start.style.display = "none";
+  quiz.style.display = "block";
+  try { await bg.play(); } catch(e) { console.log("Autoplay blocked"); }
 
   // In-Page Push pod quizem
   const adContainer = document.getElementById("ad");
@@ -149,25 +149,30 @@ function show(){
     b.className="btn";
     b.textContent=t;
     b.onclick=()=>{
-
       if(idx===q.c){pts++; b.classList.add("good"); ok.play(); fire();}
       else{b.classList.add("bad"); bad.play();}
       ptsEl.textContent=pts;
 
-      // Vignette po 7 pytaniu – bezpośrednio w onclick
+      // Vignette po 7 pytaniu – dodany timeout
       if(i+1 === 7 && !ad7){
         ad7 = true;
-        if(window.monetag && window.monetag.queue){
-          monetag.queue.push({format:"vignette", zoneId:10523625});
-        }
+        setTimeout(()=>{
+          if(window.monetag && window.monetag.queue){
+            monetag.queue.push({format:"vignette", zoneId:10523625});
+            console.log("Vignette queued");
+          }
+        },200);
       }
 
-      // Popunder po 14 pytaniu – bezpośrednio w onclick
+      // Popunder po 14 pytaniu – dodany timeout
       if(i+1 === 14 && !ad14){
         ad14 = true;
-        if(window.monetag && window.monetag.queue){
-          monetag.queue.push({format:"popunder", zoneId:10580761});
-        }
+        setTimeout(()=>{
+          if(window.monetag && window.monetag.queue){
+            monetag.queue.push({format:"popunder", zoneId:10580761});
+            console.log("Popunder queued");
+          }
+        },200);
       }
 
       i++;
