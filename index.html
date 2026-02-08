@@ -12,7 +12,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;padding:12px;cursor:pointer;}
+body{display:flex;justify-content:center;padding:12px;}
 .page{width:100%;max-width:520px;margin-top:120px;}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -31,7 +31,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
 #ad{margin-top:20px;text-align:center;position:relative;z-index:5;}
 </style>
 
-<!-- Monetag -->
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
@@ -65,7 +64,6 @@ window.monetag = window.monetag || { queue: [] };
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
 
-    <!-- Baner pod quizem -->
     <div id="ad"></div>
 
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
@@ -83,7 +81,6 @@ window.monetag = window.monetag || { queue: [] };
 </div>
 
 <script>
-// pytania
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -115,7 +112,6 @@ banner.dataset.zone='10526457';
 banner.src='https://nap5k.com/tag.min.js';
 adContainer.appendChild(banner);
 
-// funkcja mieszająca odpowiedzi
 function shuffleAnswers(arr, correctIdx){
   let newArr = arr.map((text,i)=>({text,i}));
   for(let i=newArr.length-1;i>0;i--){
@@ -126,7 +122,6 @@ function shuffleAnswers(arr, correctIdx){
   return {shuffled: newArr.map(o=>o.text), newCorrect};
 }
 
-// funkcja uruchamiająca vignette/popunder
 function triggerAd(format, zoneId){
   if(window.monetag && window.monetag.queue){
     monetag.queue.push({format: format, zoneId: zoneId});
@@ -137,7 +132,7 @@ startBtn.onclick = async () => {
   nick = document.getElementById("nick").value || "Gracz";
   start.style.display="none";
   quiz.style.display="block";
-  try{ await bg.play(); } catch(e){ console.log("Autoplay blocked"); }
+  try{ await bg.play(); } catch(e){ }
   show();
 };
 
@@ -161,6 +156,7 @@ function show(){
       else{ b.classList.add("bad"); bad.play();}
       ptsEl.textContent = pts;
 
+      // Reklamy po 7 i 14 pytaniu
       if(i+1===7 && !ad7){ ad7=true; triggerAd("vignette",10523625);}
       if(i+1===14 && !ad14){ ad14=true; triggerAd("popunder",10580761);}
 
