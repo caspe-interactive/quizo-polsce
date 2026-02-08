@@ -16,7 +16,7 @@ body{display:flex;justify-content:center;padding:12px}
 .page{
   width:100%;
   max-width:520px;
-  margin-top:120px; /* quiz obniżony pod górną reklamę */
+  margin-top:120px; /* quiz obniżony – reklama u góry nie zasłania */
 }
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
@@ -40,13 +40,7 @@ border:2px solid var(--n1);background:#050c18;color:#fff;
 margin-bottom:18px;text-align:center
 }
 canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
-#ad{margin-top:20px;text-align:center;} /* miejsce na reklamę pod quizem */
 </style>
-
-<script>
-window.monetag = window.monetag || { queue: [] };
-</script>
-<script async src="https://btloader.com/tag?o=5688917489764352&upapi=true"></script>
 </head>
 
 <body>
@@ -59,6 +53,7 @@ window.monetag = window.monetag || { queue: [] };
 
 <div class="page">
 
+<!-- START -->
 <div id="start" class="full">
   <div class="box">
     <h1 style="color:var(--n2)">QuizoPolsce</h1>
@@ -67,6 +62,7 @@ window.monetag = window.monetag || { queue: [] };
   </div>
 </div>
 
+<!-- QUIZ -->
 <div id="quiz" style="display:none">
   <div class="card">
     <div class="top">
@@ -76,14 +72,11 @@ window.monetag = window.monetag || { queue: [] };
 
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
-
-    <!-- KONTEJNER NA REKLAMĘ POD QUIZEM -->
-    <div id="ad"></div>
-
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
 </div>
 
+<!-- KONIEC -->
 <div id="final" class="full" style="display:none">
   <div class="box">
     <h1 style="color:var(--n2)">KONIEC</h1>
@@ -113,7 +106,6 @@ const Q=[
 ];
 
 let i=0,pts=0,nick="";
-let ad7=false, ad14=false;
 
 const qEl=document.getElementById("q");
 const aEl=document.getElementById("a");
@@ -126,12 +118,12 @@ startBtn.onclick=()=>{
   quiz.style.display="block";
   bg.play().catch(()=>{});
 
-  // In-Page Push pod quizem
-  const adContainer = document.getElementById("ad");
-  const s = document.createElement("script");
-  s.dataset.zone='10526457';
-  s.src='https://nap5k.com/tag.min.js';
-  adContainer.appendChild(s);
+  /* ===== VIGNETTE MONETAG – JEDYNY POPRAWNY SPOSÓB ===== */
+  const s=document.createElement("script");
+  s.dataset.zone="10552577";
+  s.src="https://gizokraijaw.net/vignette.min.js";
+  document.body.appendChild(s);
+  /* =================================================== */
 
   show();
 };
@@ -144,32 +136,18 @@ function show(){
   aEl.innerHTML="";
   progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  q.a.forEach((t,idx)=>{
+  // LOSOWANIE ODPOWIEDZI
+  const answers=q.a.map((t,idx)=>({t,idx}))
+                   .sort(()=>Math.random()-0.5);
+
+  answers.forEach(({t,idx})=>{
     const b=document.createElement("div");
     b.className="btn";
     b.textContent=t;
     b.onclick=()=>{
-
-      if(idx===q.c){pts++; b.classList.add("good"); ok.play(); fire();}
-      else{b.classList.add("bad"); bad.play();}
+      if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
+      else{b.classList.add("bad");bad.play();}
       ptsEl.textContent=pts;
-
-      // Vignette po 7 pytaniu – bezpośrednio w onclick
-      if(i+1 === 7 && !ad7){
-        ad7 = true;
-        if(window.monetag && window.monetag.queue){
-          monetag.queue.push({format:"vignette", zoneId:10523625});
-        }
-      }
-
-      // Popunder po 14 pytaniu – bezpośrednio w onclick
-      if(i+1 === 14 && !ad14){
-        ad14 = true;
-        if(window.monetag && window.monetag.queue){
-          monetag.queue.push({format:"popunder", zoneId:10580761});
-        }
-      }
-
       i++;
       setTimeout(show,700);
     };
