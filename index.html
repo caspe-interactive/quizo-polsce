@@ -6,31 +6,22 @@
 <title>QuizoPolsce</title>
 
 <style>
-:root{
---bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
---n1:#00f0ff;--n2:#ff3fc4;--good:#16d36a;--bad:#ff5c6c;--accent:#ffd27a;
-}
+:root{--bg:#071025;--card:#0b1220;--txt:#e6f7ff;--n1:#00f0ff;--n2:#ff3fc4;--good:#16d36a;--bad:#ff5c6c;}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;padding:12px}
+body{margin:0;font-family:system-ui;background:var(--bg);color:var(--txt);display:flex;justify-content:center;padding:12px}
 .page{width:100%;max-width:520px;margin-top:120px}
 .card{background:var(--card);border-radius:14px;padding:22px}
-.top{display:flex;justify-content:space-between;margin-bottom:10px}
-.title{font-weight:800;color:var(--n1)}
-.score{font-weight:700;color:var(--accent)}
-.question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer;text-align:center;border:none}
+.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer;text-align:center}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0) !important}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94) !important}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
-input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
-#ad{margin-top:20px;text-align:center}
+#ad{margin-top:20px;text-align:center;min-height:50px}
 </style>
 
+<!-- GŁÓWNY SKRYPT MONETAG -->
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
@@ -38,93 +29,83 @@ window.monetag = window.monetag || { queue: [] };
 </head>
 
 <body>
-<canvas id="fx"></canvas>
-<audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="ok" src="sounds/ding.mp3"></audio>
-<audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <div class="page">
-<div id="start" class="full"><div class="box"><h1 style="color:var(--n2)">QuizoPolsce</h1><input id="nick" placeholder="Twój nick" maxlength="15"><div class="btn" id="startBtn">START</div></div></div>
-<div id="quiz" style="display:none"><div class="card"><div class="top"><div class="title">QuizoPolsce</div><div class="score">PKT: <span id="pts">0</span></div></div><div id="q" class="question"></div><div id="a" class="answers"></div><div id="ad"></div><div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div></div></div>
-<div id="final" class="full" style="display:none"><div class="box"><h1 style="color:var(--n2)">KONIEC</h1><div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div><div class="btn" onclick="location.reload()">Zagraj ponownie</div></div></div>
+  <div id="start" class="full">
+    <div class="box">
+      <h1 style="color:var(--n2)">QuizoPolsce</h1>
+      <div class="btn" id="startBtn">START</div>
+    </div>
+  </div>
+
+  <div id="quiz" style="display:none">
+    <div class="card">
+      <div id="q" style="text-align:center;font-size:1.3rem;margin:20px 0"></div>
+      <div id="a" class="answers"></div>
+      
+      <!-- KONTENER NA REKLAMĘ IN-PAGE PUSH -->
+      <div id="ad"></div>
+      
+      <div id="prog" style="margin-top:10px;font-size:.8rem;opacity:0.6"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-const Q=[
-{q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},{q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},{q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0},{q:"Polski skoczek narciarski z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},{q:"Największe miasto mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},{q:"Noblistka w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},{q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},{q:"Rok odzyskania niepodległości?",a:["1918","1945","1914","1939"],c:0},{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu"],c:0},{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"],c:0},{q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
-];
+const Q=[{q:"Stolica?",a:["Warszawa","Kraków"],c:0},{q:"Port?",a:["Gdańsk","Gdynia"],c:0},{q:"Południe?",a:["Kraków","Łódź"],c:0},{q:"NATO?",a:["1999","2004"],c:0},{q:"Skoczek?",a:["Małysz","Stoch"],c:1},{q:"Mazowsze?",a:["Warszawa","Radom"],c:0},{q:"Chemia?",a:["Maria","Jan"],c:0},{q:"Wisła?",a:["Tak","Nie"],c:0},{q:"Rysy?",a:["Tak","Nie"],c:0},{q:"1918?",a:["Tak","Nie"],c:0},{q:"Orzeł?",a:["Tak","Nie"],c:0},{q:"Śląsk?",a:["Katowice","Bytom"],c:0},{q:"Hymn?",a:["Mazurek","Rota"],c:0},{q:"Król?",a:["Jan III","Lech"],c:0}];
 
-let i=0,pts=0,nick="";
-let ad7=false, ad14=false;
-
-const qEl=document.getElementById("q"), aEl=document.getElementById("a"), progEl=document.getElementById("prog"), ptsEl=document.getElementById("pts");
+let i=0, ad7=false, ad14=false;
 
 startBtn.onclick=()=>{
-  nick=document.getElementById("nick").value||"Gracz";
-  start.style.display="none"; quiz.style.display="block";
-  document.getElementById("bg").play().catch(()=>{});
+  document.getElementById("start").style.display="none";
+  document.getElementById("quiz").style.display="block";
 
-  // PRZYWRÓCONO: In-Page Push
-  const adContainer = document.getElementById("ad");
+  // INICJALIZACJA REKLAMY POD QUIZEM (In-Page Push)
+  const adBox = document.getElementById("ad");
   const s = document.createElement("script");
   s.dataset.zone='10526457';
   s.src='https://nap5k.com';
-  adContainer.appendChild(s);
+  adBox.appendChild(s);
 
   show();
 };
 
 function show(){
-  if(i>=Q.length) return end();
+  if(i>=Q.length) return;
+  const aEl=document.getElementById("a");
   aEl.style.pointerEvents = "auto";
   const q=Q[i];
-  qEl.textContent=q.q; aEl.innerHTML="";
-  progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
+  document.getElementById("q").textContent=q.q;
+  aEl.innerHTML="";
 
   q.a.forEach((t,idx)=>{
     const b=document.createElement("div");
-    b.className="btn"; b.textContent=t;
+    b.className="btn";
+    b.textContent=t;
     b.onclick=()=>{
       aEl.style.pointerEvents = "none";
-      if(idx===q.c){pts++; b.classList.add("good"); ok.play(); fire();}
-      else{b.classList.add("bad"); bad.play();}
-      ptsEl.textContent=pts;
+      if(idx===q.c) b.classList.add("good"); else b.classList.add("bad");
 
-      // PRZYWRÓCONO: Logika Vignette i Popunder
-      if(i+1 === 7 && !ad7){
+      // LOGIKA REKLAM VIGNETTE I POPUNDER (Z Twojego oryginału)
+      const currentQ = i + 1;
+      if(currentQ === 7 && !ad7){
         ad7 = true;
-        if(window.monetag && window.monetag.queue) monetag.queue.push({format:"vignette", zoneId:10523625});
+        if(window.monetag && window.monetag.queue) {
+            monetag.queue.push({format:"vignette", zoneId:10523625});
+        }
       }
-      if(i+1 === 14 && !ad14){
+      if(currentQ === 14 && !ad14){
         ad14 = true;
-        if(window.monetag && window.monetag.queue) monetag.queue.push({format:"popunder", zoneId:10580761});
+        if(window.monetag && window.monetag.queue) {
+            monetag.queue.push({format:"popunder", zoneId:10580761});
+        }
       }
 
-      i++; setTimeout(show,700);
+      i++;
+      setTimeout(show, 700);
     };
     aEl.appendChild(b);
   });
-}
-
-function end(){ quiz.style.display="none"; final.style.display="flex"; finalScore.textContent=`${nick} — ${pts} pkt`; fire(); }
-
-function fire(){
-  const c=fx,x=c.getContext("2d"); c.width=innerWidth;c.height=innerHeight;
-  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
-  for(let b=0;b<3;b++){
-    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
-    for(let i=0;i<40;i++) p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
-  }
-  (function a(){
-    x.fillStyle="rgba(7,16,37,.2)"; x.fillRect(0,0,c.width,c.height);
-    for(let i=p.length-1;i>=0;i--){
-      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
-      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
-      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
-      if(o.a<=0)p.splice(i,1);
-    }
-    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
-  })();
 }
 </script>
 </body>
