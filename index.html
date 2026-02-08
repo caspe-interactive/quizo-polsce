@@ -14,7 +14,7 @@
 html,body{margin:0;font-family:system-ui;background:var(--bg);color:var(--txt)}
 body{display:flex;justify-content:center;padding-top:110px}
 
-/* REKLAMA U GÓRY */
+/* STAŁY BANNER U GÓRY */
 #ad-top{
 position:fixed;
 top:0;left:0;right:0;
@@ -48,6 +48,7 @@ cursor:pointer;text-align:center
 
 <body>
 
+<!-- STAŁY BANNER U GÓRY -->
 <div id="ad-top"></div>
 
 <div class="page">
@@ -84,7 +85,6 @@ cursor:pointer;text-align:center
 </div>
 
 <script>
-/* PYTANIA – BEZ ZMIAN */
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -108,13 +108,14 @@ startBtn.onclick=()=>{
 start.style.display="none";
 quiz.style.display="block";
 
-/* banner u góry */
+/* BANNER U GÓRY */
 (function(s){
-s.dataset.zone='10523608';
+s.dataset.zone='10523608'; 
 s.src='https://nap5k.com/tag.min.js';
 document.getElementById("ad-top").appendChild(s);
 })(document.createElement('script'));
 
+/* URUCHOMIENIE QUIZU */
 show();
 };
 
@@ -143,7 +144,7 @@ if(idx===Q[i].c){pts++;b.classList.add("good")}
 else b.classList.add("bad");
 ptsEl.textContent=pts;
 i++;
-setTimeout(show,600);
+setTimeout(show,700);
 };
 a.appendChild(b);
 });
