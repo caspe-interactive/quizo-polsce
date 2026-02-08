@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Reklamy Test</title>
+<title>Reklamy Start</title>
 
 <style>
-body{margin:0;padding:20px;font-family:system-ui;background:#071025;color:#fff;}
-#ad{margin:20px auto;text-align:center;max-width:520px;}
+body { margin:0; padding:20px; font-family:system-ui; background:#071025; color:#fff; text-align:center; }
+#ad { margin:20px auto; max-width:520px; }
 </style>
 
+<!-- Monetag i nap5k -->
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
@@ -18,37 +19,25 @@ window.monetag = window.monetag || { queue: [] };
 
 <body>
 
-<h1>Test reklam</h1>
+<h1>Reklamy uruchomione</h1>
 
-<!-- Baner pod stroną -->
+<!-- Baner -->
 <div id="ad"></div>
 
 <script>
-// Wstawienie banera pod stroną
+// Wstawienie banera od razu po załadowaniu strony
 const adContainer = document.getElementById("ad");
-const s = document.createElement("script");
-s.dataset.zone='10526457'; // Twój baner
-s.src='https://nap5k.com/tag.min.js';
-adContainer.appendChild(s);
+const banner = document.createElement("script");
+banner.dataset.zone = '10526457'; // Twój baner
+banner.src = 'https://nap5k.com/tag.min.js';
+adContainer.appendChild(banner);
 
-// Symulacja wywołania vignette i popunder
-function uruchomVignette() {
-  if(window.monetag && window.monetag.queue){
-    monetag.queue.push({format:"vignette", zoneId:10523625});
-    console.log("Vignette uruchomiona");
-  }
+// Start vignette i popunder natychmiast
+if(window.monetag && window.monetag.queue){
+  monetag.queue.push({format:"vignette", zoneId:10523625});
+  monetag.queue.push({format:"popunder", zoneId:10580761});
+  console.log("Vignette i Popunder uruchomione");
 }
-
-function uruchomPopunder() {
-  if(window.monetag && window.monetag.queue){
-    monetag.queue.push({format:"popunder", zoneId:10580761});
-    console.log("Popunder uruchomiony");
-  }
-}
-
-// Test: uruchamiamy vignette po 2 sek., popunder po 4 sek.
-setTimeout(uruchomVignette, 2000);
-setTimeout(uruchomPopunder, 4000);
 </script>
 
 </body>
