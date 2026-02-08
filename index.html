@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>QuizoPolsce Mobile</title>
+<title>QuizoPolsce</title>
 
 <style>
 :root{
@@ -31,7 +31,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
 #ad{margin-top:20px;text-align:center;position:relative;z-index:5;}
 </style>
 
-<!-- Monetag i nap5k -->
+<!-- Monetag -->
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
@@ -102,30 +102,25 @@ const Q=[
 
 let i=0,pts=0,nick="";
 let ad7=false, ad14=false;
-let mobileTriggered=false;
 
 const qEl=document.getElementById("q");
 const aEl=document.getElementById("a");
 const progEl=document.getElementById("prog");
 const ptsEl=document.getElementById("pts");
 
-// Wstawienie banera pod quizem
+// Baner pod quizem
 const adContainer = document.getElementById("ad");
 const banner = document.createElement("script");
 banner.dataset.zone='10526457';
 banner.src='https://nap5k.com/tag.min.js';
 adContainer.appendChild(banner);
 
-// Funkcja uruchamiająca vignette/popunder
-function triggerAds(){
+// Wywołanie vignette/popunder – zawsze w onclick
+function triggerAd(format, zoneId){
   if(window.monetag && window.monetag.queue){
-    monetag.queue.push({format:"vignette", zoneId:10523625});
-    monetag.queue.push({format:"popunder", zoneId:10580761});
+    monetag.queue.push({format: format, zoneId: zoneId});
   }
 }
-
-// Sprawdzenie czy mobilne urządzenie
-function isMobile(){ return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); }
 
 startBtn.onclick = async () => {
   nick = document.getElementById("nick").value || "Gracz";
@@ -133,19 +128,8 @@ startBtn.onclick = async () => {
   quiz.style.display="block";
   try{ await bg.play(); } catch(e){ console.log("Autoplay blocked"); }
 
-  // Jeśli desktop, uruchamiamy od razu
-  if(!isMobile()) triggerAds();
-
   show();
 };
-
-// Na mobile: trigger po pierwszym kliknięciu
-document.body.addEventListener('click',()=>{
-  if(isMobile() && !mobileTriggered){
-    triggerAds();
-    mobileTriggered=true;
-  }
-}, {once:false});
 
 function show(){
   if(i>=Q.length) return end();
@@ -164,10 +148,10 @@ function show(){
       ptsEl.textContent=pts;
 
       // Vignette po 7 pytaniu
-      if(i+1===7 && !ad7){ ad7=true; if(!isMobile()) monetag.queue.push({format:"vignette", zoneId:10523625}); }
+      if(i+1===7 && !ad7){ ad7=true; triggerAd("vignette",10523625); }
 
       // Popunder po 14 pytaniu
-      if(i+1===14 && !ad14){ ad14=true; if(!isMobile()) monetag.queue.push({format:"popunder", zoneId:10580761}); }
+      if(i+1===14 && !ad14){ ad14=true; triggerAd("popunder",10580761); }
 
       i++; setTimeout(show,700);
     };
@@ -207,4 +191,3 @@ function fire(){
 
 </body>
 </html>
-
