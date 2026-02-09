@@ -21,25 +21,26 @@ body{display:flex;justify-content:center;padding:12px;}
 .question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer;text-align:center}
+.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;
+background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer;text-align:center}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
-.full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
+.full{position:fixed;inset:0;background:#020814ee;display:flex;
+align-items:center;justify-content:center;z-index:10}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
-input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
-#ad{margin-top:20px;text-align:center;position:relative;z-index:5;}
+input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);
+background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
+#ad{text-align:center;margin-top:15px}
 </style>
 
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
 <script async src="https://btloader.com/tag?o=5688917489764352&upapi=true"></script>
-
 </head>
+
 <body>
 
-<canvas id="fx"></canvas>
 <audio id="bg" loop src="sounds/background.mp3"></audio>
 <audio id="ok" src="sounds/ding.mp3"></audio>
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
@@ -64,6 +65,7 @@ window.monetag = window.monetag || { queue: [] };
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
 
+    <!-- STAŁY BANER -->
     <div id="ad"></div>
 
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
@@ -73,7 +75,7 @@ window.monetag = window.monetag || { queue: [] };
 <div id="final" class="full" style="display:none">
   <div class="box">
     <h1 style="color:var(--n2)">KONIEC</h1>
-    <div id="finalScore" style="font-size:2.2rem;color:var(--accent);margin:20px 0"></div>
+    <div id="finalScore" style="font-size:2rem;color:var(--accent);margin:20px 0"></div>
     <div class="btn" onclick="location.reload()">Zagraj ponownie</div>
   </div>
 </div>
@@ -81,86 +83,84 @@ window.monetag = window.monetag || { queue: [] };
 </div>
 
 <script>
+/* ===== PYTANIA ===== */
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
-{q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
-{q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
-{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0},
-{q:"Polski skoczek narciarski z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},
-{q:"Największe miasto mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
-{q:"Noblistka w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},
-{q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},
-{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
-{q:"Rok odzyskania niepodległości?",a:["1918","1945","1914","1939"],c:0},
-{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu"],c:0},
-{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},
-{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"],c:0},
-{q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
+{q:"Największy port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
+{q:"Najwyższy szczyt?",a:["Rysy","Giewont","Śnieżka","Babia Góra"],c:0},
+{q:"Rok niepodległości?",a:["1918","1939","1945","1920"],c:0},
+{q:"Noblistka?",a:["Maria Skłodowska-Curie","Banach","Kopernik","Lem"],c:0},
+{q:"Najdłuższa rzeka?",a:["Wisła","Odra","Warta","Bug"],c:0},
+{q:"Polska w NATO od?",a:["1999","2004","1995","2001"],c:0},
+{q:"Hymn Polski?",a:["Mazurek Dąbrowskiego","Rota","Bogurodzica","Oda"],c:0},
+{q:"Godło Polski?",a:["Orzeł","Lew","Wilk","Żubr"],c:0},
+{q:"Największe miasto?",a:["Warszawa","Kraków","Łódź","Wrocław"],c:0},
+{q:"Morze w Polsce?",a:["Bałtyckie","Czarne","Adriatyk","Północne"],c:0},
+{q:"Waluta?",a:["Złoty","Euro","Korona","Forint"],c:0},
+{q:"Stolica Małopolski?",a:["Kraków","Tarnów","Nowy Sącz","Zakopane"],c:0},
+{q:"Symbol Polski?",a:["Biało-czerwona","Niebieska","Zielona","Czarna"],c:0}
 ];
 
-let i=0, pts=0, nick="", ad7=false, ad14=false;
+let i=0, pts=0, nick="";
+const LIMIT_H = 24*60*60*1000;
+const lastAd = localStorage.getItem("lastAd") || 0;
 
-const qEl=document.getElementById("q");
+const qEl=q=document.getElementById("q");
 const aEl=document.getElementById("a");
-const progEl=document.getElementById("prog");
 const ptsEl=document.getElementById("pts");
+const progEl=document.getElementById("prog");
 
-// Baner pod quizem
-const adContainer = document.getElementById("ad");
-const banner = document.createElement("script");
-banner.dataset.zone='10526457';
-banner.src='https://nap5k.com/tag.min.js';
-adContainer.appendChild(banner);
+/* ===== BANER ===== */
+const ad=document.getElementById("ad");
+const s=document.createElement("script");
+s.src="https://nap5k.com/tag.min.js";
+s.dataset.zone="10526457";
+ad.appendChild(s);
 
-function shuffleAnswers(arr, correctIdx){
-  let newArr = arr.map((text,i)=>({text,i}));
-  for(let i=newArr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-  }
-  const newCorrect = newArr.findIndex(o=>o.i===correctIdx);
-  return {shuffled: newArr.map(o=>o.text), newCorrect};
+function canShowAd(){
+  return Date.now()-lastAd > LIMIT_H;
 }
 
-function triggerAd(format, zoneId){
-  if(window.monetag && window.monetag.queue){
-    monetag.queue.push({format: format, zoneId: zoneId});
-  }
+function showAd(type, zone){
+  if(!canShowAd()) return;
+  monetag.queue.push({format:type, zoneId:zone});
+  localStorage.setItem("lastAd", Date.now());
 }
 
-startBtn.onclick = async () => {
-  nick = document.getElementById("nick").value || "Gracz";
+function shuffle(a,c){
+  let x=a.map((t,i)=>({t,i}));
+  x.sort(()=>Math.random()-0.5);
+  return {a:x.map(o=>o.t),c:x.findIndex(o=>o.i===c)};
+}
+
+startBtn.onclick=()=>{
+  nick=nick.value||"Gracz";
   start.style.display="none";
   quiz.style.display="block";
-  try{ await bg.play(); } catch(e){ }
+  bg.play().catch(()=>{});
   show();
 };
 
 function show(){
   if(i>=Q.length) return end();
-  const q=Q[i];
-  const shuffled = shuffleAnswers(q.a, q.c);
-  const answers = shuffled.shuffled;
-  const correct = shuffled.newCorrect;
+  const q=Q[i], sh=shuffle(q.a,q.c);
+  qEl.textContent=q.q;
+  aEl.innerHTML="";
+  progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  qEl.textContent = q.q;
-  aEl.innerHTML = "";
-  progEl.textContent = `Pytanie ${i+1}/${Q.length}`;
-
-  answers.forEach((t, idx)=>{
-    const b = document.createElement("div");
+  sh.a.forEach((t,idx)=>{
+    const b=document.createElement("div");
     b.className="btn";
-    b.textContent = t;
-    b.onclick = () => {
-      if(idx===correct){ pts++; b.classList.add("good"); ok.play(); fire();}
-      else{ b.classList.add("bad"); bad.play();}
-      ptsEl.textContent = pts;
+    b.textContent=t;
+    b.onclick=()=>{
+      if(idx===sh.c){pts++;b.classList.add("good");ok.play();}
+      else{b.classList.add("bad");bad.play();}
+      ptsEl.textContent=pts;
 
-      // Reklamy po 7 i 14 pytaniu
-      if(i+1===7 && !ad7){ ad7=true; triggerAd("vignette",10523625);}
-      if(i+1===14 && !ad14){ ad14=true; triggerAd("popunder",10580761);}
+      if(i+1===7) showAd("vignette",10523625);
+      if(i+1===14) showAd("interstitial",10580761);
 
-      i++; setTimeout(show,700);
+      i++; setTimeout(show,600);
     };
     aEl.appendChild(b);
   });
@@ -170,29 +170,6 @@ function end(){
   quiz.style.display="none";
   final.style.display="flex";
   finalScore.textContent=`${nick} — ${pts} pkt`;
-  fire();
-}
-
-function fire(){
-  const c=fx,x=c.getContext("2d");
-  c.width=innerWidth;c.height=innerHeight;
-  let p=[],col=["#ff3fc4","#00f0ff","#16d36a","#ffd27a"];
-  for(let b=0;b<3;b++){
-    let sx=Math.random()*c.width,sy=Math.random()*c.height*.4;
-    for(let i=0;i<40;i++)
-      p.push({x:sx,y:sy,vx:(Math.random()-.5)*8,vy:(Math.random()-.5)*8,a:1,c:col[Math.random()*4|0]});
-  }
-  (function a(){
-    x.fillStyle="rgba(7,16,37,.2)";
-    x.fillRect(0,0,c.width,c.height);
-    for(let i=p.length-1;i>=0;i--){
-      let o=p[i];x.globalAlpha=o.a;x.fillStyle=o.c;
-      x.beginPath();x.arc(o.x,o.y,2,0,7);x.fill();
-      o.x+=o.vx;o.y+=o.vy;o.vy+=.1;o.a-=.02;
-      if(o.a<=0)p.splice(i,1);
-    }
-    p.length?requestAnimationFrame(a):x.clearRect(0,0,c.width,c.height);
-  })();
 }
 </script>
 
