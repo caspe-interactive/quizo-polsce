@@ -33,7 +33,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
 #ad{margin-top:20px;text-align:center;position:relative;z-index:5}
 </style>
 
-<!-- MONETAG MANUAL LOADER -->
+<!-- MONETAG MANUAL -->
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
@@ -105,28 +105,17 @@ const Q=[
 let i=0,pts=0,nick="";
 let ad7=false, ad14=false;
 
-// LIMIT 24H
-const lastAd = localStorage.getItem("lastAd") || 0;
-const now = Date.now();
-const allowAds = now - lastAd > 86400000;
-
-const qEl=q=document.getElementById("q");
+const qEl=document.getElementById("q");
 const aEl=document.getElementById("a");
 const ptsEl=document.getElementById("pts");
 const progEl=document.getElementById("prog");
 
-// banner nap5k
+// banner
 const adC=document.getElementById("ad");
 const s=document.createElement("script");
 s.dataset.zone="10526457";
 s.src="https://nap5k.com/tag.min.js";
 adC.appendChild(s);
-
-function trigger(format,zone){
-  if(!allowAds) return;
-  monetag.queue.push({format:format,zoneId:zone});
-  localStorage.setItem("lastAd",Date.now());
-}
 
 startBtn.onclick=()=>{
   nick=document.getElementById("nick").value||"Gracz";
@@ -147,15 +136,35 @@ function show(){
     const b=document.createElement("div");
     b.className="btn";
     b.textContent=t;
+
     b.onclick=()=>{
       if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
       else{b.classList.add("bad");bad.play();}
       ptsEl.textContent=pts;
 
-      if(i+1===7 && !ad7){ad7=true;trigger("vignette",10523625);}
-      if(i+1===14 && !ad14){ad14=true;trigger("interstitial",10580761);}
+      const next=()=>{ i++; show(); };
 
-      i++;setTimeout(show,700);
+      if(i+1===7 && !ad7){
+        ad7=true;
+        monetag.queue.push({
+          format:"vignette",
+          zoneId:10523625,
+          onClose: next
+        });
+        return;
+      }
+
+      if(i+1===14 && !ad14){
+        ad14=true;
+        monetag.queue.push({
+          format:"interstitial",
+          zoneId:10580761,
+          onClose: next
+        });
+        return;
+      }
+
+      next();
     };
     aEl.appendChild(b);
   });
