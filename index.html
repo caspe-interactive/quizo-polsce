@@ -12,8 +12,8 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:system-ui;background:var(--bg);color:var(--txt)}
-body{display:flex;justify-content:center;padding:12px}
-.page{width:100%;max-width:520px;margin-top:120px}
+body{display:flex;justify-content:center;padding:12px;}
+.page{width:100%;max-width:520px;margin-top:120px;}
 .card{background:var(--card);border-radius:14px;padding:22px}
 .top{display:flex;justify-content:space-between;margin-bottom:10px}
 .title{font-weight:800;color:var(--n1)}
@@ -21,27 +21,27 @@ body{display:flex;justify-content:center;padding:12px}
 .question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;
-background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer}
+.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer;text-align:center}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
 .box{background:#081322;padding:30px;border-radius:14px;text-align:center;width:90%;max-width:360px}
 input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:999;}
-#ad{margin-top:20px;text-align:center;position:relative;z-index:5;}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
 </style>
 
+<!-- MONETAG CORE -->
 <script>
-window.monetag = window.monetag || { queue: [] };
+window.monetag = window.monetag || {};
+monetag.queue = monetag.queue || [];
 </script>
-<script async src="https://btloader.com/tag?o=5688917489764352&upapi=true"></script>
+<script src="https://cdn.monetag.com/core.js"></script>
 
 </head>
-
 <body>
 
 <canvas id="fx"></canvas>
+
 <audio id="bg" loop src="sounds/background.mp3"></audio>
 <audio id="ok" src="sounds/ding.mp3"></audio>
 <audio id="bad" src="sounds/buzzer.mp3"></audio>
@@ -62,12 +62,9 @@ window.monetag = window.monetag || { queue: [] };
       <div class="title">QuizoPolsce</div>
       <div class="score">PKT: <span id="pts">0</span></div>
     </div>
+
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
-
-    <!-- Banner / In-page Push -->
-    <div id="ad"></div>
-
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
   </div>
 </div>
@@ -83,18 +80,6 @@ window.monetag = window.monetag || { queue: [] };
 </div>
 
 <script>
-// ELEMENTY DOM
-const start = document.getElementById("start");
-const quiz = document.getElementById("quiz");
-const final = document.getElementById("final");
-const qEl = document.getElementById("q");
-const aEl = document.getElementById("a");
-const progEl = document.getElementById("prog");
-const ptsEl = document.getElementById("pts");
-const finalScore = document.getElementById("finalScore");
-const startBtn = document.getElementById("startBtn");
-
-// PYTANIA (pełna lista)
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
@@ -112,88 +97,60 @@ const Q=[
 {q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
 ];
 
-let i=0, pts=0, ad7=false, ad14=false;
+let i=0, pts=0, nick="";
+const qEl=q=document.getElementById("q");
+const aEl=document.getElementById("a");
+const prog=document.getElementById("prog");
+const ptsEl=document.getElementById("pts");
 
-// FUNKCJA LOSUJĄCA ODPOWIEDZI
-function shuffleAnswers(arr, correctIdx){
-  let newArr = arr.map((text,i)=>({text,i}));
-  for(let i=newArr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-  }
-  const newCorrect = newArr.findIndex(o=>o.i===correctIdx);
-  return {shuffled: newArr.map(o=>o.text), newCorrect};
+function popunder(){
+  monetag.queue.push({
+    format:"onclick",
+    zoneId:10580761
+  });
 }
 
-// POPUNDER
-function triggerPopunder(){
-  if(window.monetag && window.monetag.queue){
-    monetag.queue.push({format:"onclick", zoneId:10580761});
-  }
-}
-
-// VIGNETTE
-function triggerVignette(){
-  if(window.monetag && window.monetag.queue){
-    monetag.queue.push({format:"vignette", zoneId:10523625});
-  }
-}
-
-// BANER POD QUIZEM (in-page push)
-function loadBanner(){
-  const adContainer = document.getElementById("ad");
-  const s = document.createElement("script");
-  s.dataset.zone='10526457';
-  s.src='https://nap5k.com/tag.min.js';
-  adContainer.appendChild(s);
-}
-
-// START QUIZU
-startBtn.onclick=()=>{
-  const nick=document.getElementById("nick").value||"Gracz";
+startBtn.onclick=async()=>{
+  nick=nickInput.value||"Gracz";
   start.style.display="none";
   quiz.style.display="block";
-  document.getElementById("bg").play().catch(()=>{});
-  loadBanner();
+  try{bg.play()}catch(e){}
   show();
-}
+};
 
-// POKAZANIE PYTAŃ
 function show(){
   if(i>=Q.length) return end();
   const q=Q[i];
-  const s=shuffleAnswers(q.a,q.c);
   qEl.textContent=q.q;
   aEl.innerHTML="";
-  progEl.textContent=`Pytanie ${i+1}/${Q.length}`;
+  prog.textContent=`Pytanie ${i+1}/${Q.length}`;
 
-  s.shuffled.forEach((t,idx)=>{
+  q.a.forEach((t,idx)=>{
     const b=document.createElement("div");
     b.className="btn";
     b.textContent=t;
     b.onclick=()=>{
-      if(idx===s.newCorrect){ b.classList.add("good"); pts++; document.getElementById("ok").play(); fire(); }
-      else{ b.classList.add("bad"); document.getElementById("bad").play(); }
+      if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
+      else{b.classList.add("bad");bad.play();}
       ptsEl.textContent=pts;
 
-      if(i+1===7 && !ad7){ ad7=true; triggerVignette(); }
-      if(i+1===14 && !ad14){ ad14=true; triggerPopunder(); }
+      i++;
 
-      i++; setTimeout(show,700);
+      if(i===7||i===14) popunder();
+
+      setTimeout(show,700);
     };
     aEl.appendChild(b);
   });
 }
 
-// KONIEC QUIZU
 function end(){
   quiz.style.display="none";
   final.style.display="flex";
-  finalScore.textContent=`${pts} pkt`;
+  finalScore.textContent=`${nick} — ${pts} pkt`;
   fire();
 }
 
-// FAJERWERKI
 function fire(){
   const c=fx,x=c.getContext("2d");
   c.width=innerWidth;c.height=innerHeight;
