@@ -83,35 +83,33 @@ monetag.queue = monetag.queue || [];
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
-{q:"Największe miasto na południu Polski?",a:["Kraków","Wrocław","Katowice","Łódź"],c:0},
-{q:"Polska jest członkiem NATO od?",a:["1999","2004","1990","2001"],c:0},
-{q:"Polski skoczek narciarski z medalami?",a:["Adam Małysz","Kamil Stoch","Piotr Żyła","Andrzej Stękała"],c:1},
-{q:"Największe miasto mazowieckiego?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
-{q:"Noblistka w dziedzinie chemii?",a:["Maria Skłodowska-Curie","Jan Czochralski","Michał Kalecki","Stefan Banach"],c:0},
 {q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},
-{q:"Najwyższy szczyt w Polsce?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
-{q:"Rok odzyskania niepodległości?",a:["1918","1945","1914","1939"],c:0},
-{q:"Polski orzeł jest symbolem?",a:["Godła","Flagi","Hymnu","Herbu"],c:0},
-{q:"Największe miasto na Śląsku?",a:["Katowice","Gliwice","Częstochowa","Bytom"],c:0},
-{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Bogurodzica","Rota","Oda do radości"],c:0},
-{q:"Król „Lew Lechistanu”?",a:["Jan III Sobieski","Władysław Jagiełło","Zygmunt Stary","Bolesław Chrobry"],c:0}
+{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Rota","Bogurodzica","Oda do radości"],c:0},
+{q:"Rok odzyskania niepodległości?",a:["1918","1939","1945","1920"],c:0},
+{q:"Najwyższy szczyt Polski?",a:["Rysy","Giewont","Babia Góra","Śnieżka"],c:0},
+{q:"Noblistka z chemii?",a:["Maria Skłodowska-Curie","Banach","Czochralski","Kopernik"],c:0},
+{q:"Polska w UE od?",a:["2004","1999","2001","2010"],c:0},
+{q:"Największe miasto Polski?",a:["Warszawa","Kraków","Łódź","Wrocław"],c:0},
+{q:"Morze w Polsce?",a:["Bałtyckie","Czarne","Północne","Śródziemne"],c:0},
+{q:"Godło Polski?",a:["Orzeł","Lew","Wilk","Żubr"],c:0},
+{q:"Waluta Polski?",a:["Złoty","Euro","Korona","Marka"],c:0},
+{q:"Stolica Małopolski?",a:["Kraków","Tarnów","Nowy Sącz","Zakopane"],c:0},
+{q:"Król Polski – zwycięzca spod Wiednia?",a:["Jan III Sobieski","Jagiełło","Chrobry","Waza"],c:0}
 ];
 
 let i=0, pts=0, nick="";
-const qEl=q=document.getElementById("q");
-const aEl=document.getElementById("a");
-const prog=document.getElementById("prog");
-const ptsEl=document.getElementById("pts");
+const qEl = document.getElementById("q");
+const aEl = document.getElementById("a");
+const prog = document.getElementById("prog");
+const ptsEl = document.getElementById("pts");
+const nickInput = document.getElementById("nick");
 
 function popunder(){
-  monetag.queue.push({
-    format:"onclick",
-    zoneId:10580761
-  });
+  monetag.queue.push({ format:"onclick", zoneId:10580761 });
 }
 
 startBtn.onclick=async()=>{
-  nick=nickInput.value||"Gracz";
+  nick = nickInput.value || "Gracz";
   start.style.display="none";
   quiz.style.display="block";
   try{bg.play()}catch(e){}
@@ -133,11 +131,8 @@ function show(){
       if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
       else{b.classList.add("bad");bad.play();}
       ptsEl.textContent=pts;
-
       i++;
-
       if(i===7||i===14) popunder();
-
       setTimeout(show,700);
     };
     aEl.appendChild(b);
