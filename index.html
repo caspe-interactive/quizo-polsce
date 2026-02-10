@@ -21,11 +21,8 @@ body{display:flex;justify-content:center;padding:12px}
 .question{text-align:center;font-size:1.3rem;margin:20px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:450px){.answers{grid-template-columns:1fr}}
-.btn{
-padding:14px;border-radius:12px;font-weight:800;color:#fff;
-background:linear-gradient(90deg,var(--n1),var(--n2));
-cursor:pointer;text-align:center;transition:.2s
-}
+.btn{padding:14px;border-radius:12px;font-weight:800;color:#fff;
+background:linear-gradient(90deg,var(--n1),var(--n2));cursor:pointer}
 .btn.good{background:linear-gradient(90deg,var(--good),#8df3b0)}
 .btn.bad{background:linear-gradient(90deg,var(--bad),#ff8a94)}
 .full{position:fixed;inset:0;background:#020814ee;display:flex;align-items:center;justify-content:center;z-index:10}
@@ -33,7 +30,6 @@ cursor:pointer;text-align:center;transition:.2s
 input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
 </style>
 
-<!-- Monetag loader -->
 <script>
 window.monetag = window.monetag || { queue: [] };
 </script>
@@ -75,11 +71,21 @@ window.monetag = window.monetag || { queue: [] };
 </div>
 
 <script>
+const start = document.getElementById("start");
+const quiz = document.getElementById("quiz");
+const final = document.getElementById("final");
+const q = document.getElementById("q");
+const a = document.getElementById("a");
+const prog = document.getElementById("prog");
+const ptsEl = document.getElementById("pts");
+const finalScore = document.getElementById("finalScore");
+const startBtn = document.getElementById("startBtn");
+
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
 {q:"Największy port?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
 {q:"Najwyższy szczyt?",a:["Rysy","Śnieżka","Giewont","Babia Góra"],c:0},
-{q:"Rok 1918 to?",a:["Niepodległość","Wojna","Konstytucja","Zabory"],c:0},
+{q:"Rok 1918?",a:["Niepodległość","Wojna","Konstytucja","Zabory"],c:0},
 {q:"Skoczek z medalami?",a:["Małysz","Stoch","Żyła","Kubacki"],c:1},
 {q:"Najdłuższa rzeka?",a:["Wisła","Odra","Bug","Warta"],c:0},
 {q:"Hymn Polski?",a:["Mazurek","Rota","Bogurodzica","Oda"],c:0},
@@ -89,12 +95,12 @@ const Q=[
 {q:"Stolica Mazowsza?",a:["Warszawa","Radom","Płock","Siedlce"],c:0},
 {q:"Godło to?",a:["Orzeł","Flaga","Hymn","Herb"],c:0},
 {q:"NATO od?",a:["1999","2004","1990","2001"],c:0},
-{q:"Król pod Wiedniem?",a:["Sobieski","Jagiełło","Chrobry","Kazimierz"],c:0}
+{q:"Król spod Wiednia?",a:["Sobieski","Jagiełło","Chrobry","Kazimierz"],c:0}
 ];
 
 let i=0, pts=0, pop7=false, pop14=false;
 
-function shuffle(arr, c){
+function shuffle(arr,c){
  let m=arr.map((t,i)=>({t,i}));
  for(let j=m.length-1;j>0;j--){
   let k=Math.random()*(j+1)|0;[m[j],m[k]]=[m[k],m[j]];
