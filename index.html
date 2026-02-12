@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>QuizoPolsce</title>
 
+<!-- MONETAG MULTITAG -->
+<script src="https://quge5.com/88/tag.min.js"
+        data-zone="205951"
+        async
+        data-cfasync="false"></script>
+
 <style>
 :root{
 --bg:#071025;--card:#0b1220;--txt:#e6f7ff;--muted:#9fb6d6;
@@ -29,22 +35,10 @@ body{display:flex;justify-content:center;padding:12px;}
 input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--n1);background:#050c18;color:#fff;margin-bottom:18px;text-align:center}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
 </style>
-
-<!-- MONETAG CORE -->
-<script>
-window.monetag = window.monetag || {};
-monetag.queue = monetag.queue || [];
-</script>
-<script src="https://cdn.monetag.com/core.js"></script>
-
 </head>
 <body>
 
 <canvas id="fx"></canvas>
-
-<audio id="bg" loop src="sounds/background.mp3"></audio>
-<audio id="ok" src="sounds/ding.mp3"></audio>
-<audio id="bad" src="sounds/buzzer.mp3"></audio>
 
 <div class="page">
 
@@ -62,7 +56,6 @@ monetag.queue = monetag.queue || [];
       <div class="title">QuizoPolsce</div>
       <div class="score">PKT: <span id="pts">0</span></div>
     </div>
-
     <div id="q" class="question"></div>
     <div id="a" class="answers"></div>
     <div id="prog" style="margin-top:10px;font-size:.8rem;color:var(--muted)"></div>
@@ -82,37 +75,28 @@ monetag.queue = monetag.queue || [];
 <script>
 const Q=[
 {q:"Stolica Polski?",a:["Warszawa","Kraków","Gdańsk","Wrocław"],c:0},
-{q:"Największy polski port morski?",a:["Gdańsk","Gdynia","Szczecin","Świnoujście"],c:0},
 {q:"Najdłuższa rzeka w Polsce?",a:["Wisła","Odra","Warta","Bug"],c:0},
-{q:"Hymn Polski to?",a:["Mazurek Dąbrowskiego","Rota","Bogurodzica","Oda do radości"],c:0},
-{q:"Rok odzyskania niepodległości?",a:["1918","1939","1945","1920"],c:0},
 {q:"Najwyższy szczyt Polski?",a:["Rysy","Giewont","Babia Góra","Śnieżka"],c:0},
-{q:"Noblistka z chemii?",a:["Maria Skłodowska-Curie","Banach","Czochralski","Kopernik"],c:0},
-{q:"Polska w UE od?",a:["2004","1999","2001","2010"],c:0},
-{q:"Największe miasto Polski?",a:["Warszawa","Kraków","Łódź","Wrocław"],c:0},
+{q:"Rok odzyskania niepodległości?",a:["1918","1939","1945","1920"],c:0},
 {q:"Morze w Polsce?",a:["Bałtyckie","Czarne","Północne","Śródziemne"],c:0},
-{q:"Godło Polski?",a:["Orzeł","Lew","Wilk","Żubr"],c:0},
 {q:"Waluta Polski?",a:["Złoty","Euro","Korona","Marka"],c:0},
+{q:"Godło Polski?",a:["Orzeł","Lew","Wilk","Żubr"],c:0},
+{q:"Polska w UE od?",a:["2004","1999","2001","2010"],c:0},
 {q:"Stolica Małopolski?",a:["Kraków","Tarnów","Nowy Sącz","Zakopane"],c:0},
-{q:"Król Polski – zwycięzca spod Wiednia?",a:["Jan III Sobieski","Jagiełło","Chrobry","Waza"],c:0}
+{q:"Król spod Wiednia?",a:["Jan III Sobieski","Jagiełło","Chrobry","Waza"],c:0}
 ];
 
 let i=0, pts=0, nick="";
-const qEl = document.getElementById("q");
-const aEl = document.getElementById("a");
-const prog = document.getElementById("prog");
-const ptsEl = document.getElementById("pts");
-const nickInput = document.getElementById("nick");
+const qEl=document.getElementById("q");
+const aEl=document.getElementById("a");
+const prog=document.getElementById("prog");
+const ptsEl=document.getElementById("pts");
+const nickInput=document.getElementById("nick");
 
-function popunder(){
-  monetag.queue.push({ format:"onclick", zoneId:10580761 });
-}
-
-startBtn.onclick=async()=>{
-  nick = nickInput.value || "Gracz";
+startBtn.onclick=()=>{
+  nick=nickInput.value||"Gracz";
   start.style.display="none";
   quiz.style.display="block";
-  try{bg.play()}catch(e){}
   show();
 };
 
@@ -122,17 +106,15 @@ function show(){
   qEl.textContent=q.q;
   aEl.innerHTML="";
   prog.textContent=`Pytanie ${i+1}/${Q.length}`;
-
   q.a.forEach((t,idx)=>{
     const b=document.createElement("div");
     b.className="btn";
     b.textContent=t;
     b.onclick=()=>{
-      if(idx===q.c){pts++;b.classList.add("good");ok.play();fire();}
-      else{b.classList.add("bad");bad.play();}
+      if(idx===q.c){pts++;b.classList.add("good");fire();}
+      else{b.classList.add("bad");}
       ptsEl.textContent=pts;
       i++;
-      if(i===7||i===14) popunder();
       setTimeout(show,700);
     };
     aEl.appendChild(b);
