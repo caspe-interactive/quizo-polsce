@@ -83,7 +83,11 @@ const Q=[
 {q:"Godło Polski?",a:["Orzeł","Lew","Wilk","Żubr"],c:0},
 {q:"Polska w UE od?",a:["2004","1999","2001","2010"],c:0},
 {q:"Stolica Małopolski?",a:["Kraków","Tarnów","Nowy Sącz","Zakopane"],c:0},
-{q:"Król spod Wiednia?",a:["Jan III Sobieski","Jagiełło","Chrobry","Waza"],c:0}
+{q:"Król spod Wiednia?",a:["Jan III Sobieski","Jagiełło","Chrobry","Waza"],c:0},
+{q:"Największe miasto Polski?",a:["Warszawa","Kraków","Łódź","Wrocław"],c:0},
+{q:"Morze w Polsce?",a:["Bałtyckie","Czarne","Północne","Śródziemne"],c:0},
+{q:"Polski hymn to?",a:["Mazurek Dąbrowskiego","Rota","Bogurodzica","Oda do radości"],c:0},
+{q:"Noblistka z chemii?",a:["Maria Skłodowska-Curie","Banach","Czochralski","Kopernik"],c:0}
 ];
 
 let i=0, pts=0, nick="";
@@ -106,6 +110,7 @@ function show(){
   qEl.textContent=q.q;
   aEl.innerHTML="";
   prog.textContent=`Pytanie ${i+1}/${Q.length}`;
+
   q.a.forEach((t,idx)=>{
     const b=document.createElement("div");
     b.className="btn";
@@ -115,7 +120,12 @@ function show(){
       else{b.classList.add("bad");}
       ptsEl.textContent=pts;
       i++;
-      setTimeout(show,700);
+
+      if(i===7){
+        setTimeout(()=>show(),900);
+      } else {
+        setTimeout(show,500);
+      }
     };
     aEl.appendChild(b);
   });
@@ -123,9 +133,13 @@ function show(){
 
 function end(){
   quiz.style.display="none";
-  final.style.display="flex";
-  finalScore.textContent=`${nick} — ${pts} pkt`;
-  fire();
+
+  // pauza przed wynikiem (tu Multitag ma drugą okazję)
+  setTimeout(()=>{
+    final.style.display="flex";
+    finalScore.textContent=`${nick} — ${pts} pkt`;
+    fire();
+  },1000);
 }
 
 function fire(){
